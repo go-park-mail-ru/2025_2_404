@@ -10,11 +10,6 @@ type RegisterUser struct {
 	Email string `json:"user_email"`
 }
 
-type Session struct {
-	Token  string `json:"token"`
-	UserID string `json:"user_id"`
-}
-
 type Ads struct {
 	AdID     string `json:"ad_id"`
 	CreatorID string `json:"creator_id"`

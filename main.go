@@ -6,6 +6,14 @@ import (
 	"2025_2_404/models"
 )
 
+func foundBD(sessionID string) string {
+	// Здесь вы можете реализовать логику поиска пользователя по sessionID
+	if sessionID == "valid_session_id" {
+		return "user_id"
+	}
+	return ""
+}
+
 // loginHandler handles user login requests. It processes incoming HTTP requests,
 // validates user credentials, and manages user authentication flow.
 // The function writes the appropriate HTTP response based on the authentication result.
@@ -27,10 +35,19 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sessionID := "Create session ID"
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		Path:     "/",
+		MaxAge:   8080,
+		HttpOnly: true,
+	})
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "Успешная авторизация",
-		"token":   "Auth token",
 	})
 }
 
@@ -57,14 +74,20 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// session.token = "Create token"
-	// session.user_id = "Create user_id"
+	sessionID := "Create session ID"
+
+	http.SetCookie(w, &http.Cookie{
+		Name:     "session_id",
+		Value:    sessionID,
+		Path:     "/",
+		MaxAge:   8080,
+		HttpOnly: true,
+	})
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "User created",
-		"token":   "Create token",
 	})
 }
 
@@ -74,25 +97,27 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req models.Session
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Json not correct", http.StatusBadRequest)
+	sessionCookie, err := r.Cookie("session_id")
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	req.UserID = "Extracted UserID"
+	sessionID := sessionCookie.Value
+	// Здесь вы можете использовать sessionID для извлечения информации о пользователе
+	userID := foundBD(sessionID)
 
 	ads := []map[string]string{
 		{
 			"add_id":     "1",
-			"creater_id": req.UserID,
+			"creater_id": userID,
 			"file_path":  "/files/ad1.jpg",
 			"title":      "Реклама 1",
 			"text":       "Текст рекламы 1",
 		},
 		{
 			"add_id":     "2",
-			"creater_id": req.UserID,
+			"creater_id": userID,
 			"file_path":  "/files/ad2.jpg",
 			"title":      "Реклама 2",
 			"text":       "Текст рекламы 2",
