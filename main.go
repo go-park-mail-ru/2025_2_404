@@ -52,6 +52,12 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		Email    string `json:"email"`
 		Password string `json:"password"`
 	}
+
+	// var session struct{
+	// 	token	string
+	// 	user_id	string
+	// }
+
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
 		return
@@ -61,6 +67,9 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Name or password no validate", http.StatusUnauthorized)
 		return
 	}
+
+	// session.token = "Create token"
+	// session.user_id = "Create user_id"
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -76,26 +85,42 @@ func handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var Add struct{
-		AddId		string	`json:"add_id"`
-		CreaterID	string	`json:"creater_id"`
-		FilePath	string	`json:"file_path"`
-		Title		string	`json:"title"`
-		Text		string	`json:"text"`
-	}
-	
-	var Creater struct{
-		CreaterID	string	`json:"creater_id"`
+	var req struct {
+		UserID string `json:"user_id"`
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&Creater); err != nil{
-		http.Error(w,"Json not correct", http.StatusBadRequest)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Json not correct", http.StatusBadRequest)
 		return
 	}
+
+	ads := []map[string]string{
+		{
+			"add_id":     "1",
+			"creater_id": req.UserID,
+			"file_path":  "/files/ad1.jpg",
+			"title":      "Реклама 1",
+			"text":       "Текст рекламы 1",
+		},
+		{
+			"add_id":     "2",
+			"creater_id": req.UserID,
+			"file_path":  "/files/ad2.jpg",
+			"title":      "Реклама 2",
+			"text":       "Текст рекламы 2",
+		},
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"ads": ads,
+	})
 }
 
 func main() {
 	http.HandleFunc("/", handle)
+	http.HandleFunc("/register", registerHandler)
+	http.HandleFunc("/login", loginHandler)
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
