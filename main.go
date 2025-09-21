@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"net/http"
+	"2025_2_404/models"
 )
 
 // loginHandler handles user login requests. It processes incoming HTTP requests,
@@ -10,14 +11,11 @@ import (
 // The function writes the appropriate HTTP response based on the authentication result.
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Не тот метод", http.StatusMethodNotAllowed)
+		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var creds struct {
-		UserName string `json:"user_name"`
-		Password string `json:"password"`
-	}
+	var creds models.BaseUser
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
 		return
@@ -25,7 +23,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Пример проверки логина и пароля (заглушка)
 	if creds.UserName != "admin" || creds.Password != "password1234" {
-		http.Error(w, "Неверные имя пользователя или пароль", http.StatusUnauthorized)
+		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
 		return
 	}
 
@@ -43,20 +41,11 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 // Returns appropriate HTTP error codes for invalid methods, malformed JSON, or validation failures.
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Не тот метод", http.StatusMethodNotAllowed)
+		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var user struct {
-		UserName string `json:"user_name"`
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
-
-	// var session struct{
-	// 	token	string
-	// 	user_id	string
-	// }
+	var user models.RegisterUser
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
@@ -64,7 +53,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(user.Password) < 10 || len(user.UserName) < 4 {
-		http.Error(w, "Name or password no validate", http.StatusUnauthorized)
+		http.Error(w, "Name or password no validate", http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -74,25 +63,24 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Пользователь создался",
+		"message": "User created",
 		"token":   "Create token",
 	})
 }
 
 func handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		http.Error(w, "Не тот метод", http.StatusMethodNotAllowed)
+		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var req struct {
-		UserID string `json:"user_id"`
-	}
-
+	var req models.Session
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
 		return
 	}
+
+	req.UserID = "Extracted UserID"
 
 	ads := []map[string]string{
 		{
@@ -115,7 +103,7 @@ func handle(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"ads": ads,
 	})
-}
+}	
 
 func main() {
 	http.HandleFunc("/", handle)
