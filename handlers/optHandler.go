@@ -4,15 +4,18 @@ import(
 	"encoding/json"
 	"net/http"
 	"2025_2_404/models"
+	"database/sql"
 )
 
-type Handlers struct {}
-
-func New() *Handlers {
-	return &Handlers{}
+type Handlers struct {
+	DB *sql.DB
 }
 
-func foundDB(sessionID string) string {
+func New(db *sql.DB) *Handlers {
+	return &Handlers{DB: db}
+}
+
+func foundUserBySessionDB(sessionID string) string {
 	// Здесь вы можете реализовать логику поиска пользователя по sessionID
 	if sessionID == "valid_session_id" {
 		return "user_id"
@@ -54,7 +57,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Успешная авторизация",
+		"message": "Successful authorization",
 	})
 }
 
@@ -111,8 +114,7 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := sessionCookie.Value
-	// Здесь вы можете использовать sessionID для извлечения информации о пользователе
-	userID := foundDB(sessionID)
+	userID := foundUserBySessionDB(sessionID)
 
 	ads := []map[string]string{
 		{
