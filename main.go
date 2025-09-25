@@ -8,18 +8,19 @@ import (
 )
 
 func main() {
-
-	postgresql, err := db.ConnectDB(config.GetPostgresConfig())
+	config := config.GetConfig()
+	postgresql, err := db.ConnectDB(config.DBConfig)
 	if err != nil {
 		panic(err)
 	}
 	defer postgresql.Close()
-	var handlers = handlers.New(postgresql)
+
+	handlers := handlers.New(postgresql)
 	http.HandleFunc("/", handlers.Handle)
 	http.HandleFunc("/register", handlers.RegisterHandler)
 	http.HandleFunc("/login", handlers.LoginHandler)
 
-	err = http.ListenAndServe(":"+config.GetAppPort(), nil)
+	err = http.ListenAndServe(":"+config.AppConfig.Port, nil)
 	if err != nil {
 		panic(err)
 	}

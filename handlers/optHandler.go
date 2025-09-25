@@ -16,17 +16,12 @@ func New(db *sql.DB) *Handlers {
 }
 
 func foundUserBySessionDB(sessionID string) string {
-	// Здесь вы можете реализовать логику поиска пользователя по sessionID
 	if sessionID == "valid_session_id" {
 		return "user_id"
 	}
 	return ""
 }
 
-
-// loginHandler handles user login requests. It processes incoming HTTP requests,
-// validates user credentials, and manages user authentication flow.
-// The function writes the appropriate HTTP response based on the authentication result.
 func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
@@ -61,11 +56,6 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-// registerHandler handles user registration requests.
-// It expects a POST request with a JSON body containing "user_name", "email", and "password" fields.
-// The handler validates the request method, parses and validates the input data,
-// and responds with a JSON message and a placeholder token upon successful registration.
-// Returns appropriate HTTP error codes for invalid methods, malformed JSON, or validation failures.
 func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
