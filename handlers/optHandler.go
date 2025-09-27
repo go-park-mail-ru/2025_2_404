@@ -1,26 +1,38 @@
 package handlers
 
-import(
-	"encoding/json"
-	"net/http"
+import (
 	"2025_2_404/models"
+	"crypto/rand"
 	"database/sql"
+	"encoding/hex"
+	"encoding/json"
+	"2025_2_404/pkg/password"
+	"net/http"
 )
+
 
 type Handlers struct {
 	DB *sql.DB
 }
 
+
 func New(db *sql.DB) *Handlers {
 	return &Handlers{DB: db}
 }
 
-func foundUserBySessionDB(sessionID string) string {
-	if sessionID == "valid_session_id" {
-		return "user_id"
+
+func GenerateSession() (string, error){
+	sessionID := make([]byte,32)
+	if _, err := rand.Read(sessionID); err != nil{
+		return "", err
 	}
-	return ""
+	return hex.EncodeToString(sessionID), nil
 }
+
+func foundUserBySessionDB(sessionID string) string{
+	return sessionID
+}
+
 
 func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -35,12 +47,15 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Пример проверки логина и пароля (заглушка)
-	if creds.UserName != "admin" || creds.Password != "password1234" {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+	if creds.Email != "admin@example.com" || creds.Password != "password1234" {
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
-	sessionID := "Create session ID"
+	sessionID, err := GenerateSession()
+	if err != nil{
+		http.Error(w, "Session not generated", http.StatusInternalServerError)
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
@@ -55,6 +70,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "Successful authorization",
 	})
 }
+
 
 func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -74,7 +90,29 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID := "Create session ID"
+	password, err := password.Hash(user.Password)
+	if err != nil{
+		http.Error(w, "Password don't hash", http.StatusInternalServerError)
+	}
+
+	var userID int
+	sqlText := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	if err := h.DB.QueryRow(sqlText, user.Email, password, user.UserName).Scan(&userID); err != nil{
+		http.Error(w, "User not register", http.StatusUnprocessableEntity)
+		return
+	}
+
+	sessionID, err := GenerateSession()
+	if err != nil{
+		http.Error(w, "Session not generated", http.StatusInternalServerError)
+	}
+
+	sqlText = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+	_, err = h.DB.Exec(sqlText, userID, sessionID)
+	if err != nil{
+		http.Error(w,"Session token not created", http.StatusConflict)
+		return
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
@@ -90,6 +128,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "User created",
 	})
 }
+
 
 func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
