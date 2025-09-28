@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -34,11 +35,24 @@ func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
 	sqlText := "SELECT user_id FROM session WHERE session_id = $1"
 	err := h.DB.QueryRow(sqlText, sessionID).Scan(&userID)
 	if err != nil {
-		return "", err
+		return "", errors.New("session not found")
 	}
 	return userID, nil
 }
 
+func (h *Handlers) foundUserByCredentialsDB(email, password string) (string, error) {
+	var userID string
+	var hashedPassword string
+	sqlTextForSelectUsers := "SELECT id, password FROM users WHERE email = $1 "
+	err := h.DB.QueryRow(sqlTextForSelectUsers, email).Scan(&userID, &hashedPassword)
+	if err != nil {
+		return "", err
+	}
+	if hashedPassword != password {
+		return "", errors.New("invalid password")
+	}
+	return userID, nil
+}
 
 func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -52,17 +66,32 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Пример проверки логина и пароля (заглушка)
-	if creds.Email != "admin@example.com" || creds.Password != "password1234" {
+	passwordHash := sha1.Sum([]byte(creds.Password))
+	hexPasswordHash := hex.EncodeToString(passwordHash[:])
+
+	returnUserID, err := h.foundUserByCredentialsDB(creds.Email, hexPasswordHash)
+	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
-	sessionID, err := GenerateSession()
-	if err != nil{
-		http.Error(w, "Session not generated", http.StatusInternalServerError)
-	}
+	var sessionID string
+	sqlTextForCheckSession := "SELECT session_id FROM session WHERE user_id = $1"
+	err = h.DB.QueryRow(sqlTextForCheckSession, returnUserID).Scan(&sessionID)
+	if err != nil {
+		sessionID, err = GenerateSession()
+		if err != nil {
+			http.Error(w, "Session not generated", http.StatusInternalServerError)
+			return
+		}
 
+		sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+		_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
+		if err != nil {
+			http.Error(w, "Session token not created", http.StatusConflict)
+			return
+		}
+	} 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
@@ -131,7 +160,6 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "User created",
-		"values": sessionID,
 	})
 }
 

@@ -18,7 +18,7 @@ func main() {
 	handlers := handlers.New(postgresql)
 	http.HandleFunc("/", handlers.Handle)
 	http.HandleFunc("/signup", handlers.RegisterHandler)
-	http.HandleFunc("/login", handlers.LoginHandler)
+	http.HandleFunc("/signin", handlers.LoginHandler)
 
 	err = http.ListenAndServe(":"+config.AppConfig.Port, nil)
 	if err != nil {
