@@ -17,10 +17,10 @@ import (
 )
 
 const (
-	saltSize            = 16
-	delmiter            = "$#$"
-	stretching_password = 500
-	salt_local_secret   = "ahfw*&TGdsfnbi*^Wt"
+	saltSize            = 5
+	delmiter            = "|#|"
+	stretching_password = 20
+	salt_local_secret   = "ahfw*"
 )
 
 func Hash(pass string) (string, error) {
@@ -128,7 +128,9 @@ func salt_secret() (string, error) {
 		return "", err
 	}
 
-	return base64.URLEncoding.EncodeToString(rb), nil
+	secret := base64.URLEncoding.EncodeToString(rb)
+	secret = strings.ReplaceAll(secret, "$", "-")
+	return secret, nil
 }
 
 func randInt(min int, max int) int {

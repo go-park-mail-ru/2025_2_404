@@ -6,7 +6,6 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
-	"2025_2_404/pkg/password"
 	"net/http"
 )
 
@@ -29,8 +28,14 @@ func GenerateSession() (string, error){
 	return hex.EncodeToString(sessionID), nil
 }
 
-func foundUserBySessionDB(sessionID string) string{
-	return sessionID
+func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
+	var userID string
+	sqlText := "SELECT user_id FROM session WHERE session_id = $1"
+	err := h.DB.QueryRow(sqlText, sessionID).Scan(&userID)
+	if err != nil {
+		return "", err
+	}
+	return userID, nil
 }
 
 
@@ -90,14 +95,15 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	password, err := password.Hash(user.Password)
-	if err != nil{
-		http.Error(w, "Password don't hash", http.StatusInternalServerError)
-	}
+	// passwordHash, err := password.Hash(user.Password)
+	// if err != nil || passwordHash != "" {
+	// 	http.Error(w, fmt.Sprintf("Password don't hash: %v Length: %d", passwordHash, len(passwordHash)), http.StatusInternalServerError)
+	// 	return
+	// }
 
 	var userID int
 	sqlText := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
-	if err := h.DB.QueryRow(sqlText, user.Email, password, user.UserName).Scan(&userID); err != nil{
+	if err := h.DB.QueryRow(sqlText, user.Email, user.Password, user.UserName).Scan(&userID); err != nil{
 		http.Error(w, "User not register", http.StatusUnprocessableEntity)
 		return
 	}
@@ -143,7 +149,11 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := sessionCookie.Value
-	userID := foundUserBySessionDB(sessionID)
+	userID, err := h.foundUserBySessionDB(sessionID)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	ads := []map[string]string{
 		{
