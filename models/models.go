@@ -1,13 +1,13 @@
 package models
 
 type BaseUser struct {
-	UserName string `json:"user_name"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
 type RegisterUser struct {
 	BaseUser
-	Email string `json:"user_email"`
+	UserName string `json:"user_name"`
 }
 
 type Ads struct {

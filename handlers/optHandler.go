@@ -1,25 +1,57 @@
 package handlers
 
-import(
-	"encoding/json"
-	"net/http"
+import (
 	"2025_2_404/models"
+	"crypto/rand"
+	"crypto/sha1"
 	"database/sql"
+	"encoding/hex"
+	"encoding/json"
+	"errors"
+	"net/http"
 )
+
 
 type Handlers struct {
 	DB *sql.DB
 }
 
+
 func New(db *sql.DB) *Handlers {
 	return &Handlers{DB: db}
 }
 
-func foundUserBySessionDB(sessionID string) string {
-	if sessionID == "valid_session_id" {
-		return "user_id"
+
+func GenerateSession() (string, error){
+	sessionID := make([]byte,32)
+	if _, err := rand.Read(sessionID); err != nil{
+		return "", err
 	}
-	return ""
+	return hex.EncodeToString(sessionID), nil
+}
+
+func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
+	var userID string
+	sqlText := "SELECT user_id FROM session WHERE session_id = $1"
+	err := h.DB.QueryRow(sqlText, sessionID).Scan(&userID)
+	if err != nil {
+		return "", errors.New("session not found")
+	}
+	return userID, nil
+}
+
+func (h *Handlers) foundUserByCredentialsDB(email, password string) (string, error) {
+	var userID string
+	var hashedPassword string
+	sqlTextForSelectUsers := "SELECT id, password FROM users WHERE email = $1 "
+	err := h.DB.QueryRow(sqlTextForSelectUsers, email).Scan(&userID, &hashedPassword)
+	if err != nil {
+		return "", err
+	}
+	if hashedPassword != password {
+		return "", errors.New("invalid password")
+	}
+	return userID, nil
 }
 
 func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -34,14 +66,32 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Пример проверки логина и пароля (заглушка)
-	if creds.UserName != "admin" || creds.Password != "password1234" {
-		http.Error(w, "Invalid username or password", http.StatusUnauthorized)
+	passwordHash := sha1.Sum([]byte(creds.Password))
+	hexPasswordHash := hex.EncodeToString(passwordHash[:])
+
+	returnUserID, err := h.foundUserByCredentialsDB(creds.Email, hexPasswordHash)
+	if err != nil {
+		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
-	sessionID := "Create session ID"
+	var sessionID string
+	sqlTextForCheckSession := "SELECT session_id FROM session WHERE user_id = $1"
+	err = h.DB.QueryRow(sqlTextForCheckSession, returnUserID).Scan(&sessionID)
+	if err != nil {
+		sessionID, err = GenerateSession()
+		if err != nil {
+			http.Error(w, "Session not generated", http.StatusInternalServerError)
+			return
+		}
 
+		sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+		_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
+		if err != nil {
+			http.Error(w, "Session token not created", http.StatusConflict)
+			return
+		}
+	} 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
@@ -55,6 +105,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		"message": "Successful authorization",
 	})
 }
+
 
 func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
@@ -74,7 +125,28 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionID := "Create session ID"
+	passwordHash := sha1.Sum([]byte(user.Password))
+	hexPasswordHash := hex.EncodeToString(passwordHash[:])
+
+	var returnUserID int
+	sqlTextForInsertUsers := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
+		http.Error(w, "User not register", http.StatusUnprocessableEntity)
+		return
+	}
+
+	sessionID, err := GenerateSession()
+	if err != nil{
+		http.Error(w, "Session not generated", http.StatusInternalServerError)
+		return
+	}
+
+	sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
+	if err != nil{
+		http.Error(w,"Session token not created", http.StatusConflict)
+		return
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
@@ -91,6 +163,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+
 func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
@@ -104,7 +177,11 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := sessionCookie.Value
-	userID := foundUserBySessionDB(sessionID)
+	userID, err := h.foundUserBySessionDB(sessionID)
+	if err != nil {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 
 	ads := []map[string]string{
 		{
