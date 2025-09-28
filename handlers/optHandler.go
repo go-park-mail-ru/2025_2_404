@@ -3,6 +3,7 @@ package handlers
 import (
 	"2025_2_404/models"
 	"crypto/rand"
+	"crypto/sha1"
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
@@ -95,15 +96,12 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// passwordHash, err := password.Hash(user.Password)
-	// if err != nil || passwordHash != "" {
-	// 	http.Error(w, fmt.Sprintf("Password don't hash: %v Length: %d", passwordHash, len(passwordHash)), http.StatusInternalServerError)
-	// 	return
-	// }
+	passwordHash := sha1.Sum([]byte(user.Password))
+	hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
-	var userID int
-	sqlText := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
-	if err := h.DB.QueryRow(sqlText, user.Email, user.Password, user.UserName).Scan(&userID); err != nil{
+	var returnUserID int
+	sqlTextForInsertUsers := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
 		http.Error(w, "User not register", http.StatusUnprocessableEntity)
 		return
 	}
@@ -111,10 +109,11 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	sessionID, err := GenerateSession()
 	if err != nil{
 		http.Error(w, "Session not generated", http.StatusInternalServerError)
+		return
 	}
 
-	sqlText = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
-	_, err = h.DB.Exec(sqlText, userID, sessionID)
+	sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 	if err != nil{
 		http.Error(w,"Session token not created", http.StatusConflict)
 		return
@@ -132,6 +131,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
 		"message": "User created",
+		"values": sessionID,
 	})
 }
 
