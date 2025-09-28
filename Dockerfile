@@ -1,4 +1,4 @@
-FROM golang:alpine AS builder
+FROM golang:tip-alpine3.22
 
 WORKDIR /app
 
@@ -7,14 +7,6 @@ COPY . .
 RUN go mod download
 
 RUN go build main.go
-
-FROM alpine:latest
-
-WORKDIR /app
-
-COPY .env .
-
-COPY --from=builder /app/main /app/main
 
 EXPOSE 8080
 
