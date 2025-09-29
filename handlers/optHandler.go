@@ -131,7 +131,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var returnUserID int
 	sqlTextForInsertUsers := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
 	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
-		http.Error(w, "User not register", http.StatusUnprocessableEntity)
+		http.Error(w, "User already registered", http.StatusUnprocessableEntity)
 		return
 	}
 

@@ -22,7 +22,7 @@ func CORS(next http.HandlerFunc) http.HandlerFunc {
 
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
 
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, X-Requested-With, X-CSRF-Token")
 
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
