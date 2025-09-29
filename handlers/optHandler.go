@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"2025_2_404/pkg"
 )
 
 
@@ -66,6 +67,11 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if validateErr := pkg.ValidateLoginUser(&creds); validateErr != nil {
+		http.Error(w, validateErr.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+
 	passwordHash := sha1.Sum([]byte(creds.Password))
 	hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
@@ -120,8 +126,8 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(user.Password) < 10 || len(user.UserName) < 4 {
-		http.Error(w, "Name or password no validate", http.StatusUnprocessableEntity)
+	if validateErr := pkg.ValidateRegisterUser(&user); validateErr != nil {
+		http.Error(w, validateErr.Error(), http.StatusUnprocessableEntity)
 		return
 	}
 
