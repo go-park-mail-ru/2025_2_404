@@ -9,9 +9,13 @@ import (
 
 func CORS(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request){
-		allowedOrigin := "http://localhost:8000"
+		allowed := map[string]bool{
+        "http://localhost:8000": true,
+        "http://127.0.0.1:8000": true,
+        // добавь нужные домены, если будут
+    }
 		origin := r.Header.Get("Origin")
-		if origin == allowedOrigin{
+		if allowed[origin] {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 		}
 
