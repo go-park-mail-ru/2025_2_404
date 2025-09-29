@@ -32,8 +32,8 @@ func GenerateSession() (string, error){
 
 func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
 	var userID string
-	sqlText := "SELECT user_id FROM session WHERE session_id = $1"
-	err := h.DB.QueryRow(sqlText, sessionID).Scan(&userID)
+	sqlTextForFoundUser := "SELECT user_id FROM session WHERE session_id = $1"
+	err := h.DB.QueryRow(sqlTextForFoundUser, sessionID).Scan(&userID)
 	if err != nil {
 		return "", errors.New("session not found")
 	}
@@ -183,20 +183,31 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	filePath := "images/1.jpg"
+	title := "Новый набор студентов в технопарк!"
+	text := "Этой весной наступает новый набор студентов в Технопарк по программе WEB-разработка. Обучим вас GO-lang! Студенты нашего курса разработали сайт ADS"
+	sqlTextForInsertAds := "INSERT INTO ads (creator_id, file_path, title, text) VALUES ($1, $2, $3, $4)"
+	_, err = h.DB.Exec(sqlTextForInsertAds, userID, filePath, title, text)
+	if err != nil {
+		http.Error(w, "Failed to insert ad", http.StatusInternalServerError)
+		return
+	}
+
+	var ad models.Ads
+	sqlTextForSelectAds := "SELECT id, file_path, title, text FROM ads WHERE creator_id = $1"
+	err = h.DB.QueryRow(sqlTextForSelectAds, userID).Scan(&ad.AdID, &ad.FilePath, &ad.Title, &ad.Text)
+	if err != nil {
+		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
+		return
+	}
+
 	ads := []map[string]string{
 		{
-			"add_id":     "1",
+			"add_id":     ad.AdID,
 			"creater_id": userID,
-			"file_path":  "/files/ad1.jpg",
-			"title":      "Реклама 1",
-			"text":       "Текст рекламы 1",
-		},
-		{
-			"add_id":     "2",
-			"creater_id": userID,
-			"file_path":  "/files/ad2.jpg",
-			"title":      "Реклама 2",
-			"text":       "Текст рекламы 2",
+			"file_path":  ad.FilePath,
+			"title":      ad.Title,
+			"text":       ad.Text,
 		},
 	}
 
