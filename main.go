@@ -12,6 +12,7 @@ func CORS(next http.HandlerFunc) http.HandlerFunc {
 		allowed := map[string]bool{
         "http://localhost:8000": true,
         "http://127.0.0.1:8000": true,
+		"http://89.208.230.119:8000": true,
         // добавь нужные домены, если будут
     }
 		origin := r.Header.Get("Origin")
