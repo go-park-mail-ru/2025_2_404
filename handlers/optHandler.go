@@ -24,10 +24,11 @@ func New(db *sql.DB) *Handlers {
 const(
 	sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
 	sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
-	sqlTextForSelectUsers = "SELECT id, password FROM user WHERE email = $1 "
+	sqlTextForSelectUsers = "SELECT id, password FROM app_user WHERE email = $1 "
 	sqlTextForCheckSession = "SELECT session_id FROM session WHERE user_id = $1"
 	sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
-	sqlTextForInsertUsers = "INSERT INTO user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForInsertUsers = "INSERT INTO app_user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForInsertAds = "INSERT INTO ad (creator_id, file_path, title, text_ad) VALUES ($1, $2, $3, $4)"
 )
 
 func GenerateSession() (string, error){
@@ -103,23 +104,6 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	} 
 
-	var ads []models.Ads
-	row, err := h.DB.Query(sqlTextForSelectAds, returnUserID)
-	if err != nil {
-		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
-		return
-	}
-	defer row.Close()
-
-	for row.Next() {
-		var ad models.Ads
-		if err := row.Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text); err != nil {
-			http.Error(w, "Failed to scan ad", http.StatusInternalServerError)
-			return
-		}
-		ads = append(ads, ad)
-	}
-
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
@@ -128,8 +112,8 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	JSONResponse(w, http.StatusOK, map[string]string{
-		"message": "Successful authorization",
+	JSONResponse(w, http.StatusCreated, map[string]interface{}{
+		"message": "Successful authorizatio",
 	})
 }
 
@@ -147,7 +131,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(user.Password) < 10 || len(user.UserName) < 4 {
+	if len(user.Password) < 8 || len(user.UserName) < 4 {
 		http.Error(w, "Name or password no validate", http.StatusUnprocessableEntity)
 		return
 	}
@@ -167,27 +151,26 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ads := models.Ads{
+		FilePath:  "images/1.jpg",
+		Title:     "Новый набор студентов в технопарк!",
+		Text:      "Этой весной наступает новый набор студентов в Технопарк по программе WEB-разработка. Обучим вас GO-lang! Студенты нашего курса разработали сайт ADS",
+	}
+	_, err = h.DB.Exec(sqlTextForInsertAds, returnUserID, ads.FilePath, ads.Title, ads.Text)
+	if err != nil {
+		http.Error(w, "Failed to insert ads", http.StatusInternalServerError)
+		return
+	}
+
 	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 	if err != nil{
 		http.Error(w,"Session token not created", http.StatusConflict)
 		return
 	}
 
-	var ads []models.Ads
-	row, err := h.DB.Query(sqlTextForSelectAds, returnUserID)
-	if err != nil {
+	if err := h.DB.QueryRow(sqlTextForSelectAds, returnUserID).Scan(&ads.ID, &ads.FilePath, &ads.Title, &ads.Text); err != nil {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
-	}
-	defer row.Close()
-
-	for row.Next() {
-		var ad models.Ads
-		if err := row.Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text); err != nil {
-			http.Error(w, "Failed to scan ad", http.StatusInternalServerError)
-			return
-		}
-		ads = append(ads, ad)
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -198,7 +181,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	JSONResponse(w, http.StatusCreated, map[string]string{
+	JSONResponse(w, http.StatusCreated, map[string]interface{}{
 		"message": "User created",
 	})
 }
@@ -223,24 +206,23 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ads []models.Ads
-	row, err := h.DB.Query(sqlTextForSelectAds, userID)
-	if err != nil {
+	var ads models.Ads
+	if err := h.DB.QueryRow(sqlTextForSelectAds, userID).Scan(&ads.ID, &ads.FilePath, &ads.Title, &ads.Text); err != nil {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
 	}
-	defer row.Close()
 
-	for row.Next() {
-		var ad models.Ads
-		if err := row.Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text); err != nil {
-			http.Error(w, "Failed to scan ad", http.StatusInternalServerError)
-			return
-		}
-		ads = append(ads, ad)
+	adsOut := []map[string]string{
+		{
+			"add_id":     ads.ID,
+			"creater_id": ads.CreatorID,
+			"file_path":  ads.FilePath,
+			"title":      ads.Title,
+			"text":       ads.Text,
+		},
 	}
-
-	JSONResponse(w, http.StatusOK, map[string]interface{}{
-		"ads": ads,
+	JSONResponse(w, http.StatusCreated, map[string]interface{}{
+		"message": "Successful authorization",
+		"ads":     adsOut,
 	})
 }	

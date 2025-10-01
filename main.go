@@ -22,18 +22,18 @@ func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		if r.Method != http.MethodOptions {
 			next.ServeHTTP(w, r)
+		} else {
+			w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, X-Requested-With, X-CSRF-Token")
+
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+			w.Header().Set("Access-Control-Max-Age", "86400")
+
+			w.WriteHeader(http.StatusOK)
+			return
 		}
-
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
-
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, X-Requested-With, X-CSRF-Token")
-
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-		w.Header().Set("Access-Control-Max-Age", "86400")
-
-		w.WriteHeader(http.StatusOK)
-		return
 	}
 }
 
