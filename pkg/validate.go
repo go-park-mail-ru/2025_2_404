@@ -6,11 +6,12 @@ import (
 	"regexp"
 )
 
+var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9._!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$`)
 var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
 var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
 
 func validPasswords (password string) bool {
-	return allowedSymbols.MatchString(password);
+	return allowedPassword.MatchString(password);
 }
 
 func validNames (name string) bool {
