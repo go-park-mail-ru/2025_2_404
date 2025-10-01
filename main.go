@@ -21,7 +21,6 @@ func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if r.Method == http.MethodOptions {
-			w.Header().Set("Access-Control-Allow-Origin", "http://89.208.230.119:8000")
 			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
 			w.Header().Set("Access-Control-Max-Age", "3600")
 			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept")
