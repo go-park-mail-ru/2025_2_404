@@ -7,6 +7,7 @@ import (
 	"net/http/httptest"
 	"regexp"
 	"testing"
+	"errors"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -103,4 +104,58 @@ func TestLoginHandler_UserNotFound(t *testing.T) {
 	
 	err = mock.ExpectationsWereMet()
 	assert.NoError(t, err)
+}
+
+func TestRegisterHandler_Success(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	h := New(db)
+
+	userData := `{"email":"newuser@example.com", "password":"password123", "user_name":"Newbie"}`
+	passwordHash := "cbfdac6008f9cab4083784cbd1874f76618d2a97" 
+	expectedUserID := 1
+
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id`)).
+		WithArgs("newuser@example.com", passwordHash, "Newbie").
+		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedUserID))
+
+	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO session (user_id, session_id) VALUES ($1, $2)`)).
+		WithArgs(expectedUserID, sqlmock.AnyArg()).
+		WillReturnResult(sqlmock.NewResult(1, 1))
+
+	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBufferString(userData))
+	rr := httptest.NewRecorder()
+	h.RegisterHandler(rr, req)
+
+	assert.Equal(t, http.StatusCreated, rr.Code)
+	cookie := rr.Result().Cookies()[0]
+	assert.Equal(t, "session_id", cookie.Name)
+	assert.NotEmpty(t, cookie.Value)
+	assert.JSONEq(t, `{"message": "User created"}`, rr.Body.String())
+	assert.NoError(t, mock.ExpectationsWereMet())
+}
+
+func TestRegisterHandler_UserAlreadyExists(t *testing.T) {
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+
+	h := New(db)
+
+	userData := `{"email":"existing@example.com", "password":"password123", "user_name":"ExistingUser"}`
+	passwordHash := "cbfdac6008f9cab4083784cbd1874f76618d2a97"
+
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id`)).
+		WithArgs("existing@example.com", passwordHash, "ExistingUser").
+		WillReturnError(errors.New("UNIQUE constraint failed: users.email")) // Симулируем ошибку БД
+
+	req := httptest.NewRequest(http.MethodPost, "/register", bytes.NewBufferString(userData))
+	rr := httptest.NewRecorder()
+	h.RegisterHandler(rr, req)
+
+	assert.Equal(t, http.StatusUnprocessableEntity, rr.Code)
+	assert.Equal(t, "User not register\n", rr.Body.String())
+	assert.NoError(t, mock.ExpectationsWereMet())
 }

@@ -15,7 +15,7 @@ func TestValidateRegisterUser(t *testing.T){
 	}{
 		{
 			nameTest: "Успешная валидация", 
-			user: &models.RegisterUser{ // Используем & и именованные поля
+			user: &models.RegisterUser{ 
 				BaseUser: models.BaseUser{Email: "test.user@example.com", Password: "Password123"},
 				UserName: "ValidUser",
 			},
@@ -28,7 +28,7 @@ func TestValidateRegisterUser(t *testing.T){
 				UserName: "me",
 			},
 			expectError:   true,
-			expectedError: "Имя пользователя должно быть не меньше 3-х символов",
+			expectedError: "Имя пользователя должно быть не меньше 3-х и не больше 20-ти символов",
 		},
 		{
 			nameTest: "Недопустимые значения в имени",
@@ -42,7 +42,7 @@ func TestValidateRegisterUser(t *testing.T){
 		{
 			nameTest: "Недопустимое имя Email",
 			user: &models.RegisterUser{
-				BaseUser: models.BaseUser{Email: "testuser@example.com@", Password: "Password123"}, // Исправил email для теста
+				BaseUser: models.BaseUser{Email: "testuser@example.com@", Password: "Password123"}, 
 				UserName: "meow",
 			},
 			expectError:   true,
@@ -58,9 +58,27 @@ func TestValidateRegisterUser(t *testing.T){
 			expectedError: "Пароль менее 8-ми символов",
 		},
 		{
+			nameTest: "Пароль больше 50-ти символов",
+			user: &models.RegisterUser{
+				BaseUser: models.BaseUser{Email: "testuser@example.com", Password: "Wv!8k$z#rE&pA6q@T3sB*uY4n^C5hF@dG2jL!mK9vP*sX7zQc#gH1"},
+				UserName: "meow",
+			},
+			expectError:   true,
+			expectedError: "Пароль больше 50-ти символов",
+		},
+		{
 			nameTest: "Недопустимые значения пароля",
 			user: &models.RegisterUser{
 				BaseUser: models.BaseUser{Email: "testuser@example.com", Password: "Pass:/12"},
+				UserName: "meow",
+			},
+			expectError:   true,
+			expectedError: "Недопустимые значения",
+		},
+		{
+			nameTest: "Недопустимые значения пароля",
+			user: &models.RegisterUser{
+				BaseUser: models.BaseUser{Email: "testuser@example.com", Password: "пароль12"},
 				UserName: "meow",
 			},
 			expectError:   true,
@@ -84,45 +102,40 @@ func TestValidateRegisterUser(t *testing.T){
 func TestValidateLoginUser(t *testing.T){
 	testCases := []struct{
 		nameTest string
-		password string
-		expectedError bool
+		user *models.BaseUser	
+		expectError bool
+		expectedError string
 	}{
 		{
-			nameTest: "Корректный пароль",
-			password: "Password123-ok",
-			expectedError: true,
+			nameTest: "unКорректный email",
+			user: &models.BaseUser{Email: "ярусский@gmail.com", Password: "123Passw3"},
+			expectError: false,
+			expectedError: "Недопустимое имя Email",
 		},
 		{
-			nameTest: "Недопустимый пароль с пробелом",
-			password: "Password 123",
-			expectedError: false,
+			nameTest: "Пароль менее 8 символов",
+			user: &models.BaseUser{Email: "test@gmail.com", Password: "123P3"},
+			expectError: false,
+			expectedError: "Пароль менее 8-ми символов",
 		},
 		{
-			nameTest: "Недопустимый пароль с двоеточием",
-			password: "Password:123",
-			expectedError: false,
+			nameTest: "Пароль более 8 символов",
+			user: &models.BaseUser{Email: "test@gmail.com", Password: "Wv!8k$z#rE&pA6q@T3sB*uY4n^C5hF@dG2jL!mK9vP*sX7zQc#gH1"},
+			expectError: false,
+			expectedError: "Пароль больше 50-ти символов",
 		},
 		{
-			nameTest: "Недопустимый пароль с одинарной кавычкой",
-			password: "Password'123", 
-			expectedError: false,
-		},
-		{
-			nameTest: "Недопустимый пароль с двойными кавычками",
-			password: "Password\"123",
-			expectedError: false,
-		},
-		{
-			nameTest: "Пустой пароль (валиден по текущей логике)",
-			password: "",
-			expectedError: true, 
+			nameTest: "Недопустимые значения пароля",
+			user: &models.BaseUser{Email: "test@gmail.com", Password: "1672 :ж"},
+			expectError: false,
+			expectedError: "Недопустимые значения",
 		},
 	}
 
 	for _, tc := range testCases{
 		t.Run(tc.nameTest, func(t *testing.T) {
-			res := validPasswords(tc.password)
-			assert.Equal(t, tc.expectedError, res)
+			res := ValidateLoginUser(tc.user)
+			assert.Equal(t, tc.expectedError, res.Error())
 		})
 	}
 }
