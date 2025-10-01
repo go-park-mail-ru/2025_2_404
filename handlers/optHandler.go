@@ -32,7 +32,7 @@ func GenerateSession() (string, error){
 
 func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
 	var userID string
-	sqlTextForFoundUser := "SELECT user_id FROM session WHERE session_id = $1"
+	const sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
 	err := h.DB.QueryRow(sqlTextForFoundUser, sessionID).Scan(&userID)
 	if err != nil {
 		return "", errors.New("session not found")
@@ -40,10 +40,16 @@ func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
 	return userID, nil
 }
 
+func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(statusCode)
+    json.NewEncoder(w).Encode(data)
+}
+
 func (h *Handlers) foundUserByCredentialsDB(email, password string) (string, error) {
 	var userID string
 	var hashedPassword string
-	sqlTextForSelectUsers := "SELECT id, password FROM users WHERE email = $1 "
+	const sqlTextForSelectUsers = "SELECT id, password FROM user WHERE email = $1 "
 	err := h.DB.QueryRow(sqlTextForSelectUsers, email).Scan(&userID, &hashedPassword)
 	if err != nil {
 		return "", err
@@ -76,7 +82,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sessionID string
-	sqlTextForCheckSession := "SELECT session_id FROM session WHERE user_id = $1"
+	const sqlTextForCheckSession = "SELECT session_id FROM session WHERE user_id = $1"
 	err = h.DB.QueryRow(sqlTextForCheckSession, returnUserID).Scan(&sessionID)
 	if err != nil {
 		sessionID, err = GenerateSession()
@@ -85,13 +91,32 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+		const sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
 		_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 		if err != nil {
 			http.Error(w, "Session token not created", http.StatusConflict)
 			return
 		}
 	} 
+
+	var ads []models.Ads
+	const sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
+	row, err := h.DB.Query(sqlTextForSelectAds, returnUserID)
+	if err != nil {
+		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
+		return
+	}
+	defer row.Close()
+
+	for row.Next() {
+		var ad models.Ads
+		if err := row.Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text); err != nil {
+			http.Error(w, "Failed to scan ad", http.StatusInternalServerError)
+			return
+		}
+		ads = append(ads, ad)
+	}
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
@@ -100,8 +125,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
+	JSONResponse(w, http.StatusOK, map[string]string{
 		"message": "Successful authorization",
 	})
 }
@@ -129,7 +153,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
 	var returnUserID int
-	sqlTextForInsertUsers := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	const sqlTextForInsertUsers = "INSERT INTO user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
 	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
 		http.Error(w, "User already registered", http.StatusUnprocessableEntity)
 		return
@@ -141,11 +165,29 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+	const sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
 	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 	if err != nil{
 		http.Error(w,"Session token not created", http.StatusConflict)
 		return
+	}
+
+	var ads []models.Ads
+	const sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
+	row, err := h.DB.Query(sqlTextForSelectAds, returnUserID)
+	if err != nil {
+		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
+		return
+	}
+	defer row.Close()
+
+	for row.Next() {
+		var ad models.Ads
+		if err := row.Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text); err != nil {
+			http.Error(w, "Failed to scan ad", http.StatusInternalServerError)
+			return
+		}
+		ads = append(ads, ad)
 	}
 
 	http.SetCookie(w, &http.Cookie{
@@ -156,9 +198,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{
+	JSONResponse(w, http.StatusCreated, map[string]string{
 		"message": "User created",
 	})
 }
@@ -183,36 +223,25 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := "images/1.jpg"
-	title := "Новый набор студентов в технопарк!"
-	text := "Этой весной наступает новый набор студентов в Технопарк по программе WEB-разработка. Обучим вас GO-lang! Студенты нашего курса разработали сайт ADS"
-	sqlTextForInsertAds := "INSERT INTO ads (creator_id, file_path, title, text) VALUES ($1, $2, $3, $4)"
-	_, err = h.DB.Exec(sqlTextForInsertAds, userID, filePath, title, text)
-	if err != nil {
-		http.Error(w, "Failed to insert ad", http.StatusInternalServerError)
-		return
-	}
-
-	var ad models.Ads
-	sqlTextForSelectAds := "SELECT id, file_path, title, text FROM ads WHERE creator_id = $1"
-	err = h.DB.QueryRow(sqlTextForSelectAds, userID).Scan(&ad.AdID, &ad.FilePath, &ad.Title, &ad.Text)
+	var ads []models.Ads
+	const sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
+	row, err := h.DB.Query(sqlTextForSelectAds, userID)
 	if err != nil {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
 	}
+	defer row.Close()
 
-	ads := []map[string]string{
-		{
-			"add_id":     ad.AdID,
-			"creater_id": userID,
-			"file_path":  ad.FilePath,
-			"title":      ad.Title,
-			"text":       ad.Text,
-		},
+	for row.Next() {
+		var ad models.Ads
+		if err := row.Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text); err != nil {
+			http.Error(w, "Failed to scan ad", http.StatusInternalServerError)
+			return
+		}
+		ads = append(ads, ad)
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
+	JSONResponse(w, http.StatusOK, map[string]interface{}{
 		"ads": ads,
 	})
 }	

@@ -7,7 +7,7 @@ import (
 	"2025_2_404/config"
 )
 
-func CORS(next http.HandlerFunc) http.HandlerFunc {
+func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request){
 		allowed := map[string]bool{
         "http://localhost:8000": true,
@@ -46,9 +46,9 @@ func main() {
 	defer postgresql.Close()
 
 	handlers := handlers.New(postgresql)
-	http.HandleFunc("/", CORS(handlers.Handle))
-	http.HandleFunc("/signup", CORS(handlers.RegisterHandler))
-	http.HandleFunc("/signin", CORS(handlers.LoginHandler))
+	http.HandleFunc("/", pefliteMiddleware(handlers.Handle))
+	http.HandleFunc("/signup", pefliteMiddleware(handlers.RegisterHandler))
+	http.HandleFunc("/signin", pefliteMiddleware(handlers.LoginHandler))
 
 	err = http.ListenAndServe(":"+config.AppConfig.Port, nil)
 	if err != nil {
