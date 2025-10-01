@@ -1,4 +1,4 @@
-package handlers
+	package handlers
 
 import (
 	"bytes"
@@ -29,10 +29,10 @@ func TestLoginHandler_Success(t *testing.T) {
 	//проверка юзера по email 
 	rowsUser := sqlmock.NewRows([]string{"id", "password"}).
 		AddRow(expectedUserID, passwordHash)
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password FROM users WHERE email = $1`)).WithArgs("test@example.com").WillReturnRows(rowsUser)
+	mock.ExpectQuery(regexp.QuoteMeta(sqlTextForSelectUsers)).WithArgs("test@example.com").WillReturnRows(rowsUser)
 
 	// проверка что сессия существует 
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT session_id FROM session WHERE user_id = $1`)).WithArgs(expectedUserID).WillReturnError(sql.ErrNoRows)
+	mock.ExpectQuery(regexp.QuoteMeta(sqlTextForCheckSession)).WithArgs(expectedUserID).WillReturnError(sql.ErrNoRows)
 
 	// проверка для создании сессии
 	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO session (user_id, session_id) VALUES ($1, $2)`)).WithArgs(expectedUserID, sqlmock.AnyArg()).WillReturnResult(sqlmock.NewResult(1, 1)) 
@@ -66,7 +66,7 @@ func TestLoginHandler_InvalidPassword(t *testing.T) {
 	
 	rowsUser := sqlmock.NewRows([]string{"id", "password"}).
 		AddRow("1", correctPasswordHash)
-	mock.ExpectQuery(regexp.QuoteMeta(`SELECT id, password FROM users WHERE email = $1`)).
+	mock.ExpectQuery(regexp.QuoteMeta(sqlTextForSelectUsers)).
 		WithArgs("test@example.com").
 		WillReturnRows(rowsUser)
 	
@@ -117,11 +117,11 @@ func TestRegisterHandler_Success(t *testing.T) {
 	passwordHash := "cbfdac6008f9cab4083784cbd1874f76618d2a97" 
 	expectedUserID := 1
 
-	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id`)).
+	mock.ExpectQuery(regexp.QuoteMeta(sqlTextForInsertUsers)).
 		WithArgs("newuser@example.com", passwordHash, "Newbie").
 		WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(expectedUserID))
 
-	mock.ExpectExec(regexp.QuoteMeta(`INSERT INTO session (user_id, session_id) VALUES ($1, $2)`)).
+	mock.ExpectExec(regexp.QuoteMeta(sqlTextForInsertSession)).
 		WithArgs(expectedUserID, sqlmock.AnyArg()).
 		WillReturnResult(sqlmock.NewResult(1, 1))
 
