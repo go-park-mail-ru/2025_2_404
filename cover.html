@@ -59,7 +59,7 @@
 				
 				<option value="file1">2025_2_404/db/postgre.go (0.0%)</option>
 				
-				<option value="file2">2025_2_404/handlers/optHandler.go (56.7%)</option>
+				<option value="file2">2025_2_404/handlers/optHandler.go (68.4%)</option>
 				
 				<option value="file3">2025_2_404/main.go (0.0%)</option>
 				
@@ -193,6 +193,15 @@ func New(db *sql.DB) *Handlers <span class="cov8" title="1">{
         return &amp;Handlers{DB: db}
 }</span>
 
+const(
+        sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+        sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
+        sqlTextForSelectUsers = "SELECT id, password FROM app_user WHERE email = $1 "
+        sqlTextForCheckSession = "SELECT session_id FROM session WHERE user_id = $1"
+        sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
+        sqlTextForInsertUsers = "INSERT INTO app_user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+        sqlTextForInsertAds = "INSERT INTO ad (creator_id, file_path, title, text_ad) VALUES ($1, $2, $3, $4)"
+)
 
 func GenerateSession() (string, error)<span class="cov8" title="1">{
         sessionID := make([]byte,32)
@@ -202,20 +211,24 @@ func GenerateSession() (string, error)<span class="cov8" title="1">{
         <span class="cov8" title="1">return hex.EncodeToString(sessionID), nil</span>
 }
 
-func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) <span class="cov0" title="0">{
+func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) <span class="cov8" title="1">{
         var userID string
-        sqlText := "SELECT user_id FROM session WHERE session_id = $1"
-        err := h.DB.QueryRow(sqlText, sessionID).Scan(&amp;userID)
+        err := h.DB.QueryRow(sqlTextForFoundUser, sessionID).Scan(&amp;userID)
         if err != nil </span><span class="cov0" title="0">{
                 return "", errors.New("session not found")
         }</span>
-        <span class="cov0" title="0">return userID, nil</span>
+        <span class="cov8" title="1">return userID, nil</span>
 }
+
+func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) <span class="cov8" title="1">{
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(statusCode)
+    json.NewEncoder(w).Encode(data)
+}</span>
 
 func (h *Handlers) foundUserByCredentialsDB(email, password string) (string, error) <span class="cov8" title="1">{
         var userID string
         var hashedPassword string
-        sqlTextForSelectUsers := "SELECT id, password FROM users WHERE email = $1 "
         err := h.DB.QueryRow(sqlTextForSelectUsers, email).Scan(&amp;userID, &amp;hashedPassword)
         if err != nil </span><span class="cov8" title="1">{
                 return "", err
@@ -253,7 +266,6 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) <span cl
         }</span>
 
         <span class="cov8" title="1">var sessionID string
-        sqlTextForCheckSession := "SELECT session_id FROM session WHERE user_id = $1"
         err = h.DB.QueryRow(sqlTextForCheckSession, returnUserID).Scan(&amp;sessionID)
         if err != nil </span><span class="cov8" title="1">{
                 sessionID, err = GenerateSession()
@@ -262,13 +274,13 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) <span cl
                         return
                 }</span>
 
-                <span class="cov8" title="1">sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
-                _, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
+                <span class="cov8" title="1">_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
                 if err != nil </span><span class="cov0" title="0">{
                         http.Error(w, "Session token not created", http.StatusConflict)
                         return
                 }</span>
         } 
+
         <span class="cov8" title="1">http.SetCookie(w, &amp;http.Cookie{
                 Name:     "session_id",
                 Value:    sessionID,
@@ -277,8 +289,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) <span cl
                 HttpOnly: true,
         })
 
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(map[string]string{
+        JSONResponse(w, http.StatusCreated, map[string]interface{}{
                 "message": "Successful authorization",
         })</span>
 }
@@ -306,9 +317,8 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) <span
         hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
         var returnUserID int
-        sqlTextForInsertUsers := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
         if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&amp;returnUserID); err != nil</span><span class="cov8" title="1">{
-                http.Error(w, "User not register", http.StatusUnprocessableEntity)
+                http.Error(w, "User already registered", http.StatusUnprocessableEntity)
                 return
         }</span>
 
@@ -318,8 +328,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) <span
                 return
         }</span>
 
-        <span class="cov8" title="1">sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
-        _, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
+        <span class="cov8" title="1">_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
         if err != nil</span><span class="cov0" title="0">{
                 http.Error(w,"Session token not created", http.StatusConflict)
                 return
@@ -333,53 +342,49 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) <span
                 HttpOnly: true,
         })
 
-        w.Header().Set("Content-Type", "application/json")
-        w.WriteHeader(http.StatusCreated)
-        json.NewEncoder(w).Encode(map[string]string{
+        JSONResponse(w, http.StatusCreated, map[string]interface{}{
                 "message": "User created",
         })</span>
 }
 
 
-func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) <span class="cov0" title="0">{
+func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) <span class="cov8" title="1">{
         if r.Method != http.MethodGet </span><span class="cov0" title="0">{
                 http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
                 return
         }</span>
 
-        <span class="cov0" title="0">sessionCookie, err := r.Cookie("session_id")
+        <span class="cov8" title="1">sessionCookie, err := r.Cookie("session_id")
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(w, "Unauthorized", http.StatusUnauthorized)
                 return
         }</span>
 
-        <span class="cov0" title="0">sessionID := sessionCookie.Value
+        <span class="cov8" title="1">sessionID := sessionCookie.Value
         userID, err := h.foundUserBySessionDB(sessionID)
         if err != nil </span><span class="cov0" title="0">{
                 http.Error(w, "Unauthorized", http.StatusUnauthorized)
                 return
         }</span>
 
-        <span class="cov0" title="0">ads := []map[string]string{
+        <span class="cov8" title="1">var ads models.Ads
+        if err := h.DB.QueryRow(sqlTextForSelectAds, userID).Scan(&amp;ads.ID, &amp;ads.FilePath, &amp;ads.Title, &amp;ads.Text); err != nil </span><span class="cov0" title="0">{
+                http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
+                return
+        }</span>
+        <span class="cov8" title="1">ads.CreatorID = userID
+        adsOut := []map[string]string{
                 {
-                        "add_id":     "1",
-                        "creater_id": userID,
-                        "file_path":  "/files/ad1.jpg",
-                        "title":      "Реклама 1",
-                        "text":       "Текст рекламы 1",
-                },
-                {
-                        "add_id":     "2",
-                        "creater_id": userID,
-                        "file_path":  "/files/ad2.jpg",
-                        "title":      "Реклама 2",
-                        "text":       "Текст рекламы 2",
+                        "add_id":     ads.ID,
+                        "creater_id": ads.CreatorID,
+                        "file_path":  ads.FilePath,
+                        "title":      ads.Title,
+                        "text":       ads.Text,
                 },
         }
-
-        w.Header().Set("Content-Type", "application/json")
-        json.NewEncoder(w).Encode(map[string]interface{}{
-                "ads": ads,
+        JSONResponse(w, http.StatusCreated, map[string]interface{}{
+                "message": "Successful authorization",
+                "ads":     adsOut,
         })</span>
 }        
 </pre>
@@ -393,6 +398,36 @@ import (
         "2025_2_404/config"
 )
 
+func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc <span class="cov0" title="0">{
+        return func(w http.ResponseWriter, r *http.Request)</span><span class="cov0" title="0">{
+                allowed := map[string]bool{
+        "http://localhost:8000": true,
+        "http://127.0.0.1:8000": true,
+                "http://89.208.230.119:8000": true,
+        // добавь нужные домены, если будут
+    }
+                origin := r.Header.Get("Origin")
+                if allowed[origin] </span><span class="cov0" title="0">{
+                        w.Header().Set("Access-Control-Allow-Origin", origin)
+                }</span>
+
+                <span class="cov0" title="0">if r.Method != http.MethodOptions </span><span class="cov0" title="0">{
+                        next.ServeHTTP(w, r)
+                }</span> else<span class="cov0" title="0"> {
+                        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+
+                        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, X-Requested-With, X-CSRF-Token")
+
+                        w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+                        w.Header().Set("Access-Control-Max-Age", "86400")
+
+                        w.WriteHeader(http.StatusOK)
+                        return
+                }</span>
+        }
+}
+
 func main() <span class="cov0" title="0">{
         config := config.GetConfig()
         postgresql, err := db.ConnectDB(config.DBConfig)
@@ -402,9 +437,9 @@ func main() <span class="cov0" title="0">{
         <span class="cov0" title="0">defer postgresql.Close()
 
         handlers := handlers.New(postgresql)
-        http.HandleFunc("/", handlers.Handle)
-        http.HandleFunc("/signup", handlers.RegisterHandler)
-        http.HandleFunc("/signin", handlers.LoginHandler)
+        http.HandleFunc("/", pefliteMiddleware(handlers.Handle))
+        http.HandleFunc("/signup", pefliteMiddleware(handlers.RegisterHandler))
+        http.HandleFunc("/signin", pefliteMiddleware(handlers.LoginHandler))
 
         err = http.ListenAndServe(":"+config.AppConfig.Port, nil)
         if err != nil </span><span class="cov0" title="0">{
