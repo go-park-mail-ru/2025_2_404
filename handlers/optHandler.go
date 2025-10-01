@@ -21,6 +21,14 @@ func New(db *sql.DB) *Handlers {
 	return &Handlers{DB: db}
 }
 
+const(
+	sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+	sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
+	sqlTextForSelectUsers = "SELECT id, password FROM user WHERE email = $1 "
+	sqlTextForCheckSession = "SELECT session_id FROM session WHERE user_id = $1"
+	sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
+	sqlTextForInsertUsers = "INSERT INTO user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+)
 
 func GenerateSession() (string, error){
 	sessionID := make([]byte,32)
@@ -32,7 +40,6 @@ func GenerateSession() (string, error){
 
 func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
 	var userID string
-	const sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
 	err := h.DB.QueryRow(sqlTextForFoundUser, sessionID).Scan(&userID)
 	if err != nil {
 		return "", errors.New("session not found")
@@ -49,7 +56,6 @@ func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
 func (h *Handlers) foundUserByCredentialsDB(email, password string) (string, error) {
 	var userID string
 	var hashedPassword string
-	const sqlTextForSelectUsers = "SELECT id, password FROM user WHERE email = $1 "
 	err := h.DB.QueryRow(sqlTextForSelectUsers, email).Scan(&userID, &hashedPassword)
 	if err != nil {
 		return "", err
@@ -82,7 +88,6 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sessionID string
-	const sqlTextForCheckSession = "SELECT session_id FROM session WHERE user_id = $1"
 	err = h.DB.QueryRow(sqlTextForCheckSession, returnUserID).Scan(&sessionID)
 	if err != nil {
 		sessionID, err = GenerateSession()
@@ -91,7 +96,6 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		const sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
 		_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 		if err != nil {
 			http.Error(w, "Session token not created", http.StatusConflict)
@@ -100,7 +104,6 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	} 
 
 	var ads []models.Ads
-	const sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
 	row, err := h.DB.Query(sqlTextForSelectAds, returnUserID)
 	if err != nil {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
@@ -153,7 +156,6 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
 	var returnUserID int
-	const sqlTextForInsertUsers = "INSERT INTO user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
 	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
 		http.Error(w, "User already registered", http.StatusUnprocessableEntity)
 		return
@@ -165,7 +167,6 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	const sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
 	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 	if err != nil{
 		http.Error(w,"Session token not created", http.StatusConflict)
@@ -173,7 +174,6 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var ads []models.Ads
-	const sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
 	row, err := h.DB.Query(sqlTextForSelectAds, returnUserID)
 	if err != nil {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
@@ -224,7 +224,6 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var ads []models.Ads
-	const sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
 	row, err := h.DB.Query(sqlTextForSelectAds, userID)
 	if err != nil {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
