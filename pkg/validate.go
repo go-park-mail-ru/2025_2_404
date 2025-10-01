@@ -25,7 +25,7 @@ func validNames (name string) bool {
 	return true
 }
 
-var allowedEmail = regexp.MustCompile("^[a-Za-Z0-9._]+@[a-Za-Z0-9-]+.[a-zA-Z]{2,}$");
+var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
 
 func ValidateRegisterUser (user *models.RegisterUser) error {
 	if len(user.UserName)<3 {
