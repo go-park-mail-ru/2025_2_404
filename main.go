@@ -21,19 +21,19 @@ func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		if r.Method == http.MethodOptions {
+			w.Header().Set("Access-Control-Allow-Origin", "https://vilka.online")
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE")
+			w.Header().Set("Access-Control-Max-Age", "3600")
+			w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept")
+			w.Header().Set("Content-Type", "application/json:charset=UTF-8")
+			w.Header().Set("Access-Control-Allow-Credentials", "true")
+
 			w.WriteHeader(http.StatusOK)
 			return
-		} 
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+		} else {
+        next.ServeHTTP(w, r)
+		}	
 
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Accept, Authorization, X-Requested-With, X-CSRF-Token")
-
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
-
-		w.Header().Set("Access-Control-Max-Age", "86400")
-
-		next.ServeHTTP(w, r)
-		
 	}
 }
 
