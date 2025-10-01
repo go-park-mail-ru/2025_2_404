@@ -69,7 +69,7 @@ func TestValidateRegisterUser(t *testing.T){
 		{
 			nameTest: "Недопустимые значения пароля",
 			user: &models.RegisterUser{
-				BaseUser: models.BaseUser{Email: "testuser@example.com", Password: "Pass:/12"},
+				BaseUser: models.BaseUser{Email: "testuser@example.com", Password: "pasdf1560~"},
 				UserName: "meow",
 			},
 			expectError:   true,
