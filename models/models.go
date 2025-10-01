@@ -11,8 +11,8 @@ type RegisterUser struct {
 }
 
 type Ads struct {
-	AdID     string `json:"ad_id"`
-	CreatorID string `json:"creator_id"`
+	ID       string `json:"add_id"`
+	CreatorID string `json:"creater_id"`
 	FilePath string `json:"file_path"`
 	Title    string `json:"title"`
 	Text     string `json:"text"`

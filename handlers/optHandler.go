@@ -22,6 +22,15 @@ func New(db *sql.DB) *Handlers {
 	return &Handlers{DB: db}
 }
 
+const(
+	sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+	sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
+	sqlTextForSelectUsers = "SELECT id, password FROM app_user WHERE email = $1 "
+	sqlTextForCheckSession = "SELECT session_id FROM session WHERE user_id = $1"
+	sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
+	sqlTextForInsertUsers = "INSERT INTO app_user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForInsertAds = "INSERT INTO ad (creator_id, file_path, title, text_ad) VALUES ($1, $2, $3, $4)"
+)
 
 func GenerateSession() (string, error){
 	sessionID := make([]byte,32)
@@ -33,18 +42,22 @@ func GenerateSession() (string, error){
 
 func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
 	var userID string
-	sqlText := "SELECT user_id FROM session WHERE session_id = $1"
-	err := h.DB.QueryRow(sqlText, sessionID).Scan(&userID)
+	err := h.DB.QueryRow(sqlTextForFoundUser, sessionID).Scan(&userID)
 	if err != nil {
 		return "", errors.New("session not found")
 	}
 	return userID, nil
 }
 
+func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
+    w.Header().Set("Content-Type", "application/json")
+    w.WriteHeader(statusCode)
+    json.NewEncoder(w).Encode(data)
+}
+
 func (h *Handlers) foundUserByCredentialsDB(email, password string) (string, error) {
 	var userID string
 	var hashedPassword string
-	sqlTextForSelectUsers := "SELECT id, password FROM users WHERE email = $1 "
 	err := h.DB.QueryRow(sqlTextForSelectUsers, email).Scan(&userID, &hashedPassword)
 	if err != nil {
 		return "", err
@@ -82,7 +95,6 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var sessionID string
-	sqlTextForCheckSession := "SELECT session_id FROM session WHERE user_id = $1"
 	err = h.DB.QueryRow(sqlTextForCheckSession, returnUserID).Scan(&sessionID)
 	if err != nil {
 		sessionID, err = GenerateSession()
@@ -91,13 +103,13 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
 		_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 		if err != nil {
 			http.Error(w, "Session token not created", http.StatusConflict)
 			return
 		}
 	} 
+
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
 		Value:    sessionID,
@@ -106,9 +118,8 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Successful authorization",
+	JSONResponse(w, http.StatusCreated, map[string]interface{}{
+		"message": "Successful authorizatio",
 	})
 }
 
@@ -135,9 +146,8 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
 	var returnUserID int
-	sqlTextForInsertUsers := "INSERT INTO users (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
 	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
-		http.Error(w, "User not register", http.StatusUnprocessableEntity)
+		http.Error(w, "User already registered", http.StatusUnprocessableEntity)
 		return
 	}
 
@@ -147,10 +157,25 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sqlTextForInsertSession := "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
+	ads := models.Ads{
+		FilePath:  "images/1.jpg",
+		Title:     "Новый набор студентов в технопарк!",
+		Text:      "Этой весной наступает новый набор студентов в Технопарк по программе WEB-разработка. Обучим вас GO-lang! Студенты нашего курса разработали сайт ADS",
+	}
+	_, err = h.DB.Exec(sqlTextForInsertAds, returnUserID, ads.FilePath, ads.Title, ads.Text)
+	if err != nil {
+		http.Error(w, "Failed to insert ads", http.StatusInternalServerError)
+		return
+	}
+
 	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 	if err != nil{
 		http.Error(w,"Session token not created", http.StatusConflict)
+		return
+	}
+
+	if err := h.DB.QueryRow(sqlTextForSelectAds, returnUserID).Scan(&ads.ID, &ads.FilePath, &ads.Title, &ads.Text); err != nil {
+		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
 	}
 
@@ -162,9 +187,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(map[string]string{
+	JSONResponse(w, http.StatusCreated, map[string]interface{}{
 		"message": "User created",
 	})
 }
@@ -189,25 +212,23 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ads := []map[string]string{
-		{
-			"add_id":     "1",
-			"creater_id": userID,
-			"file_path":  "/files/ad1.jpg",
-			"title":      "Реклама 1",
-			"text":       "Текст рекламы 1",
-		},
-		{
-			"add_id":     "2",
-			"creater_id": userID,
-			"file_path":  "/files/ad2.jpg",
-			"title":      "Реклама 2",
-			"text":       "Текст рекламы 2",
-		},
+	var ads models.Ads
+	if err := h.DB.QueryRow(sqlTextForSelectAds, userID).Scan(&ads.ID, &ads.FilePath, &ads.Title, &ads.Text); err != nil {
+		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
+		return
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]interface{}{
-		"ads": ads,
+	adsOut := []map[string]string{
+		{
+			"add_id":     ads.ID,
+			"creater_id": ads.CreatorID,
+			"file_path":  ads.FilePath,
+			"title":      ads.Title,
+			"text":       ads.Text,
+		},
+	}
+	JSONResponse(w, http.StatusCreated, map[string]interface{}{
+		"message": "Successful authorization",
+		"ads":     adsOut,
 	})
 }	
