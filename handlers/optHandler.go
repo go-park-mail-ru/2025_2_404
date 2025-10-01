@@ -119,7 +119,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 
 	JSONResponse(w, http.StatusCreated, map[string]interface{}{
-		"message": "Successful authorizatio",
+		"message": "Successful authorization",
 	})
 }
 
@@ -157,25 +157,9 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ads := models.Ads{
-		FilePath:  "images/1.jpg",
-		Title:     "Новый набор студентов в технопарк!",
-		Text:      "Этой весной наступает новый набор студентов в Технопарк по программе WEB-разработка. Обучим вас GO-lang! Студенты нашего курса разработали сайт ADS",
-	}
-	_, err = h.DB.Exec(sqlTextForInsertAds, returnUserID, ads.FilePath, ads.Title, ads.Text)
-	if err != nil {
-		http.Error(w, "Failed to insert ads", http.StatusInternalServerError)
-		return
-	}
-
 	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
 	if err != nil{
 		http.Error(w,"Session token not created", http.StatusConflict)
-		return
-	}
-
-	if err := h.DB.QueryRow(sqlTextForSelectAds, returnUserID).Scan(&ads.ID, &ads.FilePath, &ads.Title, &ads.Text); err != nil {
-		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
 	}
 
@@ -217,7 +201,7 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
 	}
-
+	ads.CreatorID = userID
 	adsOut := []map[string]string{
 		{
 			"add_id":     ads.ID,
