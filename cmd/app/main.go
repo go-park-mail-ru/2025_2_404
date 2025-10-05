@@ -5,6 +5,7 @@ import (
 	"2025_2_404/handlers"
 	"net/http"
 	"2025_2_404/config"
+	"2025_2_404/internal/repository/postgres"
 )
 
 func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -45,6 +46,8 @@ func main() {
 	}
 	defer postgresql.Close()
 
+	repo := 
+
 	handlers := handlers.New(postgresql)
 	http.HandleFunc("/", pefliteMiddleware(handlers.Handle))
 	http.HandleFunc("/signup", pefliteMiddleware(handlers.RegisterHandler))
@@ -55,3 +58,4 @@ func main() {
 		panic(err)
 	}
 }
+
