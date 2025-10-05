@@ -1,7 +1,7 @@
 package usecase
 
 import(
-	"2025_2_404/internal/domain"
+	modeluser"2025_2_404/internal/models/user"
 	"errors"
 )
 
@@ -16,7 +16,7 @@ type RegisterUser struct {
 }
 
 type UserUseCase struct {
-	userRepo domain.UserRepository
+	userRepo modeluser.UserRepository
 }
 
 // dto - data transport object 
