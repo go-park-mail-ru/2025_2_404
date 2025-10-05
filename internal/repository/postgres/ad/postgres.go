@@ -20,11 +20,17 @@ type DB struct {
 	sql sqlI
 }
 
-func (r *DB) FindAdByID(ctx context.Context, adID int) (modelad.Ads, error) {
+func New(sql sqlI) *DB {
+	return &DB{
+		sql: sql,
+	}
+}
+
+func (r *DB) FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
 	var ad modelad.Ads
-	err := r.sql.QueryRowContext(ctx, sqlTextForSelectAds, adID).Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text)
+	err := r.sql.QueryRowContext(ctx, sqlTextForSelectAds, userID).Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text)
 	if err != nil {
-		return modelad.Ads{}, fmt.Errorf("failed to find ad by ID: %w", err)
+		return modelad.Ads{}, fmt.Errorf("failed to find ad by user ID: %w", err)
 	}
 	return ad, nil
 }
@@ -37,3 +43,5 @@ func (r *DB) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
 	}
 	return adID, nil
 }
+
+func 

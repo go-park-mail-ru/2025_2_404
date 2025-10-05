@@ -6,10 +6,12 @@ import (
 	"regexp"
 )
 
+type ID int64
+
 type User struct {
-	id int64
+	id       ID
 	userName string
-	email string
+	email    string
 	hashedPassword string
 }
 
