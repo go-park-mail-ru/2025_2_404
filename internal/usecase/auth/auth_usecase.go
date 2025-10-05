@@ -1,9 +1,5 @@
 package usecase
 
-<<<<<<< HEAD:internal/usecase/auth/auth_usecase.go
-import ()
-
-=======
 import(
 	"2025_2_404/internal/domain"
 	"errors"
@@ -45,4 +41,3 @@ func (uc *UserUseCase) Login(dto BaseUser) (*domain.User, error) {
 
 	return user, nil
 }
->>>>>>> c140dad9a526807051e898f2f7af2f518f8e34ae:internal/usecase/auth_usecase.go
