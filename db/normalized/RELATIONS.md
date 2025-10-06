@@ -77,11 +77,17 @@
 * created_at: Дата и время создания записи
 * last_update: Дата последнего обновления
 
-## ad_platform ##
-Связующая таблица между рекламой и платформой.
+```mermaid
+erDiagram
+    CLIENT ||--|| CLIENT_WALLET : has
+    CLIENT ||--o{ NOTIFICATIONS : receives
+    CLIENT ||--o{ AD : creates
+    
+    CLIENT_WALLET ||--o{ WALLET_TOP_UP : has
+    
+    AD ||--|| AD_DETAILS : has
+    PLATFORM ||--o{ AD_DETAILS : includes
+    AD_DETAILS ||--o{ STATISTICS : has
+    
+    
 
-* id: Уникальный идентификатор
-* ad_id: Идентификатор рекламы (ссылка на ad)
-* platform_id: Идентификатор платформы (ссылка на platform)
-* created_at: Дата и время создания записи
-* last_update: Дата последнего обновления
