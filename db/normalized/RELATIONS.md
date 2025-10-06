@@ -89,7 +89,7 @@ erDiagram
     AD ||--|| AD_DETAILS : has
     PLATFORM ||--o{ AD_DETAILS : includes
     AD_DETAILS ||--o{ STATISTICS : has
-    
+```
 ```mermaid
 erDiagram
     CLIENT {
