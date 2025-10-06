@@ -73,7 +73,6 @@
 * ad_details_id: Идентификатор деталей рекламы (ссылка на ad_details)
 * clicks: Количество кликов
 * impressions: Количество показов
-* conversion: Процент конверсии
 * created_at: Дата и время создания записи
 * last_update: Дата последнего обновления
 
@@ -81,6 +80,80 @@
 
 ```mermaid
 erDiagram
+    CLIENT ||--|| CLIENT_WALLET : has
+    CLIENT ||--o{ NOTIFICATIONS : receives
+    CLIENT ||--o{ AD : creates
+    
+    CLIENT_WALLET ||--o{ WALLET_TOP_UP : has
+    
+    AD ||--|| AD_DETAILS : has
+    PLATFORM ||--o{ AD_DETAILS : includes
+    AD_DETAILS ||--o{ STATISTICS : has
+    
+```mermaid
+erDiagram
+    CLIENT {
+        _ id PK
+        _ name "AK"
+        _ email "AK"
+        _ password_hash
+        _ created_at
+        _ updated_at
+    }
+    CLIENT_WALLET {
+        _ id PK
+        _ client_id "AK" 
+        _ balance
+        _ created_at
+        _ updated_at
+    }
+    WALLET_TOP_UP {
+        _ id PK
+        _ client_wallet_id FK
+        _ amount
+        _ payment_method
+        _ status
+        _ created_at
+    }
+    NOTIFICATIONS {
+        _ id PK
+        _ client_id FK
+        _ notification_text
+        _ type
+        _ created_at
+    }
+    PLATFORM {
+        _ id PK
+        _ platform_name "AK" 
+        _ created_at
+    }
+    AD {
+        _ id PK
+        _ client_id FK
+        _ title
+        _ content
+        _ img_bin
+        _ target_url
+        _ start_date
+        _ end_date
+    }
+    AD_DETAILS {
+        _ id "PK"
+        _ ad_id FK "AK"
+        _ platform_id FK
+        _ amount_for_ad
+        _ status
+        _ start_date
+        _ end_date
+    }
+    STATISTICS {
+        _ id "PK"
+        _ ad_details_id FK "AK" 
+        _ clicks
+        _ impressions
+        _ created_at
+        _ last_update
+    }
     CLIENT ||--|| CLIENT_WALLET : has
     CLIENT ||--o{ NOTIFICATIONS : receives
     CLIENT ||--o{ AD : creates
