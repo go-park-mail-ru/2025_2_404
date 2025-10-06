@@ -194,46 +194,46 @@ erDiagram
 # Функциональные зависимости #
 
 ## client ##
-
+```
 {id} → {name, emaol, created_at, updated_at}
 {email} → {id, password_hash, created_at, updated_at}  
 {email} → {id} 
-
+```
 ## client_wallet ##
-
+```
 {client_id} → {balance}
 {id} → {balance, created_at, updated_at}
-
+```
 ## wallet_top_up ##
-
+```
 {client_wallet_id} → {amount, payment_method, status, created_at}
 {id} → {client_wallet_id, amount}
-
+```
 ## notifications ##
-
+```
 {client_id} → {notification_text, type, status, created_at}
 {id} → {status, created_at, updated_at}
-
+```
 ## platform ##
-
+```
 {id} → {platform_name, created_at, updated_at}
-
+```
 ## ad ##
-
+```
 {client_id} → {id, title, content, img_bin, target_url}
 {id} → {title, content, img_bin, target_url, created_at, updated_at}
-
+```
 ## ad_details ##
-
+```
 {ad_id} → {platform_id, amount_for_ad, status, created_at}
 {ad_id} → {status, created_at, updated_at}
-
+```
 ## statistics ##
-
+```
 {ad_details_id} → {clicks, impressions, created_at, updated_at}
-
+```
 ## session ##
-
+```
 {client_id} → {session_token}
 {session_token} → {client_id}
-
+```
