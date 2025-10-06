@@ -34,7 +34,9 @@
 * client_id: Идентификатор клиента (ссылка на client)
 * notification_text: Текст уведомления
 * type: Тип уведомления
+* status: Статус уведомления(прочитано или нет)
 * created_at: Дата и время создания записи
+* updated_at: Дата и время последнего обновления записи
 
 ## platform ##
 Таблица с информацией о платформах.
@@ -42,6 +44,7 @@
 * id: Уникальный идентификатор платформы
 * platform_name: Название платформы
 * created_at: Дата и время создания записи
+* updated_at: Дата и время последнего обновления записи
 
 ## ad ##
 Таблица с данными о рекламе.
@@ -52,8 +55,8 @@
 * content: Содержание рекламы
 * img_bin: Бинарные данные изображения
 * target_url: Целевая ссылка
-* start_date: Дата начала
-* end_date: Дата окончания
+* created_at: Дата и время создания записи
+* updated_at: Дата и время последнего обновления записи
 
 ## ad_details ##
 Детали рекламы.
@@ -63,8 +66,8 @@
 * platform_id: Идентификатор платформы (ссылка на platform)
 * amount_for_ad: Сумма за рекламу
 * status: Активна или нет
-* start_date: Дата начала
-* end_date: Дата окончания
+* created_at: Дата и время создания записи
+* updated_at: Дата и время последнего обновления записи
 
 ## statistics ##
 Статистические показатели по рекламе.
@@ -74,15 +77,25 @@
 * clicks: Количество кликов
 * impressions: Количество показов
 * created_at: Дата и время создания записи
-* last_update: Дата последнего обновления
+* updated_at: Дата и время последнего обновления записи
 
-## erDiagram ##
+## session ##
+Хранение сеесий для аутентификации пользователя
+
+* id: Уникальный идентификатор
+* session_token: Сессионный токен
+* client_id: Идентификатор пользователя
+* created_at: Дата и время создания записи
+* updated_at: Дата и время последнего обновления записи
+
+## ER-диаграмма(min) ##
 
 ```mermaid
 erDiagram
     CLIENT ||--|| CLIENT_WALLET : has
     CLIENT ||--o{ NOTIFICATIONS : receives
     CLIENT ||--o{ AD : creates
+    CLIENT ||--o{ SESSION : has
     
     CLIENT_WALLET ||--o{ WALLET_TOP_UP : has
     
@@ -90,6 +103,8 @@ erDiagram
     PLATFORM ||--o{ AD_DETAILS : includes
     AD_DETAILS ||--o{ STATISTICS : has
 ```
+## ER-диаграмма ##
+
 ```mermaid
 erDiagram
     CLIENT {
@@ -97,6 +112,13 @@ erDiagram
         _ name "AK"
         _ email "AK"
         _ password_hash
+        _ created_at
+        _ updated_at
+    }
+    SESSION {
+        _ id PK
+        _ session_token "AK"
+        _ client_id FK
         _ created_at
         _ updated_at
     }
@@ -120,12 +142,15 @@ erDiagram
         _ client_id FK
         _ notification_text
         _ type
+        _ status
         _ created_at
+        _ updated_at
     }
     PLATFORM {
         _ id PK
         _ platform_name "AK" 
         _ created_at
+        _ updated_at
     }
     AD {
         _ id PK
@@ -134,8 +159,8 @@ erDiagram
         _ content
         _ img_bin
         _ target_url
-        _ start_date
-        _ end_date
+        _ created_at
+        _ updated_at
     }
     AD_DETAILS {
         _ id "PK"
@@ -143,8 +168,8 @@ erDiagram
         _ platform_id FK
         _ amount_for_ad
         _ status
-        _ start_date
-        _ end_date
+        _ created_at
+        _ updated_at
     }
     STATISTICS {
         _ id "PK"
@@ -152,10 +177,11 @@ erDiagram
         _ clicks
         _ impressions
         _ created_at
-        _ last_update
+        _ updated_at
     }
     CLIENT ||--|| CLIENT_WALLET : has
     CLIENT ||--o{ NOTIFICATIONS : receives
+    CLIENT ||--o{ SESSION : has
     CLIENT ||--o{ AD : creates
     
     CLIENT_WALLET ||--o{ WALLET_TOP_UP : has
@@ -163,6 +189,51 @@ erDiagram
     AD ||--|| AD_DETAILS : has
     PLATFORM ||--o{ AD_DETAILS : includes
     AD_DETAILS ||--o{ STATISTICS : has
-    
-    
+```
+
+# Функциональные зависимости #
+
+## client ##
+
+{id} → {name, emaol, created_at, updated_at}
+{email} → {id, password_hash, created_at, updated_at}  
+{email} → {id} 
+
+## client_wallet ##
+
+{client_id} → {balance}
+{id} → {balance, created_at, updated_at}
+
+## wallet_top_up ##
+
+{client_wallet_id} → {amount, payment_method, status, created_at}
+{id} → {client_wallet_id, amount}
+
+## notifications ##
+
+{client_id} → {notification_text, type, status, created_at}
+{id} → {status, created_at, updated_at}
+
+## platform ##
+
+{id} → {platform_name, created_at, updated_at}
+
+## ad ##
+
+{client_id} → {id, title, content, img_bin, target_url}
+{id} → {title, content, img_bin, target_url, created_at, updated_at}
+
+## ad_details ##
+
+{ad_id} → {platform_id, amount_for_ad, status, created_at}
+{ad_id} → {status, created_at, updated_at}
+
+## statistics ##
+
+{ad_details_id} → {clicks, impressions, created_at, updated_at}
+
+## session ##
+
+{client_id} → {session_token}
+{session_token} → {client_id}
 
