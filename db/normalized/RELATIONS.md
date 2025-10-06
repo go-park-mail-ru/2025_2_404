@@ -77,6 +77,8 @@
 * created_at: Дата и время создания записи
 * last_update: Дата последнего обновления
 
+## erDiagram ##
+
 ```mermaid
 erDiagram
     CLIENT ||--|| CLIENT_WALLET : has
