@@ -1,4 +1,4 @@
-package user
+package models
 
 import (
 	"errors"
@@ -9,10 +9,10 @@ import (
 type ID int64
 
 type User struct {
-	id       ID
-	userName string
-	email    string
-	hashedPassword string
+	ID       ID
+	UserName string
+	Email    string
+	HashedPassword string
 }
 
 var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
@@ -49,14 +49,14 @@ func NewUser(userName, email, password string) (*User, error){
 	}
 
 	return &User{
-		userName: userName,
-		email: email,
-		hashedPassword: string(hashedPassword),
+		UserName: userName,
+		Email: email,
+		HashedPassword: string(hashedPassword),
 	}, nil
 }
 
 func (u *User) ComparePasswords(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(u.hashedPassword),([]byte(password)))
+	err := bcrypt.CompareHashAndPassword([]byte(u.HashedPassword),([]byte(password)))
 	return err == nil
 }
 
@@ -78,7 +78,23 @@ func LoginUser(email, password string) (*User, error){
 	}
 	
 	return &User{
-		email: email,
-		hashedPassword: password,
+		Email: email,
+		HashedPassword: password,
 	}, nil
+}
+
+func (u *User) GetID() ID {
+	return u.ID
+}
+
+func (u *User) GetUserName() string {
+	return u.UserName
+}
+
+func (u *User) GetEmail() string {
+	return u.Email
+}
+
+func (u *User) GetHashedPassword() string {
+	return u.HashedPassword
 }

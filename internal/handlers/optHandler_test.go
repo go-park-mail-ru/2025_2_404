@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"2025_2_404/models"
+	"2025_2_404/internal/models"
 	"bytes"
 	"database/sql"
 	"errors"
@@ -170,8 +170,8 @@ func TestHandle_Success(t *testing.T) {
 	sessionID := "valid-session-id"
 	userID := "123"
 	expectedAd := models.Ads{
-		ID:        "ad-001",
-		CreatorID: userID, 
+		ID: 1,
+		CreatorID:  userID, 
 		FilePath:  "/files/ad.jpg",
 		Title:     "Тестовая реклама",
 		Text:      "Лучшее предложение!",

@@ -1,14 +1,16 @@
 package ad
 
 import (
-	modelad "2025_2_404/internal/models/ad"
-	modeluser "2025_2_404/internal/models/user"
+	// modelad "2025_2_404/internal/models"
+	// modeluser "2025_2_404/internal/models"
+	"2025_2_404/internal/models"
 	"context"
 )
 
 type adRepositoryI interface {
-	FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error)
-	CreateAd(ctx context.Context, ad modelad.Ads) (int, error)
+	FindAdByUserID(ctx context.Context, userID models.User) (models.Ads, error)
+	CreateAd(ctx context.Context, ad models.Ads) (int, error)
+	UpdateAd(ctx context.Context, ad models.Ads) (error)
 }
 
 type AdUseCase struct {
@@ -21,15 +23,19 @@ func New(adRepo adRepositoryI) *AdUseCase {
 	}
 }
 
-func (u *AdUseCase) FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
+func (u *AdUseCase) FindAdByUserID(ctx context.Context, userID int64) (models.Ads, error) {
 	return u.adRepo.FindAdByUserID(ctx, userID)
 }
 
-func (u *AdUseCase) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
+func (u *AdUseCase) CreateAd(ctx context.Context, ad models.Ads) (int, error) {
 	return u.adRepo.CreateAd(ctx, ad)
 }
 
-func (u *AdUseCase) UpdateAd(ctx context.Context, ad modelad.Ads) error {
-	u.adRepo.FindAdByUserID(ctx, ad.)
-	return u.adRepo.UpdateAd(ctx, ad)
+func (u *AdUseCase) UpdateAd(ctx context.Context, ad models.Ads) error {
+	_, err := u.adRepo.FindAdByUserID(ctx, ad.CreatorID)
+	if err != nil {
+        // Хорошей практикой будет проверить, найдено ли объявление вообще
+		return err 
+	}
+	return ctx.Err()
 }

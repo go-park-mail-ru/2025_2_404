@@ -1,7 +1,7 @@
 package pkg
 
 import (
-	"2025_2_404/models"
+	"2025_2_404/internal/models"
 	"errors"
 	"regexp"
 )
@@ -17,7 +17,7 @@ func validNames (name string) bool {
 	return allowedSymbols.MatchString(name)
 }
 
-func ValidateRegisterUser (user *models.RegisterUser) error {
+func ValidateRegisterUser (user *models.User) error {
 	if len(user.UserName)<3 || len(user.UserName)>20{
 		return errors.New("Имя пользователя должно быть не меньше 3-х и не больше 20-ти символов")
 	}
@@ -30,35 +30,35 @@ func ValidateRegisterUser (user *models.RegisterUser) error {
 		return errors.New("Недопустимое имя Email")
 	}
 
-	if len(user.Password) < 8 {
+	if len(user.HashedPassword) < 8 {
 		return errors.New("Пароль менее 8-ми символов")
 	}
 
-	if len(user.Password) > 50 {
+	if len(user.HashedPassword) > 50 {
 		return errors.New("Пароль больше 50-ти символов")
 	}
 
-	if !validPasswords(user.Password){
+	if !validPasswords(user.HashedPassword){
 		return errors.New("Недопустимые значения")
 	}
 	
 	return nil
 }
 
-func ValidateLoginUser (user *models.BaseUser) error {
+func ValidateLoginUser (user *models.User) error {
 	if !allowedEmail.MatchString(user.Email){
 		return errors.New("Недопустимое имя Email")
 	}
 
-	if len(user.Password) < 8{
+	if len(user.HashedPassword) < 8{
 		return errors.New("Пароль менее 8-ми символов")
 	}
 
-	if len(user.Password) > 50 {
+	if len(user.HashedPassword) > 50 {
 		return errors.New("Пароль больше 50-ти символов")
 	}
 
-	if !validPasswords(user.Password){
+	if !validPasswords(user.HashedPassword){
 		return errors.New("Недопустимые значения")
 	}
 	

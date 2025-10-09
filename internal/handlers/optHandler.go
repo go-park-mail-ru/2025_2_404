@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"2025_2_404/models"
+	"2025_2_404/internal/models"
 	"crypto/rand"
 	"crypto/sha1"
 	"database/sql"
@@ -74,7 +74,7 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var creds models.BaseUser
+	var creds models.User
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
 		return
@@ -85,10 +85,10 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	passwordHash := sha1.Sum([]byte(creds.Password))
+	passwordHash := sha1.Sum([]byte(creds.GetHashedPassword()))
 	hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
-	returnUserID, err := h.foundUserByCredentialsDB(creds.Email, hexPasswordHash)
+	returnUserID, err := h.foundUserByCredentialsDB(creds.GetEmail(), hexPasswordHash)
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
@@ -130,7 +130,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var user models.RegisterUser
+	var user models.User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
@@ -142,11 +142,11 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	passwordHash := sha1.Sum([]byte(user.Password))
+	passwordHash := sha1.Sum([]byte(user.GetHashedPassword()))
 	hexPasswordHash := hex.EncodeToString(passwordHash[:])
 
 	var returnUserID int
-	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
+	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.GetEmail(), hexPasswordHash, user.GetUserName()).Scan(&returnUserID); err != nil{
 		http.Error(w, "User already registered", http.StatusUnprocessableEntity)
 		return
 	}
@@ -201,14 +201,14 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
 	}
-	ads.CreatorID = userID
+	ads.SetCreatorID(userID)
 	adsOut := []map[string]string{
 		{
-			"add_id":     ads.ID,
-			"creater_id": ads.CreatorID,
-			"file_path":  ads.FilePath,
-			"title":      ads.Title,
-			"text":       ads.Text,
+			"add_id":     string(ads.GetID()),
+			"creater_id": string(ads.GetCreatorID()),
+			"file_path":  ads.GetFilePath(),
+			"title":      ads.GetTitle(),
+			"text":       ads.GetText(),
 		},
 	}
 	JSONResponse(w, http.StatusCreated, map[string]interface{}{

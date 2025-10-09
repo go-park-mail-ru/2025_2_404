@@ -1,7 +1,8 @@
 package usecase
 
-import(
-	modeluser"2025_2_404/internal/models/user"
+import (
+	"2025_2_404/internal/models"
+	modeluser "2025_2_404/internal/models"
 	"errors"
 )
 
@@ -21,8 +22,8 @@ type UserUseCase struct {
 
 // dto - data transport object 
 
-func (uc *UserUseCase) Register(dto RegisterUser) (*domain.User, error) {
-	user, err := domain.NewUser(dto.UserName, dto.Email, dto.Password)
+func (uc *UserUseCase) Register(dto RegisterUser) (*models.User, error) {
+	user, err := models.NewUser(dto.UserName, dto.Email, dto.Password)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +31,8 @@ func (uc *UserUseCase) Register(dto RegisterUser) (*domain.User, error) {
 	return user, nil
 }
 
-func (uc *UserUseCase) Login(dto BaseUser) (*domain.User, error) {
-	user, err := domain.LoginUser(dto.Email, dto.Password)
+func (uc *UserUseCase) Login(dto BaseUser) (*models.User, error) {
+	user, err := models.LoginUser(dto.Email, dto.Password)
 	if err != nil {
 		return nil, err
 	}
