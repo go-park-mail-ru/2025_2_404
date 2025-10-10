@@ -9,7 +9,7 @@ import(
 
 type repositoryI interface {
 	CreateUser(ctx context.Context, email, password, userName string) (*modeluser.User, error)
-	CreateSession(ctx context.Context, userID, sessionID string) (string, error)
+	CreateSession(ctx context.Context, userID modeluser.ID, sessionID string) (string, error)
 }
 
 type AuthUseCase struct {
@@ -28,7 +28,7 @@ func (r *AuthUseCase) RegisterUser(ctx context.Context, email, password, userNam
 	return &user.ID, nil
 }
 
-func (r *AuthUseCase) SessionGenerateAndSave(ctx context.Context, userID string) (string, error) {
+func (r *AuthUseCase) SessionGenerateAndSave(ctx context.Context, userID modeluser.ID) (string, error) {
 	sessionID, err := utils.GenerateSession()
 	if err != nil {
 		return "", fmt.Errorf("problem with session generation: %w", err)

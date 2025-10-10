@@ -1,52 +1,33 @@
 package handlers
 
 import (
-	"2025_2_404/internal/models"
-	"crypto/rand"
-	"crypto/sha1"
-	"database/sql"
-	"encoding/hex"
+	modeluser "2025_2_404/internal/models/user"
+	modelad "2025_2_404/internal/models/ad"
 	"encoding/json"
-	"errors"
 	"net/http"
-	"2025_2_404/pkg"
+	"context"
 )
 
-
-type Handlers struct {
-	DB *sql.DB
+type authUsecaseI interface{
+	SessionGenerateAndSave(ctx context.Context, userID modeluser.ID) (string, error)
+	RegisterUser(ctx context.Context, email, password, userName string) (modeluser.ID, error)
 }
 
-
-func New(db *sql.DB) *Handlers {
-	return &Handlers{DB: db}
+type adUsecaseI interface{
+	CreateAd(ctx context.Context, ad modelad.Ads) (int, error)
+	FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error)
 }
 
-const(
-	sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
-	sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
-	sqlTextForSelectUsers = "SELECT id, password FROM app_user WHERE email = $1 "
-	sqlTextForCheckSession = "SELECT session_id FROM session WHERE user_id = $1"
-	sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
-	sqlTextForInsertUsers = "INSERT INTO app_user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
-	sqlTextForInsertAds = "INSERT INTO ad (creator_id, file_path, title, text_ad) VALUES ($1, $2, $3, $4)"
-)
-
-func GenerateSession() (string, error){
-	sessionID := make([]byte,32)
-	if _, err := rand.Read(sessionID); err != nil{
-		return "", err
-	}
-	return hex.EncodeToString(sessionID), nil
+type userUsecaseI interface{
+	CheckUser(ctx context.Context, email string, password string) (modeluser.User, error)
+	FindSessionByUserID(ctx context.Context, userID modeluser.ID) (string, error)
+	FindUser(ctx context.Context, sessionID string) (modeluser.ID, error)
 }
 
-func (h *Handlers) foundUserBySessionDB(sessionID string) (string, error) {
-	var userID string
-	err := h.DB.QueryRow(sqlTextForFoundUser, sessionID).Scan(&userID)
-	if err != nil {
-		return "", errors.New("session not found")
-	}
-	return userID, nil
+type FunctionHandler struct {
+	authUsecase authUsecaseI
+	adUsecase   adUsecaseI
+	userUsecase userUsecaseI
 }
 
 func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
@@ -55,44 +36,30 @@ func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
     json.NewEncoder(w).Encode(data)
 }
 
-func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *FunctionHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var creds models.BaseUser
+	var creds modeluser.User
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
 		return
 	}
 
-	if validateErr := pkg.ValidateLoginUser(&creds); validateErr != nil {
-		http.Error(w, validateErr.Error(), http.StatusUnprocessableEntity)
-		return
-	}
-
-	passwordHash := sha1.Sum([]byte(creds.Password))
-	hexPasswordHash := hex.EncodeToString(passwordHash[:])
-
-	returnUserID, err := h.foundUserByCredentialsDB(creds.Email, hexPasswordHash)
+	returnUser, err := h.userUsecase.CheckUser(r.Context(), creds.Email, creds.HashedPassword)
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
 	}
 
 	var sessionID string
-	err = h.DB.QueryRow(sqlTextForCheckSession, returnUserID).Scan(&sessionID)
-	if err != nil {
-		sessionID, err = GenerateSession()
+	sessionID, err = h.userUsecase.FindSessionByUserID(r.Context(), returnUser.ID)
+	if err == nil {
+		sessionID, err = h.authUsecase.SessionGenerateAndSave(r.Context(), returnUser.ID)
 		if err != nil {
 			http.Error(w, "Session not generated", http.StatusInternalServerError)
-			return
-		}
-
-		_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
-		if err != nil {
-			http.Error(w, "Session token not created", http.StatusConflict)
 			return
 		}
 	} 
@@ -111,42 +78,28 @@ func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (h *FunctionHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
 		return
 	}
 
-	var user models.RegisterUser
+	var user modeluser.User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		http.Error(w, "Json not correct", http.StatusBadRequest)
 		return
 	}
 
-	if validateErr := pkg.ValidateRegisterUser(&user); validateErr != nil {
-		http.Error(w, validateErr.Error(), http.StatusUnprocessableEntity)
+	userID, err := h.authUsecase.RegisterUser(r.Context(), user.Email, user.HashedPassword, user.UserName)
+	if err != nil {
+		http.Error(w, "User not created", http.StatusInternalServerError)
 		return
 	}
 
-	passwordHash := sha1.Sum([]byte(user.Password))
-	hexPasswordHash := hex.EncodeToString(passwordHash[:])
-
-	var returnUserID int
-	if err := h.DB.QueryRow(sqlTextForInsertUsers, user.Email, hexPasswordHash, user.UserName).Scan(&returnUserID); err != nil{
-		http.Error(w, "User already registered", http.StatusUnprocessableEntity)
-		return
-	}
-
-	sessionID, err := GenerateSession()
-	if err != nil{
-		http.Error(w, "Session not generated", http.StatusInternalServerError)
-		return
-	}
-
-	_, err = h.DB.Exec(sqlTextForInsertSession, returnUserID, sessionID)
-	if err != nil{
-		http.Error(w,"Session token not created", http.StatusConflict)
+	sessionID, err := h.authUsecase.SessionGenerateAndSave(r.Context(), userID)
+	if err != nil {
+		http.Error(w, "Session not created", http.StatusInternalServerError)
 		return
 	}
 
@@ -164,7 +117,7 @@ func (h *Handlers) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
+func (h *FunctionHandler) Handle(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
 		return
@@ -177,29 +130,14 @@ func (h *Handlers) Handle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sessionID := sessionCookie.Value
-	userID, err := h.foundUserBySessionDB(sessionID)
+	userID, err := h.userUsecase.FindUser(r.Context(), sessionID)
 	if err != nil {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	var ads models.Ads
-	if err := h.DB.QueryRow(sqlTextForSelectAds, userID).Scan(&ads.ID, &ads.FilePath, &ads.Title, &ads.Text); err != nil {
-		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
-		return
-	}
-	ads.CreatorID = userID
-	adsOut := []map[string]string{
-		{
-			"add_id":     ads.ID,
-			"creater_id": ads.CreatorID,
-			"file_path":  ads.FilePath,
-			"title":      ads.Title,
-			"text":       ads.Text,
-		},
-	}
 	JSONResponse(w, http.StatusCreated, map[string]interface{}{
 		"message": "Successful authorization",
-		"ads":     adsOut,
+		"ads":     userID,
 	})
 }	

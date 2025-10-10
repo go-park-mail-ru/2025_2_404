@@ -12,6 +12,7 @@ const(
 	sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
 	sqlTextForSelectUsers = "SELECT id, password FROM app_user WHERE email = $1 "
 	sqlTextForInsertUsers = "INSERT INTO app_user (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForFoundSession = "SELECT session_id FROM session WHERE user_id = $1"
 )
 
 type sqlI interface {
@@ -40,7 +41,7 @@ func (r *DB) FindUserByEmail(ctx context.Context, email string) (modeluser.User,
 	return user, nil
 }
 
-func (r *DB) CreateSession(ctx context.Context, userID, sessionID string) (string, error) {
+func (r *DB) CreateSession(ctx context.Context, userID modeluser.ID, sessionID string) (string, error) {
 	_, err := r.sql.ExecContext(ctx, sqlTextForInsertSession, userID, sessionID)
 	if err != nil {
 		return "", fmt.Errorf("failed to create session: %w", err)
@@ -48,7 +49,7 @@ func (r *DB) CreateSession(ctx context.Context, userID, sessionID string) (strin
 	return sessionID, nil
 }
 
-func (r *DB) FindSession(ctx context.Context, sessionID int) (string, error) {
+func (r *DB) FindUserBySessionID(ctx context.Context, sessionID string) (string, error) {
 	var userID string
 	err := r.sql.QueryRowContext(ctx, sqlTextForFoundUser, sessionID).Scan(&userID)
 	if err != nil {
@@ -57,5 +58,11 @@ func (r *DB) FindSession(ctx context.Context, sessionID int) (string, error) {
 	return userID, nil
 }
 
-
-
+func (r *DB) FindSessionByUserID(ctx context.Context, userID modeluser.ID) (string, error) {
+	var sessionID string
+	err := r.sql.QueryRowContext(ctx, sqlTextForFoundSession, userID).Scan(&sessionID)
+	if err != nil {
+		return "", fmt.Errorf("failed to find session by user ID: %w", err)
+	}
+	return sessionID, nil
+}
