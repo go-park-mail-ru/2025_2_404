@@ -9,24 +9,24 @@ CREATE TABLE IF NOT EXISTS client (
 		length(email) >= 5 AND length(email) <= 100
 	),
 	password_hash TEXT NOT NULL CHECK (
-		length(password_hash) >= 8 AND length(password_hash) <= 50
+		length(password_hash) >= 8 AND length(password_hash) <= 120
 	),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS client_wallet (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	client_id INT UNIQUE REFERENCES client(id) ON DELETE CASCADE,
-	balance INT NOT NULL DEFAULT 0 CHECK (balance >= 0),
+	balance NUMERIC(12, 2) NOT NULL DEFAULT 0 CHECK (balance >= 0),
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS wallet_top_up (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	client_id INT REFERENCES client_wallet(id) ON DELETE CASCADE,
-	amount INT NOT NULL CHECK (amount > 0),
+	client_wallet_id INT REFERENCES client_wallet(id) ON DELETE CASCADE,
+	amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
     payment_method TEXT NOT NULL CHECK (
 		length(payment_method) >= 1 AND length(payment_method) <= 40
 	),
@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS ad_detail (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	ad_id INT REFERENCES ad(id) ON DELETE CASCADE,
 	platform_id INT REFERENCES platform(id) ON DELETE CASCADE,
+	amount_for_ad NUMERIC(12, 2) NOT NULL CHECK (amount_for_ad > 0),
     status TEXT NOT NULL CHECK (
 		length(status) >= 1 AND length(status) <= 40
 	),
