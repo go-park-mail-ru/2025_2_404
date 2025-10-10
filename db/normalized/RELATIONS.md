@@ -93,15 +93,15 @@
 ```mermaid
 erDiagram
     CLIENT ||--|| CLIENT_WALLET : has
-    CLIENT ||--o{ NOTIFICATIONS : receives
+    CLIENT ||--o{ NOTIFICATION : receives
     CLIENT ||--o{ AD : creates
     CLIENT ||--o{ SESSION : has
     
     CLIENT_WALLET ||--o{ WALLET_TOP_UP : has
     
-    AD ||--|| AD_DETAILS : has
-    PLATFORM ||--o{ AD_DETAILS : includes
-    AD_DETAILS ||--o{ STATISTICS : has
+    AD ||--|| AD_DETAIL : has
+    PLATFORM ||--o{ AD_DETAIL : includes
+    AD_DETAIL ||--o{ STATISTIC : has
 ```
 ## ER-диаграмма ##
 
@@ -137,7 +137,7 @@ erDiagram
         _ status
         _ created_at
     }
-    NOTIFICATIONS {
+    NOTIFICATION {
         _ id PK
         _ client_id FK
         _ notification_text
@@ -162,33 +162,33 @@ erDiagram
         _ created_at
         _ updated_at
     }
-    AD_DETAILS {
+    AD_DETAIL {
         _ id "PK"
-        _ ad_id FK "AK"
+        _ ad_id FK
         _ platform_id FK
         _ amount_for_ad
         _ status
         _ created_at
         _ updated_at
     }
-    STATISTICS {
+    STATISTIC {
         _ id "PK"
-        _ ad_details_id FK "AK" 
+        _ ad_detail_id FK  
         _ clicks
         _ impressions
         _ created_at
         _ updated_at
     }
     CLIENT ||--|| CLIENT_WALLET : has
-    CLIENT ||--o{ NOTIFICATIONS : receives
+    CLIENT ||--o{ NOTIFICATION : receives
     CLIENT ||--o{ SESSION : has
     CLIENT ||--o{ AD : creates
     
     CLIENT_WALLET ||--o{ WALLET_TOP_UP : has
     
-    AD ||--|| AD_DETAILS : has
-    PLATFORM ||--o{ AD_DETAILS : includes
-    AD_DETAILS ||--o{ STATISTICS : has
+    AD ||--|| AD_DETAIL : has
+    PLATFORM ||--o{ AD_DETAIL : includes
+    AD_DETAIL ||--o{ STATISTIC : has
 ```
 
 # Функциональные зависимости #
