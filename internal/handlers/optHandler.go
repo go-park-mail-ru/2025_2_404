@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"2025_2_404/models"
+	"2025_2_404/internal/models"
 	"crypto/rand"
 	"crypto/sha1"
 	"database/sql"
@@ -53,19 +53,6 @@ func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(statusCode)
     json.NewEncoder(w).Encode(data)
-}
-
-func (h *Handlers) foundUserByCredentialsDB(email, password string) (string, error) {
-	var userID string
-	var hashedPassword string
-	err := h.DB.QueryRow(sqlTextForSelectUsers, email).Scan(&userID, &hashedPassword)
-	if err != nil {
-		return "", err
-	}
-	if hashedPassword != password {
-		return "", errors.New("invalid password")
-	}
-	return userID, nil
 }
 
 func (h *Handlers) LoginHandler(w http.ResponseWriter, r *http.Request) {
