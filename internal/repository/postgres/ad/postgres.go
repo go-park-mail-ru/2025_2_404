@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	modelad "2025_2_404/internal/models/ad"
+	modeluser "2025_2_404/internal/models/user"
 )
 
 const(
@@ -43,5 +44,3 @@ func (r *DB) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
 	}
 	return adID, nil
 }
-
-func 

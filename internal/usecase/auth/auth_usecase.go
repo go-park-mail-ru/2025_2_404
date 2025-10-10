@@ -1,43 +1,41 @@
 package usecase
 
 import(
-	modeluser"2025_2_404/internal/models/user"
-	"errors"
+	modeluser "2025_2_404/internal/models/user"
+	"context"
+	"fmt"
+	"2025_2_404/internal/utils"
 )
 
-type BaseUser struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+type repositoryI interface {
+	CreateUser(ctx context.Context, email, password, userName string) (*modeluser.User, error)
+	CreateSession(ctx context.Context, userID, sessionID string) (string, error)
 }
 
-type RegisterUser struct {
-	BaseUser
-	UserName string `json:"user_name"`
+type AuthUseCase struct {
+	repo repositoryI
 }
 
-type UserUseCase struct {
-	userRepo modeluser.UserRepository
-}
-
-// dto - data transport object 
-
-func (uc *UserUseCase) Register(dto RegisterUser) (*domain.User, error) {
-	user, err := domain.NewUser(dto.UserName, dto.Email, dto.Password)
+func (r *AuthUseCase) RegisterUser(ctx context.Context, email, password, userName string) (*modeluser.ID, error) {
+	user, err := modeluser.NewUser(userName, email, password)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("not validate user: %w", err)
 	}
-
-	return user, nil
+	user, err = r.repo.CreateUser(ctx, user.Email, user.HashedPassword, user.UserName)
+	if err != nil {
+		return nil, fmt.Errorf("problem with repository CreateUser: %w", err)
+	}
+	return &user.ID, nil
 }
 
-func (uc *UserUseCase) Login(dto BaseUser) (*domain.User, error) {
-	user, err := domain.LoginUser(dto.Email, dto.Password)
+func (r *AuthUseCase) SessionGenerateAndSave(ctx context.Context, userID string) (string, error) {
+	sessionID, err := utils.GenerateSession()
 	if err != nil {
-		return nil, err
+		return "", fmt.Errorf("problem with session generation: %w", err)
 	}
-	if !user.ComparePasswords(dto.Password) {
-		return nil, errors.New("Неверный пароль")
+	sessionID, err = r.repo.CreateSession(ctx, userID, sessionID)
+	if err != nil {
+		return "", fmt.Errorf("problem with repository CreateSession: %w", err)
 	}
-
-	return user, nil
+	return sessionID, nil
 }

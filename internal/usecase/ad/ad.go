@@ -29,7 +29,4 @@ func (u *AdUseCase) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
 	return u.adRepo.CreateAd(ctx, ad)
 }
 
-func (u *AdUseCase) UpdateAd(ctx context.Context, ad modelad.Ads) error {
-	u.adRepo.FindAdByUserID(ctx, ad.)
-	return u.adRepo.UpdateAd(ctx, ad)
-}
+

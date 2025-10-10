@@ -1,4 +1,4 @@
-package infra
+package auth
 
 import (
 	"database/sql"
@@ -23,18 +23,17 @@ type DB struct {
 	sql sqlI
 }
 
-func (r *DB) CreateUser(ctx context.Context, user modeluser.RegisterUser) (int, error) {
-	var userID int
-	err := r.sql.QueryRowContext(ctx, sqlTextForInsertUsers, user.Email, user.Password, user.UserName).Scan(&userID)
+func (r *DB) CreateUser(ctx context.Context, user *modeluser.User) (modeluser.ID, error) {
+	err := r.sql.QueryRowContext(ctx, sqlTextForInsertUsers, user.Email, user.HashedPassword, user.UserName).Scan(&user.ID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
 	}
-	return userID, nil
+	return user.ID, nil
 }
 
-func (r *DB) FindUserByEmail(ctx context.Context, email string) (modeluser.RegisterUser, error) {
-	var user modeluser.RegisterUser
-	err := r.sql.QueryRowContext(ctx, sqlTextForSelectUsers, email).Scan(&user.ID, &user.Password)
+func (r *DB) FindUserByEmail(ctx context.Context, email string) (modeluser.User, error) {
+	var user modeluser.User
+	err := r.sql.QueryRowContext(ctx, sqlTextForSelectUsers, email).Scan(&user.ID, &user.HashedPassword)
 	if err != nil {
 		return user, fmt.Errorf("failed to find user by email: %w", err)
 	}
