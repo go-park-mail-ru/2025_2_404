@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS client (
 		length(email) >= 5 AND length(email) <= 100
 	),
 	password_hash TEXT NOT NULL CHECK (
-		length(password_hash) >= 8 AND length(password_hash) <= 120
+		length(password_hash) <= 120
 	),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
