@@ -2,7 +2,7 @@ package auth
 
 import (
 	"database/sql"
-	modeluser "2025_2_404/internal/models/user"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
 	"fmt"
 )

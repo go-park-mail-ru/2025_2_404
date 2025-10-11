@@ -1,10 +1,9 @@
 package usecase
 
 import(
-	modeluser "2025_2_404/internal/models/user"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
 	"fmt"
-	"2025_2_404/internal/utils"
 )
 
 type repositoryI interface {
@@ -28,14 +27,14 @@ func (r *AuthUseCase) RegisterUser(ctx context.Context, email, password, userNam
 	return &user.ID, nil
 }
 
-func (r *AuthUseCase) SessionGenerateAndSave(ctx context.Context, userID modeluser.ID) (string, error) {
-	sessionID, err := utils.GenerateSession()
-	if err != nil {
-		return "", fmt.Errorf("problem with session generation: %w", err)
-	}
-	sessionID, err = r.repo.CreateSession(ctx, userID, sessionID)
-	if err != nil {
-		return "", fmt.Errorf("problem with repository CreateSession: %w", err)
-	}
-	return sessionID, nil
-}
+// func (r *AuthUseCase) SessionGenerateAndSave(ctx context.Context, userID modeluser.ID) (string, error) {
+// 	sessionID, err := utils.GenerateSession()
+// 	if err != nil {
+// 		return "", fmt.Errorf("problem with session generation: %w", err)
+// 	}
+// 	sessionID, err = r.repo.CreateSession(ctx, userID, sessionID)
+// 	if err != nil {
+// 		return "", fmt.Errorf("problem with repository CreateSession: %w", err)
+// 	}
+// 	return sessionID, nil
+// }

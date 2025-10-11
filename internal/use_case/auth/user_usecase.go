@@ -1,10 +1,8 @@
 package usecase
 
-
-
 import (
 	"context"
-	modeluser "2025_2_404/internal/models/user"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"golang.org/x/crypto/bcrypt"
 	"errors"
 )

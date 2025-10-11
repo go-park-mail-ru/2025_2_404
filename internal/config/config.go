@@ -21,6 +21,7 @@ type PostgresConfig struct {
 
 type AppConfig struct {
 	Port string
+	JwtToken string
 }
 
 func GetConfig() Config {
@@ -47,5 +48,6 @@ func GetPostgresConfig() *PostgresConfig {
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
 		Port: os.Getenv("APP_PORT"),
+		JwtToken: os.Getenv("JWT_SECRET"),
 	}
 }

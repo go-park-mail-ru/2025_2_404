@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	modeluser "2025_2_404/internal/models/user"
-	modelad "2025_2_404/internal/models/ad"
+	modeluser "2025_2_404/internal/domain/models/user"
+	modelad "2025_2_404/internal/domain/models/ad"
 	"encoding/json"
 	"net/http"
 	"context"

@@ -1,8 +1,8 @@
 package ad
 
 import (
-	modelad "2025_2_404/internal/models/ad"
-	modeluser "2025_2_404/internal/models/user"
+	modelad "2025_2_404/internal/domain/models/ad"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
 )
 
