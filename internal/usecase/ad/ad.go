@@ -31,6 +31,7 @@ func (u *AdUseCase) CreateAd(ctx context.Context, ad models.Ads) (int, error) {
 	return u.adRepo.CreateAd(ctx, ad)
 }
 
+<<<<<<< HEAD
 func (u *AdUseCase) UpdateAd(ctx context.Context, ad models.Ads) error {
 	_, err := u.adRepo.FindAdByUserID(ctx, ad.CreatorID)
 	if err != nil {
@@ -39,3 +40,6 @@ func (u *AdUseCase) UpdateAd(ctx context.Context, ad models.Ads) error {
 	}
 	return ctx.Err()
 }
+=======
+
+>>>>>>> a8230ea6cc45a4ef7d6d317222973fdc7959bd18

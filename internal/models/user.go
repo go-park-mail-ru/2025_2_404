@@ -9,9 +9,15 @@ import (
 type ID int64
 
 type User struct {
+<<<<<<< HEAD:internal/models/user.go
 	ID       ID
 	UserName string
 	Email    string
+=======
+	ID          ID
+	UserName    string
+	Email      string
+>>>>>>> a8230ea6cc45a4ef7d6d317222973fdc7959bd18:internal/models/user/user.go
 	HashedPassword string
 }
 
@@ -20,27 +26,27 @@ var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2
 
 func NewUser(userName, email, password string) (*User, error){
 	if len(userName)<3 || len(userName)>20{
-		return nil, errors.New("Имя пользователя должно быть не меньше 3-х и не больше 20-ти символов")
+		return nil, errors.New("имя пользователя должно быть не меньше 3-х и не больше 20-ти символов")
 	}
 
 	if !allowedSymbols.MatchString(userName) {
-		return nil, errors.New("Имя пользователя содержит недопустимые значения")
+		return nil, errors.New("имя пользователя содержит недопустимые значения")
 	}
 
 	if !allowedEmail.MatchString(email) {
-		return nil, errors.New("Недопустимое имя Email")
+		return nil, errors.New("недопустимое имя Email")
 	}
 	
 	if len(password) < 8 {
-		return nil, errors.New("Пароль менее 8-ми символов")
+		return nil, errors.New("пароль менее 8-ми символов")
 	}
 	
 	if len(password) > 50 {
-		return nil, errors.New("Пароль больше 50-ти символов")
+		return nil, errors.New("пароль больше 50-ти символов")
 	}
 	
 	if !allowedSymbols.MatchString(password){
-		return nil, errors.New("Недопустимые значения")
+		return nil, errors.New("недопустимые значения")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -49,8 +55,13 @@ func NewUser(userName, email, password string) (*User, error){
 	}
 
 	return &User{
+<<<<<<< HEAD:internal/models/user.go
 		UserName: userName,
 		Email: email,
+=======
+		UserName:    userName,
+		Email:      email,
+>>>>>>> a8230ea6cc45a4ef7d6d317222973fdc7959bd18:internal/models/user/user.go
 		HashedPassword: string(hashedPassword),
 	}, nil
 }
@@ -62,23 +73,27 @@ func (u *User) ComparePasswords(password string) bool {
 
 func LoginUser(email, password string) (*User, error){
 	if !allowedEmail.MatchString(email){
-		return nil, errors.New("Недопустимое имя Email")
+		return nil, errors.New("недопустимое имя Email")
 	}
 	
 	if len(password) < 8{
-		return nil, errors.New("Пароль менее 8-ми символов")
+		return nil, errors.New("пароль менее 8-ми символов")
 	}
 	
 	if len(password) > 50 {
-		return nil, errors.New("Пароль больше 50-ти символов")
+		return nil, errors.New("пароль больше 50-ти символов")
 	}
 	
 	if !allowedSymbols.MatchString(password){
-		return nil, errors.New("Недопустимые значения")
+		return nil, errors.New("недопустимые значения")
 	}
 	
 	return &User{
+<<<<<<< HEAD:internal/models/user.go
 		Email: email,
+=======
+		Email:      email,
+>>>>>>> a8230ea6cc45a4ef7d6d317222973fdc7959bd18:internal/models/user/user.go
 		HashedPassword: password,
 	}, nil
 }
