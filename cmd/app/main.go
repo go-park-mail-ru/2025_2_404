@@ -1,10 +1,10 @@
 package main
 
 import (
-	"2025_2_404/internal/connections"
-	"2025_2_404/internal/handlers"
-	"net/http"
 	"2025_2_404/internal/config"
+	"2025_2_404/internal/delivery/http"
+	db "2025_2_404/internal/connections"
+	"net/http"
 )
 
 func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc {

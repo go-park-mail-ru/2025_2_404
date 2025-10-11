@@ -1,4 +1,4 @@
-package models
+package user
 
 import (
 	"errors"
@@ -9,15 +9,9 @@ import (
 type ID int64
 
 type User struct {
-<<<<<<< HEAD:internal/models/user.go
-	ID       ID
-	UserName string
-	Email    string
-=======
 	ID          ID
 	UserName    string
 	Email      string
->>>>>>> a8230ea6cc45a4ef7d6d317222973fdc7959bd18:internal/models/user/user.go
 	HashedPassword string
 }
 
@@ -55,13 +49,8 @@ func NewUser(userName, email, password string) (*User, error){
 	}
 
 	return &User{
-<<<<<<< HEAD:internal/models/user.go
-		UserName: userName,
-		Email: email,
-=======
 		UserName:    userName,
 		Email:      email,
->>>>>>> a8230ea6cc45a4ef7d6d317222973fdc7959bd18:internal/models/user/user.go
 		HashedPassword: string(hashedPassword),
 	}, nil
 }
@@ -89,27 +78,7 @@ func LoginUser(email, password string) (*User, error){
 	}
 	
 	return &User{
-<<<<<<< HEAD:internal/models/user.go
-		Email: email,
-=======
 		Email:      email,
->>>>>>> a8230ea6cc45a4ef7d6d317222973fdc7959bd18:internal/models/user/user.go
 		HashedPassword: password,
 	}, nil
-}
-
-func (u *User) GetID() ID {
-	return u.ID
-}
-
-func (u *User) GetUserName() string {
-	return u.UserName
-}
-
-func (u *User) GetEmail() string {
-	return u.Email
-}
-
-func (u *User) GetHashedPassword() string {
-	return u.HashedPassword
 }
