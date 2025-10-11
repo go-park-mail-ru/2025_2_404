@@ -48,7 +48,7 @@ func main() {
 	// repo := 
 
 	handlers := handlers.New(postgresql)
-	http.HandleFunc("/", pefliteMiddleware(handlers.Handle))
+	http.HandleFunc("/", handlers.AuthMiddleware(http.HandlerFunc(pefliteMiddleware(handlers.Handle))))
 	http.HandleFunc("/signup", pefliteMiddleware(handlers.RegisterHandler))
 	http.HandleFunc("/signin", pefliteMiddleware(handlers.LoginHandler))
 

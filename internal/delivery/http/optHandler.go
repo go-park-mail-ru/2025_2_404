@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"context"
+	"2025_2_404/pkg"
 )
 
 type authUsecaseI interface{
@@ -54,26 +55,36 @@ func (h *FunctionHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var sessionID string
-	sessionID, err = h.userUsecase.FindSessionByUserID(r.Context(), returnUser.ID)
-	if err == nil {
-		sessionID, err = h.authUsecase.SessionGenerateAndSave(r.Context(), returnUser.ID)
-		if err != nil {
-			http.Error(w, "Session not generated", http.StatusInternalServerError)
-			return
-		}
-	} 
+	// var sessionID string
+	// sessionID, err = h.userUsecase.FindSessionByUserID(r.Context(), returnUser.ID)
+	// if err == nil {
+	// 	sessionID, err = h.authUsecase.SessionGenerateAndSave(r.Context(), returnUser.ID)
+	// 	if err != nil {
+	// 		http.Error(w, "Session not generated", http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// } 
+
+	tokenString, err := pkg.GenerateToken(int64(returnUser.ID))
+	if err != nil {
+		http.Error(w, "Не получилось сгенерить токен", http.StatusInternalServerError)
+		return
+	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
-		Value:    sessionID,
+		// Value:    sessionID,
 		Path:     "/",
 		MaxAge:   8080,
 		HttpOnly: true,
 	})
 
-	JSONResponse(w, http.StatusCreated, map[string]interface{}{
+	JSONResponse(w, http.StatusCreated, map[string]string {  
 		"message": "Successful authorization",
+	})
+
+	JSONResponse(w, http.StatusOK, map[string]string {
+		"token": tokenString,
 	})
 }
 
@@ -97,22 +108,32 @@ func (h *FunctionHandler) RegisterHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	sessionID, err := h.authUsecase.SessionGenerateAndSave(r.Context(), userID)
+	// sessionID, err := h.authUsecase.SessionGenerateAndSave(r.Context(), userID)
+	// if err != nil {
+	// 	http.Error(w, "Session not created", http.StatusInternalServerError)
+	// 	return
+	// }
+
+	tokenString, err := pkg.GenerateToken(int64(userID))
 	if err != nil {
-		http.Error(w, "Session not created", http.StatusInternalServerError)
+		http.Error(w, "Не удалось создать токен", http.StatusInternalServerError)
 		return
 	}
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "session_id",
-		Value:    sessionID,
+		// Value:    sessionID,
 		Path:     "/",
 		MaxAge:   8080,
 		HttpOnly: true,
 	})
 
-	JSONResponse(w, http.StatusCreated, map[string]interface{}{
+	JSONResponse(w, http.StatusCreated, map[string]string {
 		"message": "User created",
+	})
+
+	JSONResponse(w, http.StatusOK, map[string]string {
+		"token": tokenString,
 	})
 }
 
@@ -123,21 +144,22 @@ func (h *FunctionHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sessionCookie, err := r.Cookie("session_id")
-	if err != nil {
+	userID, ok := r.Context().Value(UserIDKey).(int64)
+	if !ok {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
-	sessionID := sessionCookie.Value
-	userID, err := h.userUsecase.FindUser(r.Context(), sessionID)
+	ads, err := h.adUsecase.FindAdByUserID(r.Context(), modeluser.ID(userID))
 	if err != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
 		return
 	}
 
-	JSONResponse(w, http.StatusCreated, map[string]interface{}{
+	
+
+	JSONResponse(w, http.StatusOK, map[string]interface{}{
 		"message": "Successful authorization",
-		"ads":     userID,
+		"ads":     ads,
 	})
 }	
