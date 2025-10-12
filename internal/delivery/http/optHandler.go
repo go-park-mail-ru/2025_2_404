@@ -1,12 +1,15 @@
 package handlers
 
 import (
-	modeluser "2025_2_404/internal/domain/models/user"
 	modelad "2025_2_404/internal/domain/models/ad"
-	"encoding/json"
-	"net/http"
-	"context"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"2025_2_404/pkg"
+	"context"
+	"crypto/ecdsa"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"time"
 )
 
 type authUsecaseI interface{
@@ -23,12 +26,16 @@ type adUsecaseI interface{
 type FunctionHandler struct {
 	authUsecase authUsecaseI
 	adUsecase   adUsecaseI
+	JwtPrivateKey *ecdsa.PrivateKey
+	JwtPublicKey  *ecdsa.PublicKey
 }
 
-func New(authUsecase authUsecaseI, adUsecase adUsecaseI) *FunctionHandler {
+func New(authUsecase authUsecaseI, adUsecase adUsecaseI, jwtPrivateKey *ecdsa.PrivateKey, jwtPublicKey *ecdsa.PublicKey) *FunctionHandler {
 	return &FunctionHandler{
 		authUsecase: authUsecase,
 		adUsecase:   adUsecase,
+		JwtPrivateKey: jwtPrivateKey,
+		JwtPublicKey:  jwtPublicKey,
 	}
 }
 
@@ -66,9 +73,9 @@ func (h *FunctionHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// 	}
 	// } 
 
-	tokenString, err := pkg.GenerateToken(int64(returnUser.ID))
+	tokenString, err := pkg.GenerateToken(h.JwtPrivateKey, int64(returnUser.ID))
 	if err != nil {
-		http.Error(w, "Не получилось сгенерить токен", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Не получилось сгенерить токен: %v", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -103,9 +110,12 @@ func (h *FunctionHandler) RegisterHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	userID, err := h.authUsecase.RegisterUser(r.Context(), user.Email, user.HashedPassword, user.UserName)
+	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(5*time.Second))
+	defer cancel()
+
+	userID, err := h.authUsecase.RegisterUser(ctx, user.Email, user.HashedPassword, user.UserName)
 	if err != nil {
-		http.Error(w, "User not created", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("User not created: %v", err), http.StatusInternalServerError)
 		return
 	}
 
@@ -115,9 +125,9 @@ func (h *FunctionHandler) RegisterHandler(w http.ResponseWriter, r *http.Request
 	// 	return
 	// }
 
-	tokenString, err := pkg.GenerateToken(int64(userID))
+	tokenString, err := pkg.GenerateToken(h.JwtPrivateKey, int64(userID))
 	if err != nil {
-		http.Error(w, "Не удалось создать токен", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Не удалось создать токен: %v", err), http.StatusInternalServerError)
 		return
 	}
 

@@ -9,10 +9,10 @@ import (
 type ID int64
 
 type User struct {
-	ID          ID
-	UserName    string
-	Email      string
-	HashedPassword string
+	ID          ID	`json:"id"`
+	UserName    string	`json:"user_name"`
+	Email      string	`json:"email"`
+	HashedPassword string	`json:"password"`
 }
 
 var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)

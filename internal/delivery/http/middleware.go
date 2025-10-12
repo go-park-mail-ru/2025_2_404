@@ -3,6 +3,7 @@ package handlers
 import (
 	"2025_2_404/pkg"
 	"context"
+	"crypto/ecdsa"
 	"net/http"
 	"strings"
 )
@@ -13,7 +14,7 @@ const (
 	UserIDKey key = "userID"
 )
 
-func AuthMiddleware(next http.Handler) http.HandlerFunc {
+func AuthMiddleware(jwtPublicKey *ecdsa.PublicKey, next http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")
 		if authHeader == "" {
@@ -28,7 +29,7 @@ func AuthMiddleware(next http.Handler) http.HandlerFunc {
 		}
 
 		tokenString := headerParts[1]
-		userID, err := pkg.ValidateToken(tokenString)
+		userID, err := pkg.ValidateToken(jwtPublicKey, tokenString)
 		if err != nil {
 			http.Error(w, "Invalid token", http.StatusUnauthorized)
 			return

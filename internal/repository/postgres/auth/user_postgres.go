@@ -10,8 +10,8 @@ import (
 const(
 	sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
 	sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
-	sqlTextForSelectUsers = "SELECT id, password FROM client WHERE email = $1 "
-	sqlTextForInsertUsers = "INSERT INTO client (email, password, user_name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1 "
+	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ( $1, $2, $3) RETURNING id"
 	sqlTextForFoundSession = "SELECT session_id FROM session WHERE user_id = $1"
 )
 

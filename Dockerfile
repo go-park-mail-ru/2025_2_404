@@ -1,6 +1,6 @@
 FROM golang:alpine AS builder
 
-WORKDIR cmd/app
+WORKDIR /app
 
 COPY . .
 
@@ -14,7 +14,9 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY .env .
+COPY --from=builder /app/.env .
+
+COPY --from=builder /app/keys ./keys
 
 COPY --from=builder /app/main ./main
 
