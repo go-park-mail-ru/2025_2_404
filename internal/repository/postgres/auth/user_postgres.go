@@ -15,13 +15,14 @@ const(
 	sqlTextForFoundSession = "SELECT session_id FROM session WHERE user_id = $1"
 )
 
-type sqlI interface {
-	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
-	ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
+type DB struct {
+	sql *sql.DB
 }
 
-type DB struct {
-	sql sqlI
+func New(sql *sql.DB) *DB {
+	return &DB{
+		sql: sql,
+	}
 }
 
 func (r *DB) CreateUser(ctx context.Context, user *modeluser.User) (modeluser.ID, error) {
@@ -49,11 +50,11 @@ func (r *DB) CreateSession(ctx context.Context, userID modeluser.ID, sessionID s
 	return sessionID, nil
 }
 
-func (r *DB) FindUserBySessionID(ctx context.Context, sessionID string) (string, error) {
-	var userID string
+func (r *DB) FindUserBySessionID(ctx context.Context, sessionID string) (modeluser.ID, error) {
+	var userID modeluser.ID
 	err := r.sql.QueryRowContext(ctx, sqlTextForFoundUser, sessionID).Scan(&userID)
 	if err != nil {
-		return "", fmt.Errorf("failed to find session by user ID: %w", err)
+		return 0, fmt.Errorf("failed to find session by user ID: %w", err)
 	}
 	return userID, nil
 }

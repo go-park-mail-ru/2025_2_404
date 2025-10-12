@@ -13,15 +13,11 @@ const(
 	sqlTextForInsertAds = "INSERT INTO ad (creator_id, file_path, title, text_ad) VALUES ($1, $2, $3, $4)"
 )
 
-type sqlI interface {
-	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
-}
-
 type DB struct {
-	sql sqlI
+	sql *sql.DB
 }
 
-func New(sql sqlI) *DB {
+func New(sql *sql.DB) *DB {
 	return &DB{
 		sql: sql,
 	}

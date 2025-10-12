@@ -10,8 +10,9 @@ import (
 )
 
 type authUsecaseI interface{
-	SessionGenerateAndSave(ctx context.Context, userID modeluser.ID) (string, error)
+	//SessionGenerateAndSave(ctx context.Context, userID modeluser.ID) (string, error)
 	RegisterUser(ctx context.Context, email, password, userName string) (modeluser.ID, error)
+	CheckUser(ctx context.Context, email string, password string) (modeluser.User, error)
 }
 
 type adUsecaseI interface{
@@ -19,16 +20,16 @@ type adUsecaseI interface{
 	FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error)
 }
 
-type userUsecaseI interface{
-	CheckUser(ctx context.Context, email string, password string) (modeluser.User, error)
-	FindSessionByUserID(ctx context.Context, userID modeluser.ID) (string, error)
-	FindUser(ctx context.Context, sessionID string) (modeluser.ID, error)
-}
-
 type FunctionHandler struct {
 	authUsecase authUsecaseI
 	adUsecase   adUsecaseI
-	userUsecase userUsecaseI
+}
+
+func New(authUsecase authUsecaseI, adUsecase adUsecaseI) *FunctionHandler {
+	return &FunctionHandler{
+		authUsecase: authUsecase,
+		adUsecase:   adUsecase,
+	}
 }
 
 func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
@@ -49,7 +50,7 @@ func (h *FunctionHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	returnUser, err := h.userUsecase.CheckUser(r.Context(), creds.Email, creds.HashedPassword)
+	returnUser, err := h.authUsecase.CheckUser(r.Context(), creds.Email, creds.HashedPassword)
 	if err != nil {
 		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
 		return
@@ -138,7 +139,7 @@ func (h *FunctionHandler) RegisterHandler(w http.ResponseWriter, r *http.Request
 }
 
 
-func (h *FunctionHandler) Handle(w http.ResponseWriter, r *http.Request) {
+func (h *FunctionHandler) AdHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
 		return

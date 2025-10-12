@@ -2,8 +2,12 @@ package main
 
 import (
 	"2025_2_404/internal/config"
-	"2025_2_404/internal/delivery/http"
+	httphandler "2025_2_404/internal/delivery/http"
 	db "2025_2_404/internal/connections"
+	authrepo "2025_2_404/internal/repository/postgres/auth"
+	adrepo "2025_2_404/internal/repository/postgres/ad"
+	usecaseauth "2025_2_404/internal/use_case/auth"
+	usecasead "2025_2_404/internal/use_case/ad"
 	"net/http"
 )
 
@@ -45,10 +49,14 @@ func main() {
 	}
 	defer postgresql.Close()
 
-	// repo := 
+	repoauth := authrepo.New(postgresql)
+	repoad := adrepo.New(postgresql)	
 
-	handlers := handlers.New(postgresql)
-	http.HandleFunc("/", handlers.AuthMiddleware(http.HandlerFunc(pefliteMiddleware(handlers.Handle))))
+	authUsecase := usecaseauth.New(repoauth)
+	adUsecase := usecasead.New(repoad)
+
+	handlers := httphandler.New(authUsecase, adUsecase)
+	http.HandleFunc("/", pefliteMiddleware(handlers.AdHandler))
 	http.HandleFunc("/signup", pefliteMiddleware(handlers.RegisterHandler))
 	http.HandleFunc("/signin", pefliteMiddleware(handlers.LoginHandler))
 
