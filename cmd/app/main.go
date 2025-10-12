@@ -56,7 +56,7 @@ func main() {
 	adUsecase := usecasead.New(repoad)
 
 	handlers := httphandler.New(authUsecase, adUsecase)
-	http.HandleFunc("/", pefliteMiddleware(handlers.AdHandler))
+	http.HandleFunc("/", httphandler.AuthMiddleware(pefliteMiddleware(handlers.AdHandler)))
 	http.HandleFunc("/signup", pefliteMiddleware(handlers.RegisterHandler))
 	http.HandleFunc("/signin", pefliteMiddleware(handlers.LoginHandler))
 
