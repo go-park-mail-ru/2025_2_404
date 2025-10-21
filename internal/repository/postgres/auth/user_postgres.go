@@ -8,11 +8,8 @@ import (
 )
 
 const(
-	sqlTextForInsertSession = "INSERT INTO session (user_id, session_id) VALUES ($1, $2)"
-	sqlTextForFoundUser = "SELECT user_id FROM session WHERE session_id = $1"
 	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1 "
 	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ( $1, $2, $3) RETURNING id"
-	sqlTextForFoundSession = "SELECT session_id FROM session WHERE user_id = $1"
 )
 
 type DB struct {
@@ -40,30 +37,4 @@ func (r *DB) FindUserByEmail(ctx context.Context, email string) (modeluser.User,
 		return user, fmt.Errorf("failed to find user by email: %w", err)
 	}
 	return user, nil
-}
-
-func (r *DB) CreateSession(ctx context.Context, userID modeluser.ID, sessionID string) (string, error) {
-	_, err := r.sql.ExecContext(ctx, sqlTextForInsertSession, userID, sessionID)
-	if err != nil {
-		return "", fmt.Errorf("failed to create session: %w", err)
-	}
-	return sessionID, nil
-}
-
-func (r *DB) FindUserBySessionID(ctx context.Context, sessionID string) (modeluser.ID, error) {
-	var userID modeluser.ID
-	err := r.sql.QueryRowContext(ctx, sqlTextForFoundUser, sessionID).Scan(&userID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to find session by user ID: %w", err)
-	}
-	return userID, nil
-}
-
-func (r *DB) FindSessionByUserID(ctx context.Context, userID modeluser.ID) (string, error) {
-	var sessionID string
-	err := r.sql.QueryRowContext(ctx, sqlTextForFoundSession, userID).Scan(&sessionID)
-	if err != nil {
-		return "", fmt.Errorf("failed to find session by user ID: %w", err)
-	}
-	return sessionID, nil
 }

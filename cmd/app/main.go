@@ -17,7 +17,6 @@ func pefliteMiddleware(next http.HandlerFunc) http.HandlerFunc {
         "http://localhost:8000": true,
         "http://127.0.0.1:8000": true,
 		"http://89.208.230.119:8000": true,
-        // добавь нужные домены, если будут
     }
 		origin := r.Header.Get("Origin")
 		if allowed[origin] {
@@ -49,11 +48,11 @@ func main() {
 	}
 	defer postgresql.Close()
 
-	repoauth := authrepo.New(postgresql)
-	repoad := adrepo.New(postgresql)	
+	repoAuth := authrepo.New(postgresql)
+	repoAd := adrepo.New(postgresql)	
 
-	authUsecase := usecaseauth.New(repoauth)
-	adUsecase := usecasead.New(repoad)
+	authUsecase := usecaseauth.New(repoAuth)
+	adUsecase := usecasead.New(repoAd)
 
 	handlers := httphandler.New(authUsecase, adUsecase, config.AppConfig.JwtPrivateKey, config.AppConfig.JwtPublicKey)
 	http.HandleFunc("/", httphandler.AuthMiddleware(handlers.JwtPublicKey, pefliteMiddleware(handlers.AdHandler)))

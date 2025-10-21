@@ -11,21 +11,21 @@ type adRepositoryI interface {
 	CreateAd(ctx context.Context, ad modelad.Ads) (int, error)
 }
 
-type AdUseCase struct {
+type UseCase struct {
 	adRepo adRepositoryI
 }
 
-func New(adRepo adRepositoryI) *AdUseCase {
-	return &AdUseCase{
+func New(adRepo adRepositoryI) *UseCase {
+	return &UseCase{
 		adRepo: adRepo,
 	}
 }
 
-func (u *AdUseCase) FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
+func (u *UseCase) FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
 	return u.adRepo.FindAdByUserID(ctx, userID)
 }
 
-func (u *AdUseCase) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
+func (u *UseCase) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
 	return u.adRepo.CreateAd(ctx, ad)
 }
 

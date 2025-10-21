@@ -13,7 +13,6 @@ import (
 )
 
 type authUsecaseI interface{
-	//SessionGenerateAndSave(ctx context.Context, userID modeluser.ID) (string, error)
 	RegisterUser(ctx context.Context, email, password, userName string) (modeluser.ID, error)
 	CheckUser(ctx context.Context, email string, password string) (modeluser.User, error)
 }
@@ -39,10 +38,13 @@ func New(authUsecase authUsecaseI, adUsecase adUsecaseI, jwtPrivateKey *ecdsa.Pr
 	}
 }
 
-func JSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
-    w.Header().Set("Content-Type", "application/json")
-    w.WriteHeader(statusCode)
-    json.NewEncoder(w).Encode(data)
+func JSONResponse(w http.ResponseWriter, statusCode int, message string, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"message": message,
+		"data":    data,
+	})
 }
 
 func (h *FunctionHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
@@ -63,35 +65,13 @@ func (h *FunctionHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// var sessionID string
-	// sessionID, err = h.userUsecase.FindSessionByUserID(r.Context(), returnUser.ID)
-	// if err == nil {
-	// 	sessionID, err = h.authUsecase.SessionGenerateAndSave(r.Context(), returnUser.ID)
-	// 	if err != nil {
-	// 		http.Error(w, "Session not generated", http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// } 
-
-	tokenString, err := pkg.GenerateToken(h.JwtPrivateKey, int64(returnUser.ID))
+	tokenString, err := pkg.GenerateToken(h.JwtPrivateKey, returnUser.ID)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Не получилось сгенерить токен: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed to generate token: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
-		// Value:    sessionID,
-		Path:     "/",
-		MaxAge:   8080,
-		HttpOnly: true,
-	})
-
-	JSONResponse(w, http.StatusCreated, map[string]string {  
-		"message": "Successful authorization",
-	})
-
-	JSONResponse(w, http.StatusOK, map[string]string {
+	JSONResponse(w, http.StatusOK, "Successful authorization", map[string]string{
 		"token": tokenString,
 	})
 }
@@ -119,31 +99,13 @@ func (h *FunctionHandler) RegisterHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// sessionID, err := h.authUsecase.SessionGenerateAndSave(r.Context(), userID)
-	// if err != nil {
-	// 	http.Error(w, "Session not created", http.StatusInternalServerError)
-	// 	return
-	// }
-
-	tokenString, err := pkg.GenerateToken(h.JwtPrivateKey, int64(userID))
+	tokenString, err := pkg.GenerateToken(h.JwtPrivateKey, userID)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("Не удалось создать токен: %v", err), http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("Failed to generate token: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	http.SetCookie(w, &http.Cookie{
-		Name:     "session_id",
-		// Value:    sessionID,
-		Path:     "/",
-		MaxAge:   8080,
-		HttpOnly: true,
-	})
-
-	JSONResponse(w, http.StatusCreated, map[string]string {
-		"message": "User created",
-	})
-
-	JSONResponse(w, http.StatusOK, map[string]string {
+	JSONResponse(w, http.StatusOK, "User created", map[string]string{
 		"token": tokenString,
 	})
 }
@@ -169,8 +131,7 @@ func (h *FunctionHandler) AdHandler(w http.ResponseWriter, r *http.Request) {
 
 	
 
-	JSONResponse(w, http.StatusOK, map[string]interface{}{
-		"message": "Successful authorization",
-		"ads":     ads,
+	JSONResponse(w, http.StatusOK, "Successful authorization", map[string]interface{}{
+		"ads":	ads,
 	})
 }	

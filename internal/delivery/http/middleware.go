@@ -11,19 +11,21 @@ import (
 type key string
 
 const (
+	AuthHeaderKey  = "Authorization"
+    AuthTypeBearer = "Bearer"
 	UserIDKey key = "userID"
 )
 
 func AuthMiddleware(jwtPublicKey *ecdsa.PublicKey, next http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
+		authHeader := r.Header.Get(AuthHeaderKey)
 		if authHeader == "" {
 			http.Error(w, "Missing authorization header", http.StatusUnauthorized)
 			return
 		}
 
 		headerParts := strings.Split(authHeader, " ")
-		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+		if len(headerParts) != 2 || headerParts[0] != AuthTypeBearer {
 			http.Error(w, "Invalid authorization header", http.StatusUnauthorized)
 			return
 		}

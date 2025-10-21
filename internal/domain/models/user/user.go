@@ -6,7 +6,7 @@ import (
 	"regexp"
 )
 
-type ID int64
+type ID int
 
 type User struct {
 	ID          ID	`json:"id"`
@@ -20,27 +20,31 @@ var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2
 
 func NewUser(userName, email, password string) (*User, error){
 	if len(userName)<3 || len(userName)>20{
-		return nil, errors.New("имя пользователя должно быть не меньше 3-х и не больше 20-ти символов")
+		return nil, errors.New("username must be at least 3 and no more than 20 characters")
 	}
 
 	if !allowedSymbols.MatchString(userName) {
-		return nil, errors.New("имя пользователя содержит недопустимые значения")
+		return nil, errors.New("username contains invalid values")
 	}
 
 	if !allowedEmail.MatchString(email) {
-		return nil, errors.New("недопустимое имя Email")
+		return nil, errors.New("invalid email format")
 	}
+
+	if len(email) <= 5 || len(email) >= 100 {
+		return nil, errors.New("email must be between 5 and 100 characters")
+	} 
 	
 	if len(password) < 8 {
-		return nil, errors.New("пароль менее 8-ми символов")
+		return nil, errors.New("password less than 8 characters")
 	}
 	
 	if len(password) > 50 {
-		return nil, errors.New("пароль больше 50-ти символов")
+		return nil, errors.New("password more than 50 characters")
 	}
 	
 	if !allowedSymbols.MatchString(password){
-		return nil, errors.New("недопустимые значения")
+		return nil, errors.New("invalid values")
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -62,19 +66,19 @@ func (u *User) ComparePasswords(password string) bool {
 
 func LoginUser(email, password string) (*User, error){
 	if !allowedEmail.MatchString(email){
-		return nil, errors.New("недопустимое имя Email")
+		return nil, errors.New("invalid email name")
 	}
 	
 	if len(password) < 8{
-		return nil, errors.New("пароль менее 8-ми символов")
+		return nil, errors.New("password less than 8 characters")
 	}
 	
 	if len(password) > 50 {
-		return nil, errors.New("пароль больше 50-ти символов")
+		return nil, errors.New("password more than 50 characters")
 	}
 	
 	if !allowedSymbols.MatchString(password){
-		return nil, errors.New("недопустимые значения")
+		return nil, errors.New("invalid values")
 	}
 	
 	return &User{
