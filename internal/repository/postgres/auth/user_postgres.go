@@ -22,7 +22,7 @@ func New(sql *sql.DB) *DB {
 	}
 }
 
-func (r *DB) CreateUser(ctx context.Context, user *modeluser.User) (modeluser.ID, error) {
+func (r *DB) Create(ctx context.Context, user *modeluser.User) (modeluser.ID, error) {
 	err := r.sql.QueryRowContext(ctx, sqlTextForInsertUsers, user.Email, user.HashedPassword, user.UserName).Scan(&user.ID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
@@ -30,7 +30,7 @@ func (r *DB) CreateUser(ctx context.Context, user *modeluser.User) (modeluser.ID
 	return user.ID, nil
 }
 
-func (r *DB) FindUserByEmail(ctx context.Context, email string) (modeluser.User, error) {
+func (r *DB) FindByEmail(ctx context.Context, email string) (modeluser.User, error) {
 	var user modeluser.User
 	err := r.sql.QueryRowContext(ctx, sqlTextForSelectUsers, email).Scan(&user.ID, &user.HashedPassword)
 	if err != nil {

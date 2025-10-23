@@ -7,8 +7,8 @@ import (
 )
 
 type adRepositoryI interface {
-	FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error)
-	CreateAd(ctx context.Context, ad modelad.Ads) (int, error)
+	FindByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error)
+	Create(ctx context.Context, ad modelad.Ads) (int, error)
 }
 
 type UseCase struct {
@@ -21,12 +21,12 @@ func New(adRepo adRepositoryI) *UseCase {
 	}
 }
 
-func (u *UseCase) FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
-	return u.adRepo.FindAdByUserID(ctx, userID)
+func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
+	return u.adRepo.FindByUserID(ctx, userID)
 }
 
-func (u *UseCase) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
-	return u.adRepo.CreateAd(ctx, ad)
+func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) (int, error) {
+	return u.adRepo.Create(ctx, ad)
 }
 
 

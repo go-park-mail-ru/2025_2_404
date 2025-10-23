@@ -2,12 +2,15 @@ package main
 
 import (
 	"2025_2_404/internal/config"
-	httphandler "2025_2_404/internal/delivery/http"
 	db "2025_2_404/internal/connections"
-	authrepo "2025_2_404/internal/repository/postgres/auth"
+	adhandler "2025_2_404/internal/delivery/http/adhandler"
+	authhandler "2025_2_404/internal/delivery/http/authhandler"
+	middleware "2025_2_404/internal/delivery/http/middleware"
 	adrepo "2025_2_404/internal/repository/postgres/ad"
-	usecaseauth "2025_2_404/internal/use_case/auth"
+	authrepo "2025_2_404/internal/repository/postgres/auth"
 	usecasead "2025_2_404/internal/use_case/ad"
+	usecaseauth "2025_2_404/internal/use_case/auth"
+	tokenusecase "2025_2_404/internal/use_case/token"
 	"net/http"
 )
 
@@ -51,13 +54,16 @@ func main() {
 	repoAuth := authrepo.New(postgresql)
 	repoAd := adrepo.New(postgresql)	
 
-	authUsecase := usecaseauth.New(repoAuth)
+	tokenUsecae := tokenusecase.New(&config)
+	authUsecase := usecaseauth.New(repoAuth, tokenUsecae)
 	adUsecase := usecasead.New(repoAd)
 
-	handlers := httphandler.New(authUsecase, adUsecase, config.AppConfig.JwtPrivateKey, config.AppConfig.JwtPublicKey)
-	http.HandleFunc("/", httphandler.AuthMiddleware(handlers.JwtPublicKey, pefliteMiddleware(handlers.AdHandler)))
-	http.HandleFunc("/signup", pefliteMiddleware(handlers.RegisterHandler))
-	http.HandleFunc("/signin", pefliteMiddleware(handlers.LoginHandler))
+	middle := middleware.New(tokenUsecae)
+	handlersAd := adhandler.New(adUsecase)
+	handlersAuth := authhandler.New(authUsecase)
+	http.HandleFunc("/", middle.AuthMiddleware(pefliteMiddleware(handlersAd.Handler)))
+	http.HandleFunc("/signup", pefliteMiddleware(handlersAuth.RegisterHandler))
+	http.HandleFunc("/signin", pefliteMiddleware(handlersAuth.LoginHandler))
 
 	err = http.ListenAndServe(":"+config.AppConfig.Port, nil)
 	if err != nil {

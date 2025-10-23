@@ -1,48 +1,75 @@
-package usecase
+package auth
 
-import(
+import (
 	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
-	"golang.org/x/crypto/bcrypt"
 	"errors"
 	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type repositoryI interface {
-	CreateUser(ctx context.Context, user *modeluser.User) (modeluser.ID, error)
-	FindUserByEmail(ctx context.Context, email string) (modeluser.User, error)
+	Create(ctx context.Context, user *modeluser.User) (modeluser.ID, error)
+	FindByEmail(ctx context.Context, email string) (modeluser.User, error)
+}
+
+type tokenUsecaseI interface {
+	GenerateToken(userID modeluser.ID) (string, error)
 }
 
 type AuthUseCase struct {
 	repo repositoryI
+	tokenUsecase tokenUsecaseI
 }
 
-func New(repo repositoryI) *AuthUseCase {
+func New(repo repositoryI, tokenUsecase tokenUsecaseI) *AuthUseCase {
 	return &AuthUseCase{
 		repo: repo,
+		tokenUsecase: tokenUsecase,
 	}
 }
 
-func (r *AuthUseCase) RegisterUser(ctx context.Context, email, password, userName string) (modeluser.ID, error) {
+func (r *AuthUseCase) Register(ctx context.Context, email, password, userName string) (string, error) {
 	user, err := modeluser.NewUser(userName, email, password)
 	if err != nil {
-		return 0, fmt.Errorf("not validate user: %w", err)
+		return "", fmt.Errorf("not validate user: %w", err)
 	}
-	userID, err := r.repo.CreateUser(ctx, user)
+
+	userID, err := r.repo.Create(ctx, user)
 	if err != nil {
-		return 0, fmt.Errorf("problem with repository CreateUser: %w", err)
+		return "", fmt.Errorf("problem with repository CreateUser: %w", err)
 	}
-	return userID, nil
+
+	token, err := r.tokenUsecase.GenerateToken(userID)
+	if err != nil {
+		return "", fmt.Errorf("auth_login : %w", err)
+	}
+	return token, nil
 }
 
-func (u *AuthUseCase) CheckUser(ctx context.Context, email string, password string) (modeluser.User, error) {
-	user, err := u.repo.FindUserByEmail(ctx, email)
+func (u *AuthUseCase) Check(ctx context.Context, email string, password string) (modeluser.ID, error) {
+	user, err := u.repo.FindByEmail(ctx, email)
 	if err != nil {
-		return modeluser.User{}, err
+		return modeluser.ID(0), err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
 	if err != nil {
-		return modeluser.User{}, errors.New("invalid password")
+		return modeluser.ID(0), errors.New("invalid password")
 	}
-	return user, nil
+	return user.ID, nil
+}
+
+func (u *AuthUseCase) Login(ctx context.Context, email string, password string) (string, error) {
+	userID, err := u.Check(ctx, email, password)
+	if err != nil {
+		return "", err
+	}
+
+	token, err := u.tokenUsecase.GenerateToken(userID)
+	if err != nil {
+		return  "", fmt.Errorf("auth_login : %w", err)
+	}
+
+	return token, nil
 }

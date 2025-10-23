@@ -23,7 +23,7 @@ func New(sql *sql.DB) *DB {
 	}
 }
 
-func (r *DB) FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
+func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
 	var ad modelad.Ads
 	err := r.sql.QueryRowContext(ctx, sqlTextForSelectAds, userID).Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text)
 	if err != nil {
@@ -32,7 +32,7 @@ func (r *DB) FindAdByUserID(ctx context.Context, userID modeluser.ID) (modelad.A
 	return ad, nil
 }
 
-func (r *DB) CreateAd(ctx context.Context, ad modelad.Ads) (int, error) {
+func (r *DB) Create(ctx context.Context, ad modelad.Ads) (int, error) {
 	var adID int
 	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.CreatorID, ad.FilePath, ad.Title, ad.Text).Scan(&adID)
 	if err != nil {

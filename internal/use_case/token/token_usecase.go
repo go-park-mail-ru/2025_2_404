@@ -1,4 +1,4 @@
-package pkg
+package token
 
 import (
 	"2025_2_404/internal/config"
@@ -10,23 +10,27 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type Usecase struct {
+	privateKey	*ecdsa.PrivateKey
+	publicKey	*ecdsa.PublicKey
+}
+
+func New(cfg *config.Config) *Usecase {
+	return &Usecase{
+		privateKey: cfg.AppConfig.JwtPrivateKey,
+		publicKey: cfg.AppConfig.JwtPublicKey,
+	}
+}
+
 type Claims struct {
 	UserID modeluser.ID `json:"user_id"`
 	jwt.RegisteredClaims
 } 
 
-func GetJwtPrivateKey() *ecdsa.PrivateKey {
-	return config.GetAppConfig().JwtPrivateKey
-}
-
-func GetJwtPublicKey() *ecdsa.PublicKey {
-	return config.GetAppConfig().JwtPublicKey
-}
-
-func GenerateToken(PrivateKey *ecdsa.PrivateKey, UserID modeluser.ID) (string, error) {
+func (usecase *Usecase) GenerateToken(userID modeluser.ID) (string, error) {
 	expTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
-		UserID: UserID,
+		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expTime),
 			IssuedAt: jwt.NewNumericDate(time.Now()),
@@ -36,16 +40,16 @@ func GenerateToken(PrivateKey *ecdsa.PrivateKey, UserID modeluser.ID) (string, e
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
 
-	ss, err:= token.SignedString(PrivateKey)
+	ss, err:= token.SignedString(usecase.privateKey)
 	return ss, err
 }
 
-func ValidateToken(PublicKey *ecdsa.PublicKey, tokenString string) (modeluser.ID, error) {
+func (usecase *Usecase) ValidateToken(tokenString string) (modeluser.ID, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func (token *jwt.Token) (any, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("неожиданный метод подписи: %v", token.Header["alg"])
 		}
-		return PublicKey, nil
+		return usecase.publicKey, nil
 	})
 
 	if err != nil {
@@ -58,4 +62,3 @@ func ValidateToken(PublicKey *ecdsa.PublicKey, tokenString string) (modeluser.ID
 
 	return 0, fmt.Errorf("невалидный токен")
 }
-
