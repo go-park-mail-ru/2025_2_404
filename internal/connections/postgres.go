@@ -1,7 +1,7 @@
 package db
 
 import (
-	"2025_2_404/config"
+	"2025_2_404/internal/config"
 	"database/sql"
 	"fmt"
 	"time"
