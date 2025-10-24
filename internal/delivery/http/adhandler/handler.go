@@ -32,7 +32,7 @@ func (h *Handler) Handler(w http.ResponseWriter, r *http.Request) {
 
 	userID, error := modules.Get(r.Context())
 	if error != nil {
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 

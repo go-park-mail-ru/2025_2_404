@@ -26,7 +26,7 @@ const (
     AuthTypeBearer = "Bearer"
 )
 
-func (u *Middleware) AuthMiddleware(next http.Handler) http.HandlerFunc {
+func (u *Middleware) Auth(next http.Handler) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get(AuthHeaderKey)
 		if authHeader == "" {
@@ -50,4 +50,33 @@ func (u *Middleware) AuthMiddleware(next http.Handler) http.HandlerFunc {
 		ctx := modules.Set(r.Context(), userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func (u *Middleware) Peflite(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request){
+		allowed := map[string]bool{
+        "http://localhost:8000": true,
+        "http://127.0.0.1:8000": true,
+		"http://89.208.230.119:8000": true,
+    }
+		origin := r.Header.Get("Origin")
+		if allowed[origin] {
+			w.Header().Set("Access-Control-Allow-Origin", origin)
+		}
+
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token")
+
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		w.Header().Set("Access-Control-Max-Age", "86400")
+
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	}
 }

@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 	"2025_2_404/pkg"
 )
 
@@ -63,10 +62,7 @@ func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithDeadline(context.Background(), time.Now().Add(5*time.Second))
-	defer cancel()
-
-	token, err := h.authUsecase.Register(ctx, user.Email, user.HashedPassword, user.UserName)
+	token, err := h.authUsecase.Register(r.Context(), user.Email, user.HashedPassword, user.UserName)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("User not created: %v", err), http.StatusInternalServerError)
 		return
