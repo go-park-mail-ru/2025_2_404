@@ -6,39 +6,54 @@ import (
 	adhandler "2025_2_404/internal/delivery/http/adhandler"
 	authhandler "2025_2_404/internal/delivery/http/authhandler"
 	middleware "2025_2_404/internal/delivery/http/middleware"
-	adrepo "2025_2_404/internal/repository/postgres/ad"
-	authrepo "2025_2_404/internal/repository/postgres/auth"
-	usecasead "2025_2_404/internal/use_case/ad"
-	usecaseauth "2025_2_404/internal/use_case/auth"
-	tokenusecase "2025_2_404/internal/use_case/token"
+	repo "2025_2_404/internal/repository/postgres"
+	usecase "2025_2_404/internal/use_case"
+	"time"
+	"fmt"
+	"github.com/gorilla/mux"
 	"net/http"
+	"log"
 )
 
 func main() {
 	config := config.GetConfig()
-	postgresql, err := db.ConnectDB(config.DBConfig)
+	connCfg, err := db.New(config)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
-	defer postgresql.Close()
+	defer connCfg.CloseAll()
+	repoCfg := repo.New(connCfg)
+	useCaseCfg := usecase.New(config, repoCfg)
+	log.Printf("AdUsecase: %v", useCaseCfg.AdUsecase)
+	log.Printf("AuthUsecase: %v", useCaseCfg.AuthUsecase)
+	
+	middle := middleware.New(useCaseCfg.TokenUsecase)
+	handlersAd := adhandler.New(useCaseCfg.AdUsecase)
+	handlersAuth := authhandler.New(useCaseCfg.AuthUsecase)
 
-	repoAuth := authrepo.New(postgresql)
-	repoAd := adrepo.New(postgresql)	
+	
+	mainRouter := mux.NewRouter()
+	authSubrouter := mainRouter.PathPrefix("").Subrouter()
+	adSubrouter := mainRouter.PathPrefix("").Subrouter()
 
-	tokenUsecae := tokenusecase.New(&config)
-	authUsecase := usecaseauth.New(repoAuth, tokenUsecae)
-	adUsecase := usecasead.New(repoAd)
+	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost)
+	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost)
+	authSubrouter.Use(middle.Peflite)
 
-	middle := middleware.New(tokenUsecae)
-	handlersAd := adhandler.New(adUsecase)
-	handlersAuth := authhandler.New(authUsecase)
-	http.HandleFunc("/", middle.Auth(middle.Peflite(handlersAd.Handler)))
-	http.HandleFunc("/signup", middle.Peflite(handlersAuth.RegisterHandler))
-	http.HandleFunc("/signin", middle.Peflite(handlersAuth.LoginHandler))
+	adSubrouter.HandleFunc("/", handlersAd.Handler).Methods(http.MethodGet)
+	adSubrouter.Use(middle.Peflite, middle.Auth)
 
-	err = http.ListenAndServe(":"+config.AppConfig.Port, nil)
+	srv := &http.Server{
+        Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
+        WriteTimeout: time.Second * 15,
+        ReadTimeout:  time.Second * 15,
+        IdleTimeout:  time.Second * 60,
+        Handler: mainRouter,
+    }
+	log.Println("Starting server on", fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port))
+	err = srv.ListenAndServe()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 }
 

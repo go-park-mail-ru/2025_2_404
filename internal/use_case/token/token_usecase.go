@@ -10,13 +10,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type Usecase struct {
+type UseCase struct {
 	privateKey	*ecdsa.PrivateKey
 	publicKey	*ecdsa.PublicKey
 }
 
-func New(cfg *config.Config) *Usecase {
-	return &Usecase{
+func New(cfg *config.Config) *UseCase {
+	return &UseCase{
 		privateKey: cfg.AppConfig.JwtPrivateKey,
 		publicKey: cfg.AppConfig.JwtPublicKey,
 	}
@@ -27,7 +27,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 } 
 
-func (usecase *Usecase) GenerateToken(userID modeluser.ID) (string, error) {
+func (usecase *UseCase) GenerateToken(userID modeluser.ID) (string, error) {
 	expTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserID: userID,
@@ -44,7 +44,7 @@ func (usecase *Usecase) GenerateToken(userID modeluser.ID) (string, error) {
 	return ss, err
 }
 
-func (usecase *Usecase) ValidateToken(tokenString string) (modeluser.ID, error) {
+func (usecase *UseCase) ValidateToken(tokenString string) (modeluser.ID, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func (token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("неожиданный метод подписи: %v", token.Header["alg"])

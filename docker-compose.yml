@@ -10,7 +10,7 @@ services:
       POSTGRES_PORT: ${POSTGRES_PORT}
       POSTGRES_SCHEMA: ${POSTGRES_SCHEMA}
     ports:
-      - "${POSTGRES_PORT}:${POSTGRES_PORT}"
+      - "${POSTGRES_PORT}:5432"
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d
     healthcheck:
@@ -27,6 +27,6 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${APP_PORT}:8080"
     depends_on:
       - db
