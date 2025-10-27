@@ -15,6 +15,10 @@ import (
 	"log"
 )
 
+const(
+	Timeout = time.Second * 5
+)
+
 func main() {
 	config := config.GetConfig()
 	connCfg, err := db.New(config)
@@ -24,8 +28,6 @@ func main() {
 	defer connCfg.CloseAll()
 	repoCfg := repo.New(connCfg)
 	useCaseCfg := usecase.New(config, repoCfg)
-	log.Printf("AdUsecase: %v", useCaseCfg.AdUsecase)
-	log.Printf("AuthUsecase: %v", useCaseCfg.AuthUsecase)
 	
 	middle := middleware.New(useCaseCfg.TokenUsecase)
 	handlersAd := adhandler.New(useCaseCfg.AdUsecase)
@@ -45,9 +47,9 @@ func main() {
 
 	srv := &http.Server{
         Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
-        WriteTimeout: time.Second * 15,
-        ReadTimeout:  time.Second * 15,
-        IdleTimeout:  time.Second * 60,
+        WriteTimeout: Timeout,
+        ReadTimeout:  Timeout,
+        IdleTimeout:  Timeout,
         Handler: mainRouter,
     }
 	log.Println("Starting server on", fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port))

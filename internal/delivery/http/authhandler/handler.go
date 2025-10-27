@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 )
 
@@ -47,8 +46,6 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
-
-	log.Println("RegisterHandler called!")
 
 	var user modeluser.User
 
