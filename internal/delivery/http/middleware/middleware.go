@@ -26,7 +26,7 @@ const (
     AuthTypeBearer = "Bearer"
 )
 
-func (u *Middleware) Auth(next http.Handler) http.HandlerFunc {
+func (u *Middleware) Auth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get(AuthHeaderKey)
 		if authHeader == "" {
@@ -52,8 +52,8 @@ func (u *Middleware) Auth(next http.Handler) http.HandlerFunc {
 	})
 }
 
-func (u *Middleware) Peflite(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request){
+func (u *Middleware) Peflite(next http.Handler) http.Handler {
+	return http.HandlerFunc( func(w http.ResponseWriter, r *http.Request){
 		allowed := map[string]bool{
         "http://localhost:8000": true,
         "http://127.0.0.1:8000": true,
@@ -78,5 +78,5 @@ func (u *Middleware) Peflite(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		next.ServeHTTP(w, r)
-	}
+	})
 }

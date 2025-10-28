@@ -1,4 +1,4 @@
-package db
+package postgres
 
 import (
 	"2025_2_404/internal/config"

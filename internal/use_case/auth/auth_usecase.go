@@ -18,19 +18,19 @@ type tokenUsecaseI interface {
 	GenerateToken(userID modeluser.ID) (string, error)
 }
 
-type AuthUseCase struct {
+type UseCase struct {
 	repo repositoryI
 	tokenUsecase tokenUsecaseI
 }
 
-func New(repo repositoryI, tokenUsecase tokenUsecaseI) *AuthUseCase {
-	return &AuthUseCase{
+func New(repo repositoryI, tokenUsecase tokenUsecaseI) *UseCase {
+	return &UseCase{
 		repo: repo,
 		tokenUsecase: tokenUsecase,
 	}
 }
 
-func (r *AuthUseCase) Register(ctx context.Context, email, password, userName string) (string, error) {
+func (r *UseCase) Register(ctx context.Context, email, password, userName string) (string, error) {
 	user, err := modeluser.NewUser(userName, email, password)
 	if err != nil {
 		return "", fmt.Errorf("not validate user: %w", err)
@@ -48,7 +48,7 @@ func (r *AuthUseCase) Register(ctx context.Context, email, password, userName st
 	return token, nil
 }
 
-func (u *AuthUseCase) Check(ctx context.Context, email string, password string) (modeluser.ID, error) {
+func (u *UseCase) Check(ctx context.Context, email string, password string) (modeluser.ID, error) {
 	user, err := u.repo.FindByEmail(ctx, email)
 	if err != nil {
 		return modeluser.ID(0), err
@@ -60,7 +60,7 @@ func (u *AuthUseCase) Check(ctx context.Context, email string, password string) 
 	return user.ID, nil
 }
 
-func (u *AuthUseCase) Login(ctx context.Context, email string, password string) (string, error) {
+func (u *UseCase) Login(ctx context.Context, email string, password string) (string, error) {
 	userID, err := u.Check(ctx, email, password)
 	if err != nil {
 		return "", err

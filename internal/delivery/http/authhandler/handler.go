@@ -2,11 +2,11 @@ package authhandler
 
 import (
 	modeluser "2025_2_404/internal/domain/models/user"
+	"2025_2_404/pkg"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"2025_2_404/pkg"
 )
 
 type authUsecaseI interface {
@@ -26,10 +26,6 @@ func New(authUsecase authUsecaseI) *AuthHandler {
 }
 
 func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
-		return
-	}
 
 	var creds modeluser.User
 	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
@@ -50,10 +46,6 @@ func (h *AuthHandler) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 
 func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
-		return
-	}
 
 	var user modeluser.User
 

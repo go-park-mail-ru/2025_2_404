@@ -24,6 +24,7 @@ type PostgresConfig struct {
 }
 
 type AppConfig struct {
+	Host			  string
 	Port              string
 	JwtPrivateKeyPath string
 	JwtPublicKeyPath  string
@@ -31,7 +32,7 @@ type AppConfig struct {
 	JwtPublicKey      *ecdsa.PublicKey
 }
 
-func GetConfig() Config {
+func GetConfig() *Config {
 	err := godotenv.Load()
 	if err != nil {
 		panic("Error loading .env file")
@@ -45,7 +46,7 @@ func GetConfig() Config {
 		panic(fmt.Errorf("ошибка загрузки JWT публичного ключа: %v", err))
 	}
 
-	return Config{
+	return &Config{
 		DBConfig:  GetPostgresConfig(),
 		AppConfig: appCfg,
 	}
@@ -63,6 +64,7 @@ func GetPostgresConfig() *PostgresConfig {
 
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
+		Host: os.Getenv("APP_HOST"),
 		Port: os.Getenv("APP_PORT"),
 		JwtPrivateKeyPath: os.Getenv("JWT_PRIVATE_KEY_PATH"),
 		JwtPublicKeyPath: os.Getenv("JWT_PUBLIC_KEY_PATH"),
