@@ -8,8 +8,9 @@ type ID int
 
 type Ads struct {
 	ID       ID    `json:"add_id"`
-	CreatorID modeluser.ID    `json:"creater_id"`
-	FilePath string `json:"file_path"`
-	Title    string `json:"title"`
-	Text     string `json:"text"`
+	ClientID modeluser.ID
+	Title string `json:"title"`
+	Content    string `json:"content"`
+	ImgBin     string `json:"img_bin"`
+	TargetUrl	string	`json:"target_url"`
 }

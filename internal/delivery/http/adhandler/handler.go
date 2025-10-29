@@ -3,10 +3,12 @@ package adhandler
 import (
 	modelad "2025_2_404/internal/domain/models/ad"
 	modeluser "2025_2_404/internal/domain/models/user"
-	"context"
-	"net/http"
-	"2025_2_404/pkg"
 	"2025_2_404/internal/modules"
+	"2025_2_404/pkg"
+	"context"
+	"encoding/json"
+	"fmt"
+	"net/http"
 )
 
 type adUsecaseI interface {
@@ -25,10 +27,6 @@ func New(adUsecase adUsecaseI) *Handler {
 }
 
 func (h *Handler) Handler(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Wrong method", http.StatusMethodNotAllowed)
-		return
-	}
 
 	userID, error := modules.Get(r.Context())
 	if error != nil {
@@ -38,13 +36,38 @@ func (h *Handler) Handler(w http.ResponseWriter, r *http.Request) {
 
 	ads, err := h.adUsecase.FindByUserID(r.Context(), userID)
 	if err != nil {
-		http.Error(w, "Failed to retrieve ads", http.StatusInternalServerError)
+		http.Error(w, "Don't have ads this user", http.StatusInternalServerError)
 		return
 	}
-
-	
 
 	pkg.JSONResponse(w, http.StatusOK, "Successful authorization", map[string]interface{}{
 		"ads":	ads,
 	})
 }	
+
+func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
+
+	userID, error := modules.Get(r.Context())
+	if error != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	var ads modelad.Ads
+	ads.ClientID = userID
+	if err := json.NewDecoder(r.Body).Decode(&ads); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	adID, err := h.adUsecase.Create(r.Context(), ads)
+	if err != nil{
+		http.Error(w, fmt.Sprintf("Ad not created: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusOK, "Successful create ad", map[string]interface{}{
+		"adID":	adID,
+		"ads":	ads,
+	})
+}

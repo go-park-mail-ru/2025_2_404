@@ -43,6 +43,7 @@ func main() {
 	authSubrouter.Use(middle.Peflite)
 
 	adSubrouter.HandleFunc("/", handlersAd.Handler).Methods(http.MethodGet)
+	adSubrouter.HandleFunc("/create", handlersAd.CreateHandler).Methods(http.MethodPost)
 	adSubrouter.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{

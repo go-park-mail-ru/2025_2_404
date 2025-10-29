@@ -9,8 +9,8 @@ import (
 )
 
 const(
-	sqlTextForSelectAds = "SELECT id, file_path, title, text_ad FROM ad WHERE creator_id = $1"
-	sqlTextForInsertAds = "INSERT INTO ad (creator_id, file_path, title, text_ad) VALUES ($1, $2, $3, $4)"
+	sqlTextForSelectAds = "SELECT id, title, content, img_bin, target_url FROM ad WHERE client_id = $1"
+	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_bin, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
 )
 
 type DB struct {
@@ -25,7 +25,7 @@ func New(sql *sql.DB) *DB {
 
 func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error) {
 	var ad modelad.Ads
-	err := r.sql.QueryRowContext(ctx, sqlTextForSelectAds, userID).Scan(&ad.ID, &ad.FilePath, &ad.Title, &ad.Text)
+	err := r.sql.QueryRowContext(ctx, sqlTextForSelectAds, userID).Scan(&ad.ID, &ad.Title, &ad.Content, &ad.ImgBin, &ad.TargetUrl)
 	if err != nil {
 		return modelad.Ads{}, fmt.Errorf("failed to find ad by user ID: %w", err)
 	}
@@ -34,7 +34,7 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads
 
 func (r *DB) Create(ctx context.Context, ad modelad.Ads) (int, error) {
 	var adID int
-	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.CreatorID, ad.FilePath, ad.Title, ad.Text).Scan(&adID)
+	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImgBin, ad.TargetUrl).Scan(&adID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create ad: %w", err)
 	}
