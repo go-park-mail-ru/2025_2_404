@@ -35,8 +35,8 @@ func main() {
 
 	
 	mainRouter := mux.NewRouter()
-	authSubrouter := mainRouter.PathPrefix("").Subrouter()
-	adSubrouter := mainRouter.PathPrefix("").Subrouter()
+	authSubrouter := mainRouter.PathPrefix("/auth").Subrouter()
+	adSubrouter := mainRouter.PathPrefix("/ads").Subrouter()
 
 	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost)
 	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost)
@@ -44,6 +44,7 @@ func main() {
 
 	adSubrouter.HandleFunc("/", handlersAd.Handler).Methods(http.MethodGet)
 	adSubrouter.HandleFunc("/create", handlersAd.CreateHandler).Methods(http.MethodPost)
+	adSubrouter.HandleFunc("/{ad_id}", handlersAd.UpdateHandler).Methods(http.MethodPut)
 	adSubrouter.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{

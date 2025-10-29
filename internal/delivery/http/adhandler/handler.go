@@ -9,11 +9,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+
+	"github.com/gorilla/mux"
 )
 
 type adUsecaseI interface {
-	Create(ctx context.Context, ad modelad.Ads) (int, error)
-	FindByUserID(ctx context.Context, userID modeluser.ID) (modelad.Ads, error)
+	Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error)
+	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
+	Update(ctx context.Context, ad modelad.Ads) (error)
 }
 
 type Handler struct {
@@ -60,14 +64,37 @@ func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	adID, err := h.adUsecase.Create(r.Context(), ads)
+	ads1, err := h.adUsecase.Create(r.Context(), ads)
 	if err != nil{
 		http.Error(w, fmt.Sprintf("Ad not created: %v", err), http.StatusInternalServerError)
 		return
 	}
 
 	pkg.JSONResponse(w, http.StatusOK, "Successful create ad", map[string]interface{}{
-		"adID":	adID,
-		"ads":	ads,
+		"ads":	ads1,
 	})
+}
+
+func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
+
+	var ads modelad.Ads
+	vars := mux.Vars(r)
+	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
+	}
+
+	ads.ID = modelad.ID(adID)
+	if err := json.NewDecoder(r.Body).Decode(&ads); err != nil {
+		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	err = h.adUsecase.Update(r.Context(), ads)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("ad not update: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusOK, "Successful update ad", map[string]interface{}{})
 }
