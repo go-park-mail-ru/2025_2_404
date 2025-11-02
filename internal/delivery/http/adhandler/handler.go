@@ -83,11 +83,12 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	ads.ID = modelad.ID(adID)
 	if err := json.NewDecoder(r.Body).Decode(&ads); err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
 		return
 	}
+
+	ads.ID = modelad.ID(adID)
 
 	ads.ClientID, err = modules.Get(r.Context())
 	if err != nil {
