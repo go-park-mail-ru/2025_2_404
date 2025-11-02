@@ -8,7 +8,7 @@ import (
 
 type adRepositoryI interface {
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
-	Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error)
+	Create(ctx context.Context, ad modelad.Ads) error
 	Update(ctx context.Context, ad modelad.Ads) error
 }
 
@@ -26,7 +26,7 @@ func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]mode
 	return u.adRepo.FindByUserID(ctx, userID)
 }
 
-func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error) {
+func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) (error) {
 	return u.adRepo.Create(ctx, ad)
 }
 

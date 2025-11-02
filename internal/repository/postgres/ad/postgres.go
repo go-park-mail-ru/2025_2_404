@@ -10,8 +10,8 @@ import (
 
 const(
 	sqlTextForSelectAds = "SELECT id, title, content, img_bin, target_url FROM ad WHERE client_id = $1"
-	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_bin, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_bin = $3, target_url = $4 WHERE id = $5"
+	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_bin, target_url) VALUES ($1, $2, $3, $4, $5)"
+	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_bin = $3, target_url = $4 WHERE id = $5 AND client_id = $6"
 )
 
 type DB struct {
@@ -48,19 +48,26 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.A
 	return ads, nil
 }
 
-func (r *DB) Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error) {
-	var adID int
-	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImgBin, ad.TargetUrl).Scan(&adID)
+func (r *DB) Create(ctx context.Context, ad modelad.Ads) (error) {
+	res, err := r.sql.ExecContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImgBin, ad.TargetUrl)
 	if err != nil {
-		return modelad.Ads{}, fmt.Errorf("failed to create ad: %w", err)
+		return fmt.Errorf("failed to create ad: %w", err)
 	}
-	ad.ID = modelad.ID(adID)
-	return ad, nil
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("ad with id %v not found", ad.ID)
+	}
+
+	return nil
 }
 
 func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 
-	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImgBin, ad.TargetUrl, ad.ID)
+	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImgBin, ad.TargetUrl, ad.ID, ad.ClientID)
 	if err != nil {
 		return fmt.Errorf("failed to update ad: %w", err)
 	}
@@ -70,7 +77,7 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("ad with id %v not found", ad.ID)
+		return fmt.Errorf("ad with id %v and client_id %v not found", ad.ID,ad.ClientID)
 	}
 
 	return nil

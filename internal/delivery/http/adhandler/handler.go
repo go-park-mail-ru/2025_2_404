@@ -15,7 +15,7 @@ import (
 )
 
 type adUsecaseI interface {
-	Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error)
+	Create(ctx context.Context, ad modelad.Ads) (error)
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
 	Update(ctx context.Context, ad modelad.Ads) (error)
 }
@@ -64,15 +64,13 @@ func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	ads1, err := h.adUsecase.Create(r.Context(), ads)
+	err := h.adUsecase.Create(r.Context(), ads)
 	if err != nil{
 		http.Error(w, fmt.Sprintf("Ad not created: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	pkg.JSONResponse(w, http.StatusOK, "Successful create ad", map[string]interface{}{
-		"ads":	ads1,
-	})
+	pkg.JSONResponse(w, http.StatusCreated, "Successful create ad", map[string]interface{}{})
 }
 
 func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
@@ -82,11 +80,18 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
+		return
 	}
 
 	ads.ID = modelad.ID(adID)
 	if err := json.NewDecoder(r.Body).Decode(&ads); err != nil {
 		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	ads.ClientID, err = modules.Get(r.Context())
+	if err != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 

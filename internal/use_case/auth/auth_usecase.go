@@ -16,6 +16,7 @@ type repositoryI interface {
 
 type tokenUsecaseI interface {
 	GenerateToken(userID modeluser.ID) (string, error)
+	InvalidateToken(tokenString string) (string, error)
 }
 
 type UseCase struct {
