@@ -18,6 +18,7 @@ type adUsecaseI interface {
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
 	Update(ctx context.Context, ad modelad.Ads) (error)
+	Delete(ctx context.Context, adID int64) (error)
 }
 
 type Handler struct {
@@ -103,4 +104,21 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	pkg.JSONResponse(w, http.StatusOK, "Successful update ad", map[string]interface{}{})
+}
+
+func (h * Handler) DeleteHandler(w http.ResponseWriter, r *http.Request){
+
+	vars := mux.Vars(r)
+	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
+	}
+
+	err = h.adUsecase.Delete(r.Context(), adID)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("ad not update: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusNoContent, "Successful deleted ad", map[string]interface{}{})	
 }

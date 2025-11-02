@@ -10,6 +10,7 @@ type adRepositoryI interface {
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
 	Create(ctx context.Context, ad modelad.Ads) error
 	Update(ctx context.Context, ad modelad.Ads) error
+	Delete(ctx context.Context, adID int64) error
 }
 
 type UseCase struct {
@@ -34,4 +35,7 @@ func (u *UseCase) Update(ctx context.Context, ad modelad.Ads) error{
 	return u.adRepo.Update(ctx, ad)
 }
 
+func (u *UseCase) Delete(ctx context.Context, adID int64) error{
+	return u.adRepo.Delete(ctx, adID)
+}
 
