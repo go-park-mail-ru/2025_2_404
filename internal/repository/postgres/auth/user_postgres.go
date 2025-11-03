@@ -10,6 +10,7 @@ import (
 const(
 	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1 "
 	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForInsertImage = "UPDATE client SET image_path = $1 WHERE id = $2"
 )
 
 type DB struct {
@@ -37,4 +38,21 @@ func (r *DB) FindByEmail(ctx context.Context, email string) (modeluser.User, err
 		return user, fmt.Errorf("failed to find user by email: %w", err)
 	}
 	return user, nil
+}
+
+func (r *DB) AddImage(ctx context.Context, userID int64, imageUrl string) error {
+	result, err := r.sql.ExecContext(ctx, sqlTextForInsertImage, imageUrl, userID)
+	if err != nil {
+		return fmt.Errorf("failed to execute update avatar query: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("User %d dosent found", userID)
+	}
+
+	return nil
 }

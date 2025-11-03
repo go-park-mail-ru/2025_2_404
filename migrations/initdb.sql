@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS client (
 	password_hash TEXT NOT NULL CHECK (
 		length(password_hash) <= 120
 	),
+	image_path TEXT NULL CHECK (
+		length(image_path) <= 256
+	),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

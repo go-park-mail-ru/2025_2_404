@@ -17,7 +17,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const(
+const (
 	Timeout = time.Second * 5
 )
 
@@ -30,13 +30,12 @@ func main() {
 	defer connCfg.CloseAll()
 	repoCfg := repo.New(connCfg)
 	useCaseCfg := usecase.New(config, repoCfg)
-	
+
 	middle := middleware.New(useCaseCfg.TokenUsecase)
 	handlersAd := adhandler.New(useCaseCfg.AdUsecase)
 	handlersAuth := authhandler.New(useCaseCfg.AuthUsecase)
 	handlersProfile := profilehandler.New(useCaseCfg.ProfileUsecase)
 
-	
 	mainRouter := mux.NewRouter()
 	authSubrouter := mainRouter.PathPrefix("/auth").Subrouter()
 	adSubrouter := mainRouter.PathPrefix("/ads").Subrouter()
@@ -44,7 +43,8 @@ func main() {
 
 	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost)
 	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost)
-	authSubrouter.Use(middle.Peflite)
+	authSubrouter.HandleFunc("/image", handlersAuth.AddImage).Methods(http.MethodPost)
+	authSubrouter.Use(middle.Peflite, middle.Auth)
 
 	adSubrouter.HandleFunc("/", handlersAd.Handler).Methods(http.MethodGet)
 	adSubrouter.HandleFunc("/", handlersAd.CreateHandler).Methods(http.MethodPost)
@@ -58,16 +58,15 @@ func main() {
 	clientSubroute.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{
-        Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
-        WriteTimeout: Timeout,
-        ReadTimeout:  Timeout,
-        IdleTimeout:  Timeout,
-        Handler: mainRouter,
-    }
+		Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
+		WriteTimeout: Timeout,
+		ReadTimeout:  Timeout,
+		IdleTimeout:  Timeout,
+		Handler:      mainRouter,
+	}
 	log.Println("Starting server on", fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port))
 	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
-

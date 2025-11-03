@@ -12,6 +12,7 @@ import (
 type repositoryI interface {
 	Create(ctx context.Context, user *modeluser.User) (modeluser.ID, error)
 	FindByEmail(ctx context.Context, email string) (modeluser.User, error)
+	AddImage(ctx context.Context, userID int64, imageUrl string) error
 }
 
 type tokenUsecaseI interface {
@@ -20,13 +21,13 @@ type tokenUsecaseI interface {
 }
 
 type UseCase struct {
-	repo repositoryI
+	repo         repositoryI
 	tokenUsecase tokenUsecaseI
 }
 
 func New(repo repositoryI, tokenUsecase tokenUsecaseI) *UseCase {
 	return &UseCase{
-		repo: repo,
+		repo:         repo,
 		tokenUsecase: tokenUsecase,
 	}
 }
@@ -69,8 +70,16 @@ func (u *UseCase) Login(ctx context.Context, email string, password string) (str
 
 	token, err := u.tokenUsecase.GenerateToken(userID)
 	if err != nil {
-		return  "", fmt.Errorf("auth_login : %w", err)
+		return "", fmt.Errorf("auth_login : %w", err)
 	}
 
 	return token, nil
+}
+
+func (u *UseCase) AddImage(ctx context.Context, userID int64, imageUrl string) error {
+	err := u.repo.AddImage(ctx, userID, imageUrl)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
 }
