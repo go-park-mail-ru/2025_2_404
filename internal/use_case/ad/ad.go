@@ -3,11 +3,13 @@ package ad
 import (
 	modelad "2025_2_404/internal/domain/models/ad"
 	modeluser "2025_2_404/internal/domain/models/user"
+	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
 	"context"
 )
 
 type adRepositoryI interface {
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
+	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error)
 	Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID int64) error
@@ -39,3 +41,6 @@ func (u *UseCase) Delete(ctx context.Context, adID int64) error{
 	return u.adRepo.Delete(ctx, adID)
 }
 
+func (u *UseCase) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error){
+	return u.adRepo.GetOneAd(ctx, adID)
+}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	modelad "2025_2_404/internal/domain/models/ad"
 	modeluser "2025_2_404/internal/domain/models/user"
+	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
 )
 
 const(
@@ -13,6 +14,7 @@ const(
 	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_bin, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
 	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_bin = $3, target_url = $4 WHERE id = $5"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1"
+	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_bin, ad.target_url, ad_detail.amount_for_ad, statistic.clicks, statistic.impressions FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1"
 )
 
 type DB struct {
@@ -47,6 +49,28 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.A
 	}
 
 	return ads, nil
+}
+
+func (r *DB) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error) {
+	var adInfo modelfullad.AdFullInfo
+	row := r.sql.QueryRowContext(ctx, sqlTextForFullAdInfo, adID)
+
+	err :=  row.Scan(
+		&adInfo.ID,
+		&adInfo.Title,
+		&adInfo.Content,
+		&adInfo.ImgBin,
+		&adInfo.TargetUrl,
+		&adInfo.AmountForAd,
+		&adInfo.Clicks,
+		&adInfo.Impressions,
+	)
+
+	if err != nil {
+		return modelfullad.AdFullInfo{}, fmt.Errorf("failed to find an ad: %w", err)
+	}
+
+	return adInfo, nil
 }
 
 func (r *DB) Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error) {
