@@ -6,13 +6,15 @@ import (
 	adhandler "2025_2_404/internal/delivery/http/adhandler"
 	authhandler "2025_2_404/internal/delivery/http/authhandler"
 	middleware "2025_2_404/internal/delivery/http/middleware"
+	"2025_2_404/internal/delivery/http/profilehandler"
 	repo "2025_2_404/internal/repository/postgres"
 	usecase "2025_2_404/internal/use_case"
-	"time"
 	"fmt"
-	"github.com/gorilla/mux"
-	"net/http"
 	"log"
+	"net/http"
+	"time"
+
+	"github.com/gorilla/mux"
 )
 
 const(
@@ -32,18 +34,26 @@ func main() {
 	middle := middleware.New(useCaseCfg.TokenUsecase)
 	handlersAd := adhandler.New(useCaseCfg.AdUsecase)
 	handlersAuth := authhandler.New(useCaseCfg.AuthUsecase)
+	handlersProfile := profilehandler.New(useCaseCfg.ProfileUsecase)
 
 	
 	mainRouter := mux.NewRouter()
-	authSubrouter := mainRouter.PathPrefix("").Subrouter()
-	adSubrouter := mainRouter.PathPrefix("").Subrouter()
+	authSubrouter := mainRouter.PathPrefix("/auth").Subrouter()
+	adSubrouter := mainRouter.PathPrefix("/ads").Subrouter()
+	clientSubroute := mainRouter.PathPrefix("/profile").Subrouter()
 
 	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost)
 	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost)
 	authSubrouter.Use(middle.Peflite)
 
 	adSubrouter.HandleFunc("/", handlersAd.Handler).Methods(http.MethodGet)
+	adSubrouter.HandleFunc("/", handlersAd.CreateHandler).Methods(http.MethodPost)
+	adSubrouter.HandleFunc("/{ad_id}", handlersAd.UpdateHandler).Methods(http.MethodPut)
 	adSubrouter.Use(middle.Peflite, middle.Auth)
+
+	clientSubroute.HandleFunc("/", handlersProfile.ShowHandler).Methods(http.MethodGet)
+	clientSubroute.HandleFunc("/", handlersProfile.UpdateHandler).Methods(http.MethodPut)
+	clientSubroute.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{
         Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),

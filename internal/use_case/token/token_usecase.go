@@ -47,18 +47,41 @@ func (usecase *UseCase) GenerateToken(userID modeluser.ID) (string, error) {
 func (usecase *UseCase) ValidateToken(tokenString string) (modeluser.ID, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func (token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
-			return nil, fmt.Errorf("неожиданный метод подписи: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signature method: %v", token.Header["alg"])
 		}
 		return usecase.publicKey, nil
 	})
 
 	if err != nil {
-		return 0, fmt.Errorf("ошибка парсинга токена: %v", err)
+		return 0, fmt.Errorf("token parsing error: %v", err)
 	}
 
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims.UserID, nil
 	}
 
-	return 0, fmt.Errorf("невалидный токен")
+	return 0, fmt.Errorf("invalid token")
+}
+
+func (usecase *UseCase) InvalidateToken(tokenString string) (string, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func (token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
+			return "", fmt.Errorf("unexpected signature method: %v", token.Header["alg"])
+		}
+		return usecase.publicKey, nil
+	})
+
+	if err != nil {
+		return "", fmt.Errorf("token parsing error: %v", err)
+	}
+
+	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
+		claims.RegisteredClaims.ExpiresAt = jwt.NewNumericDate(time.Now())
+		token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+
+		ss, err:= token.SignedString(usecase.privateKey)
+		return ss, err
+	}
+
+	return "", fmt.Errorf("invalid token")
 }
