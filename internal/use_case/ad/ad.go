@@ -2,9 +2,10 @@ package ad
 
 import (
 	modelad "2025_2_404/internal/domain/models/ad"
-	modeluser "2025_2_404/internal/domain/models/user"
 	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
+	"fmt"
 )
 
 type adRepositoryI interface {
@@ -33,14 +34,23 @@ func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, erro
 	return u.adRepo.Create(ctx, ad)
 }
 
-func (u *UseCase) Update(ctx context.Context, ad modelad.Ads) error{
+func (u *UseCase) Update(ctx context.Context, ad modelad.Ads) error {
 	return u.adRepo.Update(ctx, ad)
 }
 
-func (u *UseCase) Delete(ctx context.Context, adID int64) error{
+func (u *UseCase) Delete(ctx context.Context, adID int64) error {
 	return u.adRepo.Delete(ctx, adID)
 }
 
-func (u *UseCase) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error){
-	return u.adRepo.GetOneAd(ctx, adID)
+func (u *UseCase) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, error) {
+	adInfo, err := u.adRepo.GetOneAd(ctx, adID)
+	conversion := -1
+	if err != nil {
+		return modelfullad.AdFullInfo{}, conversion, fmt.Errorf("Failed to get ad with id error %w", err)
+	}
+	if adInfo.Impressions != 0{
+		conversion = adInfo.Clicks / adInfo.Impressions
+	}
+
+	return adInfo, conversion, nil 
 }

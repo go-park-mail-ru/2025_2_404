@@ -18,7 +18,7 @@ import (
 type adUsecaseI interface {
 	Create(ctx context.Context, ad modelad.Ads) (modelad.Ads, error)
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
-	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error)
+	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, error)
 	Update(ctx context.Context, ad modelad.Ads) (error)
 	Delete(ctx context.Context, adID int64) (error)
 }
@@ -122,16 +122,18 @@ func (h * Handler) DeleteHandler(w http.ResponseWriter, r *http.Request){
 func (h *Handler) GetOneAd(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
+	fmt.Println(adID)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
 	}
-	ad, err := h.adUsecase.GetOneAd(r.Context(), adID)
+	ad, conversion, err := h.adUsecase.GetOneAd(r.Context(), adID)
 	if err != nil {
 		http.Error(w, "Don't have this ad", http.StatusInternalServerError)
 		return
 	}
 
 	pkg.JSONResponse(w, http.StatusOK, "Successful search", map[string]interface{}{
-		"ad":	ad,
+		"ad": ad,
+		"conversion": conversion,
 	})
 }
