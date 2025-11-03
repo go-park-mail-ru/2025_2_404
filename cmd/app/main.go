@@ -50,6 +50,7 @@ func main() {
 	adSubrouter.HandleFunc("/", handlersAd.CreateHandler).Methods(http.MethodPost)
 	adSubrouter.HandleFunc("/{ad_id}", handlersAd.UpdateHandler).Methods(http.MethodPut)
 	adSubrouter.HandleFunc("/{ad_id}", handlersAd.DeleteHandler).Methods(http.MethodDelete)
+	adSubrouter.HandleFunc("/{ad_id}", handlersAd.GetOneAd).Methods(http.MethodGet)
 	adSubrouter.Use(middle.Peflite, middle.Auth)
 
 	clientSubroute.HandleFunc("/", handlersProfile.ShowHandler).Methods(http.MethodGet)

@@ -3,6 +3,7 @@ package adhandler
 import (
 	modelad "2025_2_404/internal/domain/models/ad"
 	modeluser "2025_2_404/internal/domain/models/user"
+	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
 	"2025_2_404/internal/modules"
 	"2025_2_404/pkg"
 	"context"
@@ -17,6 +18,7 @@ import (
 type adUsecaseI interface {
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
+	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error)
 	Update(ctx context.Context, ad modelad.Ads) (error)
 	Delete(ctx context.Context, adID int64) (error)
 }
@@ -121,4 +123,21 @@ func (h * Handler) DeleteHandler(w http.ResponseWriter, r *http.Request){
 	}
 
 	pkg.JSONResponse(w, http.StatusNoContent, "Successful deleted ad", map[string]interface{}{})	
+}
+
+func (h *Handler) GetOneAd(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
+	}
+	ad, err := h.adUsecase.GetOneAd(r.Context(), adID)
+	if err != nil {
+		http.Error(w, "Don't have this ad", http.StatusInternalServerError)
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusOK, "Successful search", map[string]interface{}{
+		"ad":	ad,
+	})
 }
