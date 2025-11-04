@@ -8,7 +8,7 @@ import (
 )
 
 const(
-	sqlTextForUpdateClient = "UPDATE client SET name = $1, email = $2 WHERE id = $3"
+	sqlTextForUpdateClient = "UPDATE client SET name = $1, email = $2, img_path = $3 WHERE id = $4"
 	sqlTextForShowClient = "SELECT name, email FROM client WHERE id = $1"
 )
 
@@ -23,7 +23,7 @@ func New(sql *sql.DB) *DB{
 }
 
 func (r *DB) Update(ctx context.Context, client modeluser.User) error {
-	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateClient, client.UserName, client.Email, client.ID)
+	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateClient, client.UserName, client.Email, client.ImagePath, client.ID)
 	if err != nil {
 		return fmt.Errorf("failed to update profile: %w", err)
 	}
