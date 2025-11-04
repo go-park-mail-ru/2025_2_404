@@ -14,6 +14,7 @@ import (
 type profileUsecaseI interface{
 	Update(ctx context.Context, client modeluser.User, file io.Reader, ext string) error
 	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, []byte, error)
+	Delete(ctx context.Context, clientID modeluser.ID) error
 }
 
 type UserHandler struct{
@@ -87,4 +88,20 @@ func (h *UserHandler) ShowHandler (w http.ResponseWriter, r *http.Request){
 		"client":	client,
 		"img":		bytes,
 	})
+}
+
+func (h *UserHandler) DeleteHandler(w http.ResponseWriter, r *http.Request) {
+	clientID, err := modules.Get(r.Context())
+	if err != nil {
+		http.Error(w, "Bad Request: Unauthorized", http.StatusBadRequest)
+		return
+	}
+
+	err = h.profileUsecase.Delete(r.Context(), clientID)
+	if err != nil {
+		http.Error(w, "Failed to delete user", http.StatusInternalServerError)
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusNoContent, "user deleted successfully", map[string]interface{}{})
 }

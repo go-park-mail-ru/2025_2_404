@@ -55,6 +55,7 @@ func main() {
 
 	clientSubroute.HandleFunc("/", handlersProfile.ShowHandler).Methods(http.MethodGet, http.MethodOptions)
 	clientSubroute.HandleFunc("/", handlersProfile.UpdateHandler).Methods(http.MethodPut, http.MethodOptions)
+	clientSubroute.HandleFunc("/", handlersProfile.DeleteHandler).Methods(http.MethodDelete, http.MethodOptions)
 	clientSubroute.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{

@@ -13,11 +13,13 @@ import (
 type repositoryI interface{
 	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
 	Update(ctx context.Context, client modeluser.User) error
+	Delete(ctx context.Context, clientID modeluser.ID) error
 }
 
 type fileStorageI interface{
 	Save(uploadPath string, data io.Reader) error
 	ReadImageAsBytes(path string) ([]byte, error)
+	Delete(path string) error
 }
 
 type UseCase struct{
@@ -59,4 +61,23 @@ func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.Us
 	}
 
 	return client, imgBytes, nil
+}
+
+func (u *UseCase) Delete(ctx context.Context, clientID modeluser.ID) error {
+	client, err := u.repo.Show(ctx, clientID)
+	if err != nil {
+		return fmt.Errorf("failed to get user for deletion: %w", err)
+	}
+
+	if client.ImagePath != "" {
+		if err := u.storage.Delete(client.ImagePath); err != nil {
+			return fmt.Errorf("failed to delete user photo: %w", err)
+		}
+	}
+
+	if err := u.repo.Delete(ctx, clientID); err != nil {
+		return fmt.Errorf("failed to delete user from repository: %w", err)
+	}
+
+	return nil
 }

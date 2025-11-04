@@ -10,6 +10,7 @@ import (
 const(
 	sqlTextForUpdateClient = "UPDATE client SET name = $1, email = $2 WHERE id = $3"
 	sqlTextForShowClient = "SELECT name, email FROM client WHERE id = $1"
+	sqlTextForDeleteClient = "DELETE FROM client WHERE id = $1"
 )
 
 type DB struct{
@@ -47,4 +48,21 @@ func (r *DB) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, e
 	}
 
 	return client, nil
+}
+
+func (r *DB) Delete(ctx context.Context, clientID modeluser.ID) error {
+	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteClient, clientID)
+	if err != nil {
+		return fmt.Errorf("failed to delete profile: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("Failed to get a rows: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("Profile with ID %d not found", clientID)
+	}
+	fmt.Printf("Пользователь с ID %d успешно удален. Затронуто строк: %d", clientID, rowsAffected)
+	return nil
 }
