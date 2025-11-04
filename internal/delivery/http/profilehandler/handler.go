@@ -52,7 +52,10 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
 	}
-	defer imgFail.Close()
+	if imgFail != nil {
+		defer imgFail.Close()
+	}
+
 
 	ext := strings.ToLower(filepath.Ext(header.Filename))
 	if ext != ".jpg" && ext != ".png" && ext != ".gif" {

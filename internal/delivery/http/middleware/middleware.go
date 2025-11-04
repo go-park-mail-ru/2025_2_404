@@ -68,12 +68,10 @@ func (u *Middleware) Peflite(next http.Handler) http.Handler {
             w.Header().Set("Access-Control-Allow-Credentials", "true")
         }
 
-        // Эти заголовки можно устанавливать всегда — они не зависят от origin
         w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
         w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token")
         w.Header().Set("Access-Control-Max-Age", "86400")
 
-        // Если это предварительный запрос — сразу завершаем
         if r.Method == http.MethodOptions {
             w.WriteHeader(http.StatusOK)
             return
