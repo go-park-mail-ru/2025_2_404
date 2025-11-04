@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS client (
 CREATE TABLE IF NOT EXISTS client_wallet (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	client_id INT UNIQUE REFERENCES client(id) ON DELETE CASCADE,
-	balance NUMERIC(12, 2) NOT NULL DEFAULT 0 CHECK (balance >= 0),
+	balance INT NOT NULL DEFAULT 0 CHECK (balance >= 0),
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS client_wallet (
 CREATE TABLE IF NOT EXISTS wallet_top_up (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	client_wallet_id INT REFERENCES client_wallet(id) ON DELETE CASCADE,
-	amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
+	amount INT NOT NULL CHECK (amount > 0),
     payment_method TEXT NOT NULL CHECK (
 		length(payment_method) >= 1 AND length(payment_method) <= 40
 	),
@@ -75,7 +75,7 @@ CREATE TABLE IF NOT EXISTS ad_detail (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	ad_id INT REFERENCES ad(id) ON DELETE CASCADE,
 	platform_id INT REFERENCES platform(id) ON DELETE CASCADE,
-	amount_for_ad NUMERIC(12, 2) NOT NULL CHECK (amount_for_ad > 0),
+	amount_for_ad NUMERIC(12, 2) NOT NULL CHECK (amount_for_ad >= 0),
     status TEXT NOT NULL CHECK (
 		length(status) >= 1 AND length(status) <= 40
 	),
