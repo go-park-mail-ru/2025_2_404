@@ -30,6 +30,7 @@ type AppConfig struct {
 	JwtPublicKeyPath  string
 	JwtPrivateKey     *ecdsa.PrivateKey
 	JwtPublicKey      *ecdsa.PublicKey
+	ImgPath			  string
 }
 
 func GetConfig() *Config {
@@ -68,6 +69,7 @@ func GetAppConfig() *AppConfig {
 		Port: os.Getenv("APP_PORT"),
 		JwtPrivateKeyPath: os.Getenv("JWT_PRIVATE_KEY_PATH"),
 		JwtPublicKeyPath: os.Getenv("JWT_PUBLIC_KEY_PATH"),
+		ImgPath: os.Getenv("IMG_PATH"),
 	}
 }
 

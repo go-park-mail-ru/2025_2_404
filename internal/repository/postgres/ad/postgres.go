@@ -12,7 +12,7 @@ import (
 const(
 	sqlTextForSelectAds = "SELECT id, title, content, img_bin, target_url FROM ad WHERE client_id = $1"
 	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_bin, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_bin = $3, target_url = $4 WHERE id = $5"
+	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_bin = $3, target_url = $4 WHERE id = $5 AND client_id = $6"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1"
 	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_bin, ad.target_url, COALESCE(ad_detail.amount_for_ad, 0), COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1"
 )

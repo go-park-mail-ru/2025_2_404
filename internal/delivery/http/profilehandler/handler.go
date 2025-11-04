@@ -5,14 +5,15 @@ import (
 	"2025_2_404/internal/modules"
 	"2025_2_404/pkg"
 	"context"
-	"encoding/json"
-	"fmt"
+	"io"
 	"net/http"
+	"path/filepath"
+	"strings"
 )
 
 type profileUsecaseI interface{
-	Update(ctx context.Context, client modeluser.User) error
-	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
+	Update(ctx context.Context, client modeluser.User, file io.Reader, ext string) error
+	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, []byte, error)
 }
 
 type UserHandler struct{
@@ -27,10 +28,12 @@ func New(profileUsecase profileUsecaseI) *UserHandler{
 
 func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 
-	var err error
 	var client modeluser.User
-	if err := json.NewDecoder(r.Body).Decode(&client); err != nil {
-		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+	var err error
+	r.Body = http.MaxBytesReader(w, r.Body, 10 * 1024 * 1024)
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "File is too big.", http.StatusBadRequest)
 		return
 	}
 
@@ -40,10 +43,29 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	if err = h.profileUsecase.Update(r.Context(), client); err != nil{
+	client.Email = r.FormValue("email")
+	client.UserName = r.FormValue("user_name")
+	client.HashedPassword = r.FormValue("password")
+	
+	imgFail, header, err := r.FormFile("image")
+	if err != nil && err != http.ErrMissingFile{
+		http.Error(w, "Invalid file", http.StatusBadRequest)
+		return
+	}
+	defer imgFail.Close()
+
+	ext := strings.ToLower(filepath.Ext(header.Filename))
+	if ext != ".jpg" && ext != ".png" && ext != ".gif" {
+		http.Error(w, "Invalid file type", http.StatusBadRequest)
+		return
+	}
+
+	if err = h.profileUsecase.Update(r.Context(), client, imgFail, ext); err != nil{
 		http.Error(w, "client update faild", http.StatusUnprocessableEntity)
 		return
 	}
+
+
 
 	pkg.JSONResponse(w, http.StatusOK, "client update", map[string]interface{}{})
 }
@@ -55,7 +77,7 @@ func (h *UserHandler) ShowHandler (w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	client, err := h.profileUsecase.Show(r.Context(), clientID)
+	client, bytes, err := h.profileUsecase.Show(r.Context(), clientID)
 	if err != nil {
 		http.Error(w, "Don't have ads this user", http.StatusInternalServerError)
 		return
@@ -63,5 +85,6 @@ func (h *UserHandler) ShowHandler (w http.ResponseWriter, r *http.Request){
 
 	pkg.JSONResponse(w, http.StatusOK, "Successful authorization", map[string]interface{}{
 		"client":	client,
+		"img":		bytes,
 	})
 }
