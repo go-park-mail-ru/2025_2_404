@@ -42,19 +42,19 @@ func main() {
 	adSubrouter := mainRouter.PathPrefix("/ads").Subrouter()
 	clientSubroute := mainRouter.PathPrefix("/profile").Subrouter()
 
-	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost)
-	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost)
+	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost, http.MethodOptions)
+	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost, http.MethodOptions)
 	authSubrouter.Use(middle.Peflite)
 
-	adSubrouter.HandleFunc("/", handlersAd.Handler).Methods(http.MethodGet)
-	adSubrouter.HandleFunc("/", handlersAd.CreateHandler).Methods(http.MethodPost)
-	adSubrouter.HandleFunc("/{ad_id}", handlersAd.UpdateHandler).Methods(http.MethodPut)
-	adSubrouter.HandleFunc("/{ad_id}", handlersAd.DeleteHandler).Methods(http.MethodDelete)
-	adSubrouter.HandleFunc("/{ad_id}", handlersAd.GetOneAd).Methods(http.MethodGet)
+	adSubrouter.HandleFunc("/", handlersAd.Handler).Methods(http.MethodGet, http.MethodOptions)
+	adSubrouter.HandleFunc("/", handlersAd.CreateHandler).Methods(http.MethodPost, http.MethodOptions)
+	adSubrouter.HandleFunc("/{ad_id}", handlersAd.UpdateHandler).Methods(http.MethodPut, http.MethodOptions)
+	adSubrouter.HandleFunc("/{ad_id}", handlersAd.DeleteHandler).Methods(http.MethodDelete, http.MethodOptions)
+	adSubrouter.HandleFunc("/{ad_id}", handlersAd.GetOneAd).Methods(http.MethodGet, http.MethodOptions)
 	adSubrouter.Use(middle.Peflite, middle.Auth)
 
-	clientSubroute.HandleFunc("/", handlersProfile.ShowHandler).Methods(http.MethodGet)
-	clientSubroute.HandleFunc("/", handlersProfile.UpdateHandler).Methods(http.MethodPut)
+	clientSubroute.HandleFunc("/", handlersProfile.ShowHandler).Methods(http.MethodGet, http.MethodOptions)
+	clientSubroute.HandleFunc("/", handlersProfile.UpdateHandler).Methods(http.MethodPut, http.MethodOptions)
 	clientSubroute.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{
