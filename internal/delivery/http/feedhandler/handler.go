@@ -25,7 +25,7 @@ func New(feedUsecase feedUsecaseI) *feedHandler{
 }
 
 func (h *feedHandler) GetAdFeedHandler(w http.ResponseWriter, r *http.Request) {
-    platformName := mux.Vars(r)["platform_name"] // если используешь gorilla/mux
+    platformName := mux.Vars(r)["platform_name"]
 
     banners, err := h.feedUsecase.Give(r.Context(), platformName)
     if err != nil {

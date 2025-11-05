@@ -77,15 +77,15 @@ func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
 	ads.Content = r.FormValue("content")
 	ads.TargetUrl = r.FormValue("target_url")
 
-	imgFail, header, err := r.FormFile("image")
+	imgFile, header, err := r.FormFile("image")
 	if err != nil && err != http.ErrMissingFile{
 		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
 	}
 
 	if header != nil {
-		if imgFail != nil {
-			defer imgFail.Close()
+		if imgFile != nil {
+			defer imgFile.Close()
 		}
 
 		ext := strings.ToLower(filepath.Ext(header.Filename))
@@ -94,14 +94,14 @@ func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		
-		if err = h.adUsecase.Create(r.Context(), ads, imgFail, ext); err != nil {
+		if err = h.adUsecase.Create(r.Context(), ads, imgFile, ext); err != nil {
 			http.Error(w, "ads create with image failed", http.StatusUnprocessableEntity)
 			return
 		}
 
 	} else { 
 		if err = h.adUsecase.Create(r.Context(), ads, nil, ""); err != nil {
-			http.Error(w, fmt.Sprintf("ads create failed:%s", err), http.StatusUnprocessableEntity)
+			http.Error(w, "ads create failed:", http.StatusUnprocessableEntity)
 			return
 		}
 	}
@@ -121,7 +121,7 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
+		http.Error(w, "id ad not valid:", http.StatusBadRequest)
 		return
 	}
 
@@ -136,15 +136,15 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	imgFail, header, err := r.FormFile("image")
+	imgFile, header, err := r.FormFile("image")
 	if err != nil && err != http.ErrMissingFile{
 		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
 	}
 
 	if header != nil {
-		if imgFail != nil {
-			defer imgFail.Close()
+		if imgFile != nil {
+			defer imgFile.Close()
 		}
 
 		ext := strings.ToLower(filepath.Ext(header.Filename))
@@ -153,14 +153,14 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 			return
 		}
 		
-		if err = h.adUsecase.Update(r.Context(), ads, imgFail, ext); err != nil {
+		if err = h.adUsecase.Update(r.Context(), ads, imgFile, ext); err != nil {
 			http.Error(w, "ads update with image failed", http.StatusUnprocessableEntity)
 			return
 		}
 
 	} else { 
 		if err = h.adUsecase.Update(r.Context(), ads, nil, ""); err != nil {
-			http.Error(w, fmt.Sprintf("ads update failed:%s", err), http.StatusUnprocessableEntity)
+			http.Error(w, "ads update failed:", http.StatusUnprocessableEntity)
 			return
 		}
 	}
@@ -173,12 +173,12 @@ func (h * Handler) DeleteHandler(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
 	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
+		http.Error(w, "id ad not valid: ", http.StatusBadRequest)
 	}
 
 	err = h.adUsecase.Delete(r.Context(), adID)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("ad not update: %v", err), http.StatusInternalServerError)
+		http.Error(w, "ad not delete:", http.StatusInternalServerError)
 		return
 	}
 
@@ -190,7 +190,7 @@ func (h *Handler) GetOneAd(w http.ResponseWriter, r *http.Request) {
 	adID, err := strconv.ParseInt(vars["ad_id"], 10, 64)
 	fmt.Println(adID)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
+		http.Error(w, "id ad not valid:", http.StatusBadRequest)
 	}
 	ad, conversion, bytes, err := h.adUsecase.GetOneAd(r.Context(), adID)
 	if err != nil {

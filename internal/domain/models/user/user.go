@@ -16,7 +16,7 @@ type User struct {
 	ImagePath	string		`json:"img_path"`
 }
 
-var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
+var allowedSymbols = regexp.MustCompile(`^[\p{L}\p{N}._\-@#$%&+ =]+$`)
 var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
 
 func NewUser(userName, email, password string) (*User, error){

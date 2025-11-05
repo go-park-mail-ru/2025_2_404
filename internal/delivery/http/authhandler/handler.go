@@ -5,7 +5,6 @@ import (
 	"2025_2_404/pkg"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -56,7 +55,7 @@ func (h *AuthHandler) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	token, err := h.authUsecase.Register(r.Context(), user.Email, user.HashedPassword, user.UserName)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("User not created: %v", err), http.StatusInternalServerError)
+		http.Error(w, "User not created:", http.StatusConflict)
 		return
 	}
 

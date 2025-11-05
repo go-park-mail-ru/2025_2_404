@@ -6,7 +6,6 @@ import (
 	"2025_2_404/pkg"
 	"context"
 	"encoding/base64"
-	"fmt"
 	"io"
 	"net/http"
 	"path/filepath"
@@ -49,15 +48,15 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 	client.UserName = r.FormValue("user_name")
 	client.HashedPassword = r.FormValue("password")
 	
-	imgFail, header, err := r.FormFile("img")
+	imgFile, header, err := r.FormFile("img")
 	if err != nil && err != http.ErrMissingFile{
 		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
 	}
 
 	if header != nil {
-		if imgFail != nil {
-			defer imgFail.Close()
+		if imgFile != nil {
+			defer imgFile.Close()
 		}
 
 		ext := strings.ToLower(filepath.Ext(header.Filename))
@@ -66,14 +65,14 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 			return
 		}
 		
-		if err = h.profileUsecase.Update(r.Context(), client, imgFail, ext); err != nil {
-			http.Error(w, fmt.Sprintf("client update with image failed: %v", err), http.StatusUnprocessableEntity)
+		if err = h.profileUsecase.Update(r.Context(), client, imgFile, ext); err != nil {
+			http.Error(w, "client update with image failed:", http.StatusUnprocessableEntity)
 			return
 		}
 
 	} else { 
 		if err = h.profileUsecase.Update(r.Context(), client, nil, ""); err != nil {
-			http.Error(w, fmt.Sprintf("client update failed:%s", err), http.StatusUnprocessableEntity)
+			http.Error(w, "client update failed:", http.StatusUnprocessableEntity)
 			return
 		}
 	}
