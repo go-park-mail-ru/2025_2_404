@@ -13,6 +13,7 @@ type User struct {
 	UserName    string	`json:"user_name"`
 	Email      string	`json:"email"`
 	HashedPassword string	`json:"password"`
+	ImagePath	string		`json:"img_path"`
 }
 
 var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)

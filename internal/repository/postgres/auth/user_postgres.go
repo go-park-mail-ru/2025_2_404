@@ -10,6 +10,7 @@ import (
 const(
 	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1 "
 	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForInsertBalance = "INSERT INTO client_wallet (client_id, balance) VALUES ( $1, $2)"
 )
 
 type DB struct {
@@ -26,6 +27,10 @@ func (r *DB) Create(ctx context.Context, user *modeluser.User) (modeluser.ID, er
 	err := r.sql.QueryRowContext(ctx, sqlTextForInsertUsers, user.Email, user.HashedPassword, user.UserName).Scan(&user.ID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create user: %w", err)
+	}
+	_, err = r.sql.ExecContext(ctx, sqlTextForInsertBalance, user.ID, 0)
+	if err != nil {
+		return user.ID, fmt.Errorf("balance not added: %w", err)
 	}
 	return user.ID, nil
 }

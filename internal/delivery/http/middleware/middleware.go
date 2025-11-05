@@ -2,9 +2,10 @@ package middleware
 
 import (
 	modeluser "2025_2_404/internal/domain/models/user"
+	"2025_2_404/internal/modules"
+	"log"
 	"net/http"
 	"strings"
-	"2025_2_404/internal/modules"
 )
 
 type tokenUsecaseI interface {
@@ -53,30 +54,30 @@ func (u *Middleware) Auth(next http.Handler) http.Handler {
 }
 
 func (u *Middleware) Peflite(next http.Handler) http.Handler {
-	return http.HandlerFunc( func(w http.ResponseWriter, r *http.Request){
-		allowed := map[string]bool{
-        "http://localhost:8000": true,
-        "http://127.0.0.1:8000": true,
-		"http://89.208.230.119:8000": true,
+    allowedOrigins := map[string]bool{
+        "http://localhost:8000":        true,
+        "http://127.0.0.1:8000":        true,
+        "http://89.208.230.119:8000":   true,
     }
-		origin := r.Header.Get("Origin")
-		if allowed[origin] {
-			w.Header().Set("Access-Control-Allow-Origin", origin)
-		}
 
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS")
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        origin := r.Header.Get("Origin")
+		log.Printf("Получен Origin: %s", origin)
+        if allowedOrigins[origin] {
+            w.Header().Set("Access-Control-Allow-Origin", origin)
+            w.Header().Set("Access-Control-Allow-Credentials", "true")
+        }
 
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token")
+        w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+        w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, X-CSRF-Token")
+        w.Header().Set("Access-Control-Max-Age", "86400")
 
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
+        if r.Method == http.MethodOptions {
+            w.WriteHeader(http.StatusOK)
+            return
+        }
 
-		w.Header().Set("Access-Control-Max-Age", "86400")
-
-		if r.Method == http.MethodOptions {
-			w.WriteHeader(http.StatusOK)
-			return
-		}
-
-		next.ServeHTTP(w, r)
-	})
+        next.ServeHTTP(w, r)
+    })
 }
+

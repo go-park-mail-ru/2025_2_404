@@ -9,6 +9,9 @@ CREATE TABLE IF NOT EXISTS client (
 	password_hash TEXT NOT NULL CHECK (
 		length(password_hash) <= 120
 	),
+	img_path TEXT CHECK (
+		length(img_path) <= 120
+	),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -16,7 +19,7 @@ CREATE TABLE IF NOT EXISTS client (
 CREATE TABLE IF NOT EXISTS client_wallet (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
 	client_id INT UNIQUE REFERENCES client(id) ON DELETE CASCADE,
-	balance NUMERIC(12, 2) NOT NULL DEFAULT 0 CHECK (balance >= 0),
+	balance INT NOT NULL DEFAULT 0 CHECK (balance >= 0),
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -63,7 +66,9 @@ CREATE TABLE IF NOT EXISTS ad (
 	content TEXT NOT NULL CHECK (
 		length(content) >= 1 AND length(content) <= 200
 	),
-    img_bin BYTEA,
+    img_path TEXT CHECK(
+		length(img_path) <= 100
+	),
     target_url TEXT NOT NULL CHECK (
 		length(target_url) >= 1 AND length(target_url) <= 200
 	),

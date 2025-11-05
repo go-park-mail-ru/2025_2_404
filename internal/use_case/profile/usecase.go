@@ -1,8 +1,13 @@
 package profile
 
 import (
-	"context"
 	modeluser "2025_2_404/internal/domain/models/user"
+	"context"
+	"fmt"
+	"io"
+	"path/filepath"
+
+	"github.com/google/uuid"
 )
 
 type repositoryI interface{
@@ -10,21 +15,46 @@ type repositoryI interface{
 	Update(ctx context.Context, client modeluser.User) error
 }
 
-type UseCase struct{
-	repo repositoryI
+type fileStorageI interface{
+	Save(uploadPath string, data io.Reader) error
+	ReadImageAsBytes(path string) ([]byte, error)
 }
 
-func New(repo repositoryI) *UseCase{
+type UseCase struct{
+	repo repositoryI
+	storage fileStorageI
+}
+
+func New(repo repositoryI, storage fileStorageI) *UseCase{
 	return &UseCase{
 		repo: repo,
+		storage: storage,
 	}
 }
 
-func (u *UseCase) Update(ctx context.Context, client modeluser.User) error{
+func (u *UseCase) Update(ctx context.Context, client modeluser.User, file io.Reader, ext string) error {
+	filename := uuid.New().String() + ext
+
+	uploadPath := filepath.Join("client/", filename)
+	if file != nil {
+		if err := u.storage.Save(uploadPath, file); err != nil {
+			return fmt.Errorf("failed to save file: %w", err)
+		}
+		client.ImagePath = uploadPath
+	}
 	return u.repo.Update(ctx, client)
 }
 
-func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error){
-	return u.repo.Show(ctx, clientID)
-}
+func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, []byte, error){
+	
+	client, err := u.repo.Show(ctx, clientID)
+	if err != nil {
+		return modeluser.User{}, nil, fmt.Errorf("problem with show in repo")
+	}
+	imgBytes, err := u.storage.ReadImageAsBytes(client.ImagePath)
+	if err != nil {
+		return  modeluser.User{}, nil, fmt.Errorf("problem in convert")
+	}
 
+	return client, imgBytes, nil
+}
