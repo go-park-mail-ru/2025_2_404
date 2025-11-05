@@ -7,7 +7,6 @@ import (
 	"2025_2_404/internal/modules"
 	"2025_2_404/pkg"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -22,7 +21,7 @@ type adUsecaseI interface {
 	Create(ctx context.Context, ad modelad.Ads, file io.Reader, ext string) (error)
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
 	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, []byte, error)
-	Update(ctx context.Context, ad modelad.Ads) (error)
+	Update(ctx context.Context, ad modelad.Ads, file io.Reader, ext string) (error)
 	Delete(ctx context.Context, adID int64) (error)
 }
 
@@ -96,13 +95,13 @@ func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
 		}
 		
 		if err = h.adUsecase.Create(r.Context(), ads, imgFail, ext); err != nil {
-			http.Error(w, "client update with image failed", http.StatusUnprocessableEntity)
+			http.Error(w, "ads create with image failed", http.StatusUnprocessableEntity)
 			return
 		}
 
 	} else { 
 		if err = h.adUsecase.Create(r.Context(), ads, nil, ""); err != nil {
-			http.Error(w, fmt.Sprintf("client update failed:%s", err), http.StatusUnprocessableEntity)
+			http.Error(w, fmt.Sprintf("ads create failed:%s", err), http.StatusUnprocessableEntity)
 			return
 		}
 	}
@@ -111,6 +110,12 @@ func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
 }
 
 func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
+	r.Body = http.MaxBytesReader(w, r.Body, 10 * 1024 * 1024)
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "File is too big.", http.StatusBadRequest)
+		return
+	}
 
 	var ads modelad.Ads
 	vars := mux.Vars(r)
@@ -120,11 +125,9 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	if err := json.NewDecoder(r.Body).Decode(&ads); err != nil {
-		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
-		return
-	}
-
+	ads.Title = r.FormValue("title")
+	ads.Content = r.FormValue("content")
+	ads.TargetUrl = r.FormValue("target_url")
 	ads.ID = modelad.ID(adID)
 
 	ads.ClientID, err = modules.Get(r.Context())
@@ -133,10 +136,33 @@ func (h *Handler) UpdateHandler(w http.ResponseWriter, r *http.Request){
 		return
 	}
 
-	err = h.adUsecase.Update(r.Context(), ads)
-	if err != nil {
-		http.Error(w, fmt.Sprintf("ad not update: %v", err), http.StatusInternalServerError)
+	imgFail, header, err := r.FormFile("image")
+	if err != nil && err != http.ErrMissingFile{
+		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
+	}
+
+	if header != nil {
+		if imgFail != nil {
+			defer imgFail.Close()
+		}
+
+		ext := strings.ToLower(filepath.Ext(header.Filename))
+		if ext != ".jpg" && ext != ".png" && ext != ".gif" {
+			http.Error(w, "Invalid file type", http.StatusBadRequest)
+			return
+		}
+		
+		if err = h.adUsecase.Update(r.Context(), ads, imgFail, ext); err != nil {
+			http.Error(w, "ads update with image failed", http.StatusUnprocessableEntity)
+			return
+		}
+
+	} else { 
+		if err = h.adUsecase.Update(r.Context(), ads, nil, ""); err != nil {
+			http.Error(w, fmt.Sprintf("ads update failed:%s", err), http.StatusUnprocessableEntity)
+			return
+		}
 	}
 
 	pkg.JSONResponse(w, http.StatusOK, "Successful update ad", map[string]interface{}{})

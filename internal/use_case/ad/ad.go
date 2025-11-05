@@ -54,7 +54,16 @@ func (u *UseCase) Create(ctx context.Context, ad modelad.Ads, file io.Reader, ex
 	return u.adRepo.Create(ctx, ad)
 }
 
-func (u *UseCase) Update(ctx context.Context, ad modelad.Ads) error {
+func (u *UseCase) Update(ctx context.Context, ad modelad.Ads, file io.Reader, ext string) error {
+	filename := uuid.New().String() + ext
+
+	uploadPath := filepath.Join("ad/", filename)
+	if file != nil {
+		if err := u.fileStorage.Save(uploadPath, file); err != nil {
+			return fmt.Errorf("failed to save file: %w", err)
+		}
+		ad.ImagePath = uploadPath
+	}
 	return u.adRepo.Update(ctx, ad)
 }
 
