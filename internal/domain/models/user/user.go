@@ -16,7 +16,8 @@ type User struct {
 	ImagePath	string		`json:"img_path"`
 }
 
-var allowedSymbols = regexp.MustCompile(`^[\p{L}\p{N}._\-@#$%&+ =]+$`)
+var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
+var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9._@#$%&+ =]+$`)
 var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
 
 func NewUser(userName, email, password string) (*User, error){
@@ -44,7 +45,7 @@ func NewUser(userName, email, password string) (*User, error){
 		return nil, errors.New("password more than 50 characters")
 	}
 	
-	if !allowedSymbols.MatchString(password){
+	if !allowedPassword.MatchString(password){
 		return nil, errors.New("invalid values")
 	}
 
@@ -78,7 +79,7 @@ func LoginUser(email, password string) (*User, error){
 		return nil, errors.New("password more than 50 characters")
 	}
 	
-	if !allowedSymbols.MatchString(password){
+	if !allowedPassword.MatchString(password){
 		return nil, errors.New("invalid values")
 	}
 	
