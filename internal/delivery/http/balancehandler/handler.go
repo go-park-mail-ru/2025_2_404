@@ -6,6 +6,7 @@ import (
 	"2025_2_404/internal/modules"
 	"2025_2_404/pkg"
 	"context"
+	"fmt"
 	"net/http"
 )
 
@@ -32,7 +33,7 @@ func (h *balanceHandler) Show(w http.ResponseWriter, r *http.Request){
 
 	balance, err := h.balanceUsecase.Show(r.Context(), clientID)
 	if err != nil {
-		http.Error(w, "internal server error", http.StatusInternalServerError)
+		http.Error(w, fmt.Sprintf("internal server error: %s", err), http.StatusInternalServerError)
 		return
 	}
 
