@@ -17,7 +17,7 @@ type User struct {
 }
 
 var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
-var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9._@#$%&+ =]+$`)
+var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9._@#$%&+!* =]+$`)
 var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
 
 func NewUser(userName, email, password string) (*User, error){
