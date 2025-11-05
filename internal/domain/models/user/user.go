@@ -12,6 +12,7 @@ type User struct {
 	ID          ID	`json:"id"`
 	UserName    string	`json:"user_name"`
 	Email      string	`json:"email"`
+	ImagePath string `json:"image_path"`
 	HashedPassword string	`json:"password"`
 	ImagePath	string		`json:"img_path"`
 }

@@ -18,7 +18,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const(
+const (
 	Timeout = time.Second * 5
 )
 
@@ -31,14 +31,13 @@ func main() {
 	defer connCfg.CloseAll()
 	repoCfg := repo.New(connCfg)
 	useCaseCfg := usecase.New(config, repoCfg)
-	
+
 	middle := middleware.New(useCaseCfg.TokenUsecase)
 	handlersAd := adhandler.New(useCaseCfg.AdUsecase)
 	handlersAuth := authhandler.New(useCaseCfg.AuthUsecase)
 	handlersProfile := profilehandler.New(useCaseCfg.ProfileUsecase)
 	handlersBalance := balancehandler.New(useCaseCfg.BalanceUsecase)
 
-	
 	mainRouter := mux.NewRouter()
 	authSubrouter := mainRouter.PathPrefix("/auth").Subrouter()
 	adSubrouter := mainRouter.PathPrefix("/ads").Subrouter()
@@ -64,16 +63,15 @@ func main() {
 	balanceSubrouter.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{
-        Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
-        WriteTimeout: Timeout,
-        ReadTimeout:  Timeout,
-        IdleTimeout:  Timeout,
-        Handler: mainRouter,
-    }
+		Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
+		WriteTimeout: Timeout,
+		ReadTimeout:  Timeout,
+		IdleTimeout:  Timeout,
+		Handler:      mainRouter,
+	}
 	log.Println("Starting server on", fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port))
 	err = srv.ListenAndServe()
 	if err != nil {
 		log.Fatal(err)
 	}
 }
-

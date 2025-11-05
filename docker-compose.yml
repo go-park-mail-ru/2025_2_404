@@ -28,5 +28,9 @@ services:
     restart: always
     ports:
       - "${APP_PORT}:${APP_PORT}"
+    volumes:
+      - ./storage:/storage
     depends_on:
       - db
+    environment:
+      - STORAGE_PATH=/storage
