@@ -8,6 +8,7 @@ import (
 	"2025_2_404/internal/config"
 	"2025_2_404/internal/repository/postgres"
 	"2025_2_404/internal/use_case/filestorage"
+	"2025_2_404/internal/use_case/balance"
 )
 
 type Config struct	{
@@ -16,6 +17,7 @@ type Config struct	{
 	ProfileUsecase *profile.UseCase
 	TokenUsecase *token.UseCase
 	StorageUsecase	*filestorage.UseCase
+	BalanceUsecase 	*balance.UseCase
 }
 
 func New(cfg *config.Config , configRepo *postgres.Config) *Config {
@@ -24,10 +26,12 @@ func New(cfg *config.Config , configRepo *postgres.Config) *Config {
 	authUsecase := auth.New(configRepo.AuthRepo, tokenUsecase)
 	adUsecase := ad.New(configRepo.AdRepo, storageUsecase)
 	profileUsecase := profile.New(configRepo.ProfileRepo, storageUsecase)
+	balanceUsecase := balance.New(configRepo.BalanceRepo)
 	return &Config {
 		AdUsecase:	adUsecase,
 		AuthUsecase:	authUsecase,
 		ProfileUsecase: profileUsecase,
 		TokenUsecase:	tokenUsecase,
+		BalanceUsecase: balanceUsecase,
 	}
 }

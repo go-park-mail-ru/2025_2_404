@@ -5,6 +5,7 @@ import (
 	db "2025_2_404/internal/connections"
 	adhandler "2025_2_404/internal/delivery/http/adhandler"
 	authhandler "2025_2_404/internal/delivery/http/authhandler"
+	balancehandler "2025_2_404/internal/delivery/http/balancehandler"
 	middleware "2025_2_404/internal/delivery/http/middleware"
 	"2025_2_404/internal/delivery/http/profilehandler"
 	repo "2025_2_404/internal/repository/postgres"
@@ -35,12 +36,14 @@ func main() {
 	handlersAd := adhandler.New(useCaseCfg.AdUsecase)
 	handlersAuth := authhandler.New(useCaseCfg.AuthUsecase)
 	handlersProfile := profilehandler.New(useCaseCfg.ProfileUsecase)
+	handlersBalance := balancehandler.New(useCaseCfg.BalanceUsecase)
 
 	
 	mainRouter := mux.NewRouter()
 	authSubrouter := mainRouter.PathPrefix("/auth").Subrouter()
 	adSubrouter := mainRouter.PathPrefix("/ads").Subrouter()
 	clientSubroute := mainRouter.PathPrefix("/profile").Subrouter()
+	balanceSubrouter := mainRouter.PathPrefix("/wallet").Subrouter()
 
 	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost, http.MethodOptions)
 	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost, http.MethodOptions)
@@ -56,6 +59,9 @@ func main() {
 	clientSubroute.HandleFunc("/", handlersProfile.ShowHandler).Methods(http.MethodGet, http.MethodOptions)
 	clientSubroute.HandleFunc("/", handlersProfile.UpdateHandler).Methods(http.MethodPut, http.MethodOptions)
 	clientSubroute.Use(middle.Peflite, middle.Auth)
+
+	balanceSubrouter.HandleFunc("/", handlersBalance.Show).Methods(http.MethodPut, http.MethodOptions)
+	balanceSubrouter.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{
         Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
