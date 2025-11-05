@@ -56,6 +56,7 @@ func (u *Middleware) Auth(next http.Handler) http.Handler {
 func (u *Middleware) Peflite(next http.Handler) http.Handler {
     allowedOrigins := map[string]bool{
         "http://localhost:8000":        true,
+		"http://localhost:3000":        true,
         "http://127.0.0.1:8000":        true,
         "http://89.208.230.119:8000":   true,
 		"http://89.208.230.119:3000":   true,
