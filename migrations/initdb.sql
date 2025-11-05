@@ -66,7 +66,9 @@ CREATE TABLE IF NOT EXISTS ad (
 	content TEXT NOT NULL CHECK (
 		length(content) >= 1 AND length(content) <= 200
 	),
-    img_bin BYTEA,
+    img_path TEXT CHECK(
+		length(img_path) <= 100
+	),
     target_url TEXT NOT NULL CHECK (
 		length(target_url) >= 1 AND length(target_url) <= 200
 	),

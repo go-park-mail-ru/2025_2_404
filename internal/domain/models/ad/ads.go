@@ -11,6 +11,6 @@ type Ads struct {
 	ClientID modeluser.ID
 	Title string `json:"title"`
 	Content    string `json:"content"`
-	ImgBin     string `json:"img_bin"`
+	ImagePath     string `json:"img_path"`
 	TargetUrl	string	`json:"target_url"`
 }

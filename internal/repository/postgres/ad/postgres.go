@@ -10,11 +10,11 @@ import (
 )
 
 const(
-	sqlTextForSelectAds = "SELECT id, title, content, img_bin, target_url FROM ad WHERE client_id = $1"
-	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_bin, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_bin = $3, target_url = $4 WHERE id = $5 AND client_id = $6"
+	sqlTextForSelectAds = "SELECT id, title, content, img_path, target_url FROM ad WHERE client_id = $1"
+	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_path, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4 WHERE id = $5 AND client_id = $6"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1"
-	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_bin, ad.target_url, COALESCE(ad_detail.amount_for_ad, 0), COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1"
+	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.amount_for_ad, 0), COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1"
 )
 
 type DB struct {
@@ -37,7 +37,7 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.A
 	var ads []modelad.Ads
 	for rows.Next() {
 		var ad modelad.Ads
-		err := rows.Scan(&ad.ID, &ad.Title, &ad.Content, &ad.ImgBin, &ad.TargetUrl)
+		err := rows.Scan(&ad.ID, &ad.Title, &ad.Content, &ad.ImagePath, &ad.TargetUrl)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan ad: %w", err)
 		}
@@ -59,7 +59,7 @@ func (r *DB) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, 
 		&adInfo.ID,
 		&adInfo.Title,
 		&adInfo.Content,
-		&adInfo.ImgBin,
+		&adInfo.ImgPath,
 		&adInfo.TargetUrl,
 		&adInfo.AmountForAd,
 		&adInfo.Clicks,
@@ -74,7 +74,7 @@ func (r *DB) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, 
 }
 
 func (r *DB) Create(ctx context.Context, ad modelad.Ads) (error) {
-	res, err := r.sql.ExecContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImgBin, ad.TargetUrl)
+	res, err := r.sql.ExecContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl)
 	if err != nil {
 		return fmt.Errorf("failed to create ad: %w", err)
 	}
@@ -92,7 +92,7 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) (error) {
 
 func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 
-	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImgBin, ad.TargetUrl, ad.ID, ad.ClientID)
+	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID)
 	if err != nil {
 		return fmt.Errorf("failed to update ad: %w", err)
 	}

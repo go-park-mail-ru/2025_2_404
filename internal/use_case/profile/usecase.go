@@ -35,15 +35,13 @@ func New(repo repositoryI, storage fileStorageI) *UseCase{
 func (u *UseCase) Update(ctx context.Context, client modeluser.User, file io.Reader, ext string) error {
 	filename := uuid.New().String() + ext
 
-	uploadPath := filepath.Join("ad/", filename)
-
-	if err := u.storage.Save(uploadPath, file); err != nil {
-		return fmt.Errorf("failed to save file: %w", err)
+	uploadPath := filepath.Join("client/", filename)
+	if file != nil {
+		if err := u.storage.Save(uploadPath, file); err != nil {
+			return fmt.Errorf("failed to save file: %w", err)
+		}
+		client.ImagePath = uploadPath
 	}
-
-	client.ImagePath = uploadPath
-
-
 	return u.repo.Update(ctx, client)
 }
 

@@ -5,6 +5,8 @@ import (
 	"2025_2_404/internal/modules"
 	"2025_2_404/pkg"
 	"context"
+	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
 	"path/filepath"
@@ -47,29 +49,35 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 	client.UserName = r.FormValue("user_name")
 	client.HashedPassword = r.FormValue("password")
 	
-	imgFail, header, err := r.FormFile("image")
+	imgFail, header, err := r.FormFile("img")
 	if err != nil && err != http.ErrMissingFile{
 		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
 	}
-	if imgFail != nil {
-		defer imgFail.Close()
+
+	if header != nil {
+		if imgFail != nil {
+			defer imgFail.Close()
+		}
+
+		ext := strings.ToLower(filepath.Ext(header.Filename))
+		if ext != ".jpg" && ext != ".png" && ext != ".gif" {
+			http.Error(w, "Invalid file type", http.StatusBadRequest)
+			return
+		}
+		
+		if err = h.profileUsecase.Update(r.Context(), client, imgFail, ext); err != nil {
+			http.Error(w, fmt.Sprintf("client update with image failed: %v", err), http.StatusUnprocessableEntity)
+			return
+		}
+
+	} else { 
+		if err = h.profileUsecase.Update(r.Context(), client, nil, ""); err != nil {
+			http.Error(w, fmt.Sprintf("client update failed:%s", err), http.StatusUnprocessableEntity)
+			return
+		}
 	}
-
-
-	ext := strings.ToLower(filepath.Ext(header.Filename))
-	if ext != ".jpg" && ext != ".png" && ext != ".gif" {
-		http.Error(w, "Invalid file type", http.StatusBadRequest)
-		return
-	}
-
-	if err = h.profileUsecase.Update(r.Context(), client, imgFail, ext); err != nil{
-		http.Error(w, "client update faild", http.StatusUnprocessableEntity)
-		return
-	}
-
-
-
+    
 	pkg.JSONResponse(w, http.StatusOK, "client update", map[string]interface{}{})
 }
 
@@ -86,8 +94,10 @@ func (h *UserHandler) ShowHandler (w http.ResponseWriter, r *http.Request){
 		return
 	}
 
+	avatarBase64 := base64.StdEncoding.EncodeToString(bytes)
+
 	pkg.JSONResponse(w, http.StatusOK, "Successful authorization", map[string]interface{}{
 		"client":	client,
-		"img":		bytes,
+		"img":		avatarBase64,
 	})
 }

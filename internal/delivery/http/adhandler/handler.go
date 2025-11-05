@@ -2,23 +2,26 @@ package adhandler
 
 import (
 	modelad "2025_2_404/internal/domain/models/ad"
-	modeluser "2025_2_404/internal/domain/models/user"
 	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"2025_2_404/internal/modules"
 	"2025_2_404/pkg"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
 
 type adUsecaseI interface {
-	Create(ctx context.Context, ad modelad.Ads) (error)
+	Create(ctx context.Context, ad modelad.Ads, file io.Reader, ext string) (error)
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
-	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, error)
+	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, []byte, error)
 	Update(ctx context.Context, ad modelad.Ads) (error)
 	Delete(ctx context.Context, adID int64) (error)
 }
@@ -54,23 +57,54 @@ func (h *Handler) Handler(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) CreateHandler(w http.ResponseWriter, r *http.Request){
 
-	userID, error := modules.Get(r.Context())
+	r.Body = http.MaxBytesReader(w, r.Body, 10 * 1024 * 1024)
+
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		http.Error(w, "File is too big.", http.StatusBadRequest)
+		return
+	}
+
+
+	clientID, error := modules.Get(r.Context())
 	if error != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
 	var ads modelad.Ads
-	ads.ClientID = userID
-	if err := json.NewDecoder(r.Body).Decode(&ads); err != nil {
-		http.Error(w, fmt.Sprintf("Error: %v", err), http.StatusBadRequest)
+	ads.ClientID = clientID
+
+	ads.Title = r.FormValue("title")
+	ads.Content = r.FormValue("content")
+	ads.TargetUrl = r.FormValue("target_url")
+
+	imgFail, header, err := r.FormFile("image")
+	if err != nil && err != http.ErrMissingFile{
+		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
 	}
 
-	err := h.adUsecase.Create(r.Context(), ads)
-	if err != nil{
-		http.Error(w, fmt.Sprintf("Ad not created: %v", err), http.StatusInternalServerError)
-		return
+	if header != nil {
+		if imgFail != nil {
+			defer imgFail.Close()
+		}
+
+		ext := strings.ToLower(filepath.Ext(header.Filename))
+		if ext != ".jpg" && ext != ".png" && ext != ".gif" {
+			http.Error(w, "Invalid file type", http.StatusBadRequest)
+			return
+		}
+		
+		if err = h.adUsecase.Create(r.Context(), ads, imgFail, ext); err != nil {
+			http.Error(w, "client update with image failed", http.StatusUnprocessableEntity)
+			return
+		}
+
+	} else { 
+		if err = h.adUsecase.Create(r.Context(), ads, nil, ""); err != nil {
+			http.Error(w, fmt.Sprintf("client update failed:%s", err), http.StatusUnprocessableEntity)
+			return
+		}
 	}
 
 	pkg.JSONResponse(w, http.StatusCreated, "Successful create ad", map[string]interface{}{})
@@ -132,14 +166,17 @@ func (h *Handler) GetOneAd(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, fmt.Sprintf("id ad not valid: %v", err), http.StatusBadRequest)
 	}
-	ad, conversion, err := h.adUsecase.GetOneAd(r.Context(), adID)
+	ad, conversion, bytes, err := h.adUsecase.GetOneAd(r.Context(), adID)
 	if err != nil {
-		http.Error(w, "Don't have this ad", http.StatusInternalServerError)
+		http.Error(w, "Don't have ads this user", http.StatusInternalServerError)
 		return
 	}
+	
+
 
 	pkg.JSONResponse(w, http.StatusOK, "Successful search", map[string]interface{}{
 		"ad": ad,
 		"conversion": conversion,
+		"image": bytes,
 	})
 }

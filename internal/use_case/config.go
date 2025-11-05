@@ -22,7 +22,7 @@ func New(cfg *config.Config , configRepo *postgres.Config) *Config {
 	tokenUsecase := token.New(cfg)
 	storageUsecase := filestorage.New(cfg)
 	authUsecase := auth.New(configRepo.AuthRepo, tokenUsecase)
-	adUsecase := ad.New(configRepo.AdRepo)
+	adUsecase := ad.New(configRepo.AdRepo, storageUsecase)
 	profileUsecase := profile.New(configRepo.ProfileRepo, storageUsecase)
 	return &Config {
 		AdUsecase:	adUsecase,

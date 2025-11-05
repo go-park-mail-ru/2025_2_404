@@ -9,7 +9,7 @@ import (
 
 const(
 	sqlTextForUpdateClient = "UPDATE client SET name = $1, email = $2, img_path = $3 WHERE id = $4"
-	sqlTextForShowClient = "SELECT name, email FROM client WHERE id = $1"
+	sqlTextForShowClient = "SELECT name, email, img_path FROM client WHERE id = $1"
 )
 
 type DB struct{
@@ -40,10 +40,17 @@ func (r *DB) Update(ctx context.Context, client modeluser.User) error {
 }
 
 func (r *DB) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error){
+	var imgPath sql.NullString
 	var client modeluser.User
-	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email)
+	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email, &imgPath)
 	if err != nil {
 		return modeluser.User{}, fmt.Errorf("failed to update user: %w", err)
+	}
+
+	if imgPath.Valid {
+		client.ImagePath = imgPath.String
+	} else {
+		client.ImagePath = ""
 	}
 
 	return client, nil

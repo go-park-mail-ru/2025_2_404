@@ -25,7 +25,7 @@ func (u *UseCase) Save(uploadPath string, data io.Reader) error {
     return err
 	}
 
-	file, err := os.Create(uploadPath)
+	file, err := os.Create(fullPath)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
@@ -43,7 +43,8 @@ func (u *UseCase) ReadImageAsBytes(path string) ([]byte, error) {
 	if path == ""{
 		return nil, nil
 	}
-    data, err := os.ReadFile(path)
+	fullpath := u.baseDir + path
+    data, err := os.ReadFile(fullpath)
     if err != nil {
         return nil, fmt.Errorf("failed to read image file %q: %w", path, err)
     }
