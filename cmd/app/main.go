@@ -6,6 +6,7 @@ import (
 	adhandler "2025_2_404/internal/delivery/http/adhandler"
 	authhandler "2025_2_404/internal/delivery/http/authhandler"
 	balancehandler "2025_2_404/internal/delivery/http/balancehandler"
+	feedhandler "2025_2_404/internal/delivery/http/feedhandler"
 	middleware "2025_2_404/internal/delivery/http/middleware"
 	"2025_2_404/internal/delivery/http/profilehandler"
 	repo "2025_2_404/internal/repository/postgres"
@@ -37,6 +38,7 @@ func main() {
 	handlersAuth := authhandler.New(useCaseCfg.AuthUsecase)
 	handlersProfile := profilehandler.New(useCaseCfg.ProfileUsecase)
 	handlersBalance := balancehandler.New(useCaseCfg.BalanceUsecase)
+	handlersFeed := feedhandler.New(useCaseCfg.FeedUsecase)
 
 	
 	mainRouter := mux.NewRouter()
@@ -44,6 +46,7 @@ func main() {
 	adSubrouter := mainRouter.PathPrefix("/ads").Subrouter()
 	clientSubroute := mainRouter.PathPrefix("/profile").Subrouter()
 	balanceSubrouter := mainRouter.PathPrefix("/wallet").Subrouter()
+	feedSurouter := mainRouter.PathPrefix("/feed").Subrouter()
 
 	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost, http.MethodOptions)
 	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost, http.MethodOptions)
@@ -62,6 +65,9 @@ func main() {
 
 	balanceSubrouter.HandleFunc("/", handlersBalance.Show).Methods(http.MethodGet, http.MethodOptions)
 	balanceSubrouter.Use(middle.Peflite, middle.Auth)
+
+	feedSurouter.HandleFunc("/{platform_name}", handlersFeed.GetAdFeedHandler).Methods(http.MethodGet, http.MethodOptions)
+	feedSurouter.Use(middle.Peflite)
 
 	srv := &http.Server{
         Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),

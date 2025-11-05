@@ -5,6 +5,7 @@ import (
 	"2025_2_404/internal/repository/postgres/auth"
 	"2025_2_404/internal/repository/postgres/profile"
 	"2025_2_404/internal/repository/postgres/balance"
+	"2025_2_404/internal/repository/postgres/feed"
 	"2025_2_404/internal/connections"
 )
 
@@ -13,6 +14,7 @@ type Config struct {
 	AuthRepo	*auth.DB
 	ProfileRepo	*profile.DB
 	BalanceRepo	*balance.DB
+	FeedRepo	*feed.DB
 }
 
 func New(connCFG *connections.Config) *Config {
@@ -20,11 +22,13 @@ func New(connCFG *connections.Config) *Config {
 	authRepo := auth.New(connCFG.PostgresSQL)
 	profileRepo := profile.New(connCFG.PostgresSQL)
 	balanceRepo := balance.New(connCFG.PostgresSQL)
+	feedRepo := feed.New(connCFG.PostgresSQL)
 	return &Config{
 		AdRepo:	adRepo,
 		AuthRepo:	authRepo,
 		ProfileRepo: profileRepo,
 		BalanceRepo: balanceRepo,
+		FeedRepo: feedRepo,
 	}
 }
 
