@@ -59,6 +59,11 @@ func (u *Middleware) Peflite(next http.Handler) http.Handler {
         "http://127.0.0.1:8000":        true,
         "http://89.208.230.119:8000":   true,
 		"http://89.208.230.119:3000":   true,
+		"http://0.0.0.0:3000":   true,
+		"http://0.0.0.0:8000":   true,
+		"http://89.208.230.119:8080":   true,
+		"http://0.0.0.1:3000":   true,
+		"http://0.0.0.1:8000":   true,
     }
 
     return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
