@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS client (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name TEXT UNIQUE NOT NULL CHECK (
+    name TEXT NOT NULL CHECK (
 		length(name) >= 4 AND length(name) <= 50
 	),
 	email TEXT UNIQUE NOT NULL CHECK (

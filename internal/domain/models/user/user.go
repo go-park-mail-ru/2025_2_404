@@ -2,8 +2,9 @@ package user
 
 import (
 	"errors"
-	"golang.org/x/crypto/bcrypt"
 	"regexp"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 type ID int
@@ -16,12 +17,16 @@ type User struct {
 	ImagePath	string		`json:"img_path"`
 }
 
-var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9._]+$`)
+var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
 var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9._@#$%&+!* =]+$`)
-var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
+var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9.+-_]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
+var constUpperCase = regexp.MustCompile(`^[A-Z]+$`)
+var constLowerCase = regexp.MustCompile(`^[a-z]+$`)
+var constSpecialChar = regexp.MustCompile(`^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+$`)
+
 
 func NewUser(userName, email, password string) (*User, error){
-	if len(userName)<3 || len(userName)>20{
+	if len(userName)<4 || len(userName)>20{
 		return nil, errors.New("username must be at least 3 and no more than 20 characters")
 	}
 
@@ -29,11 +34,15 @@ func NewUser(userName, email, password string) (*User, error){
 		return nil, errors.New("username contains invalid values")
 	}
 
+	if !constLowerCase.MatchString(userName) && !constUpperCase.MatchString(userName){
+		return nil, errors.New("username must contain at least one symbol")
+	}
+
 	if !allowedEmail.MatchString(email) {
 		return nil, errors.New("invalid email format")
 	}
 
-	if len(email) <= 5 || len(email) >= 100 {
+	if len(email) >= 100 {
 		return nil, errors.New("email must be between 5 and 100 characters")
 	} 
 	
@@ -49,6 +58,14 @@ func NewUser(userName, email, password string) (*User, error){
 		return nil, errors.New("invalid values")
 	}
 
+	if !constLowerCase.MatchString(password) && !constUpperCase.MatchString(password){
+		return nil, errors.New("password must contain at least one symbol")
+	}
+
+	if !constSpecialChar.MatchString(password) {
+		return nil, errors.New("password must contain at least one secial symbol")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
@@ -59,11 +76,6 @@ func NewUser(userName, email, password string) (*User, error){
 		Email:      email,
 		HashedPassword: string(hashedPassword),
 	}, nil
-}
-
-func (u *User) ComparePasswords(password string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(u.HashedPassword),([]byte(password)))
-	return err == nil
 }
 
 func LoginUser(email, password string) (*User, error){
