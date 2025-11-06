@@ -50,3 +50,20 @@ func (u *UseCase) ReadImageAsBytes(path string) ([]byte, error) {
     }
     return data, nil
 }
+
+func (u *UseCase) Delete(path string) error {
+	if path == ""{
+		return nil
+	}
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return nil
+	}
+
+	err := os.Remove(path)
+	if err != nil {
+		return fmt.Errorf("failed to delete file %q: %w", path, err)
+	}
+
+	return nil
+}
