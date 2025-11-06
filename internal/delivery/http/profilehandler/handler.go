@@ -46,8 +46,13 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 	}
 
 	client.Email = r.FormValue("email")
-	client.UserName = r.FormValue("user_name")
+	client.UserName = r.FormValue("user_login")
 	client.HashedPassword = r.FormValue("password")
+	client.UserFirstName = r.FormValue("user_name")
+	client.UserLastName = r.FormValue("user_subname")
+	client.Company = r.FormValue("company")
+	client.Phone = r.FormValue("phone_number")
+	
 	
 	imgFile, header, err := r.FormFile("img")
 	if err != nil && err != http.ErrMissingFile{

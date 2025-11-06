@@ -9,7 +9,7 @@ import (
 
 const(
 	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1 "
-	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ( $1, $2, $3) RETURNING id"
+	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, user_login) VALUES ( $1, $2, $3) RETURNING id"
 	sqlTextForInsertBalance = "INSERT INTO client_wallet (client_id, balance) VALUES ( $1, $2)"
 )
 
