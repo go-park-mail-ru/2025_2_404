@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -34,6 +35,7 @@ func New(repo repositoryI, tokenUsecase tokenUsecaseI) *UseCase {
 func (r *UseCase) Register(ctx context.Context, email, password, userName string) (string, error) {
 	user, err := modeluser.NewUser(userName, email, password)
 	if err != nil {
+		log.Printf("ОШИБКААА ПИЗДЦ")
 		return "", fmt.Errorf("not validate user: %w", err)
 	}
 

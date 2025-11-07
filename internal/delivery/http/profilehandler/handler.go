@@ -46,10 +46,10 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 	}
 
 	client.Email = r.FormValue("email")
-	client.UserName = r.FormValue("user_login")
+	client.UserName = r.FormValue("name")
 	client.HashedPassword = r.FormValue("password")
-	client.UserFirstName = r.FormValue("user_name")
-	client.UserLastName = r.FormValue("user_subname")
+	client.UserFirstName = r.FormValue("user_first_name")
+	client.UserLastName = r.FormValue("user_second_name")
 	client.Company = r.FormValue("company")
 	client.Phone = r.FormValue("phone_number")
 	

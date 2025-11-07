@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS client (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    user_login TEXT NOT NULL CHECK (
-		length(user_login) >= 4 AND length(user_login) <= 50
+    name TEXT NOT NULL CHECK (
+		length(name) >= 4 AND length(name) <= 50
 	),
 	email TEXT UNIQUE NOT NULL CHECK (
 		length(email) >= 5 AND length(email) <= 100
@@ -9,11 +9,9 @@ CREATE TABLE IF NOT EXISTS client (
 	password_hash TEXT NOT NULL CHECK (
 		length(password_hash) <= 120
 	),
-	img_path TEXT CHECK (
-		length(img_path) <= 120
-	),
-	user_name VARCHAR(20),
-	user_subname VARCHAR(20),
+	img_path VARCHAR(120),
+	user_first_name VARCHAR(20),
+	user_second_name VARCHAR(20),
 	company VARCHAR(80),
 	phone_number VARCHAR(30),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

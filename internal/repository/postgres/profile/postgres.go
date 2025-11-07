@@ -8,8 +8,8 @@ import (
 )
 
 const(
-	sqlTextForUpdateClient = "UPDATE client SET user_login = $1, email = $2, img_path = $3, user_name =$4, user_subname = $5, company = $6, phone_number = $7 WHERE id = $8"
-    sqlTextForShowClient = "SELECT user_login, email, img_path, user_name, user_subname, company, phone_number FROM client WHERE id = $1"
+	sqlTextForUpdateClient = "UPDATE client SET name = $1, email = $2, img_path = $3, user_first_name =$4, user_second_name = $5, company = $6, phone_number = $7 WHERE id = $8"
+    sqlTextForShowClient = "SELECT name, email, img_path, user_first_name, user_second_name, company, phone_number FROM client WHERE id = $1"
 	sqlTextForDeleteClient = "DELETE FROM client WHERE id = $1"
 )
 
