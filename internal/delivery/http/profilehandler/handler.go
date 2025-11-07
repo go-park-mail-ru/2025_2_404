@@ -54,7 +54,7 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 	client.Phone = r.FormValue("phone_number")
 	
 	
-	imgFile, header, err := r.FormFile("image")
+	imgFile, header, err := r.FormFile("img")
 	if err != nil && err != http.ErrMissingFile{
 		http.Error(w, "Invalid file", http.StatusBadRequest)
 		return
