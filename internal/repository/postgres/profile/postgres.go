@@ -23,8 +23,42 @@ func New(sql *sql.DB) *DB{
 	}
 }
 
-func (r *DB) Update(ctx context.Context, client modeluser.User) error {
-	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateClient, client.UserName, client.Email, client.ImagePath, client.UserFirstName, client.UserLastName, client.Company, client.Phone, client.ID)
+func (r *DB) Update(ctx context.Context, clientID modeluser.ID) error {
+	var UserName, Email ,ImgPath, UserFirstName, UserLastName, Company, Phone sql.NullString
+	var args []interface{}
+
+	if UserName.Valid && UserName.String != "" {
+		args = append(args, UserName.String)
+	}
+
+	if Email.Valid && Email.String != "" {
+		args = append(args, Email.String)
+	}
+
+	if ImgPath.Valid && ImgPath.String != "" {
+		args = append(args, ImgPath.String)
+	} 
+
+	if UserFirstName.Valid && UserFirstName.String != "" {
+		args = append(args, UserFirstName.String)
+	}
+
+	if UserLastName.Valid && UserLastName.String != "" {
+		args = append(args, UserLastName.String)
+	} 
+
+	if Company.Valid && Company.String != ""{
+		args = append(args, Company.String)
+	} 
+
+	if Phone.Valid && Phone.String != ""{ 
+		args = append(args, Phone.String)
+	} 
+
+	args = append(args, clientID)	
+	fmt.Println("Клиент args ", args)
+
+	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateClient, args...)
 	if err != nil {
 		return fmt.Errorf("failed to update profile: %w", err)
 	}
@@ -34,50 +68,20 @@ func (r *DB) Update(ctx context.Context, client modeluser.User) error {
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("ad client id %v not found", client.ID)
+		return fmt.Errorf("ad client id %v not found", clientID)
 	}
 
 	return nil
 }
 
 func (r *DB) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error){
-	var imgPath, UserFirstName, UserLastName, Company,Phone sql.NullString
 	var client modeluser.User
-	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email, &imgPath, &UserFirstName, &UserLastName, &Company, &Phone)
+	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email, &client.ImagePath, &client.UserFirstName, &client.UserLastName, &client.Company, &client.Phone)
 	if err != nil {
 		return modeluser.User{}, fmt.Errorf("failed to update user: %w", err)
 	}
 
-	if imgPath.Valid {
-		client.ImagePath = imgPath.String
-	} else {
-		client.ImagePath = ""
-	}
-
-	if UserFirstName.Valid {
-		client.UserFirstName = UserFirstName.String
-	} else {
-		client.UserFirstName = ""
-	}
-
-	if UserLastName.Valid {
-		client.UserLastName = UserLastName.String
-	} else {
-		client.UserLastName = ""
-	}
-
-	if Company.Valid {
-		client.Company = Company.String
-	} else {
-		client.Company = ""
-	}
-
-	if Phone.Valid {
-		client.Phone = Phone.String
-	} else {
-		client.Phone = ""
-	}
-
+	fmt.Println("Клиент ", client)
 	return client, nil
 }
 
