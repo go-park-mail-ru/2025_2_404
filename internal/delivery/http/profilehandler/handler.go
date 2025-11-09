@@ -66,7 +66,7 @@ func (h *UserHandler) UpdateHandler (w http.ResponseWriter, r *http.Request){
 		}
 
 		ext := strings.ToLower(filepath.Ext(header.Filename))
-		if ext != ".jpg" && ext != ".png" && ext != ".gif" {
+		if ext != ".jpg" && ext != ".png" && ext != ".gif" && ext != ".jpeg" {
 			http.Error(w, "Invalid file type", http.StatusBadRequest)
 			return
 		}

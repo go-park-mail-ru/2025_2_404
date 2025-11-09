@@ -39,11 +39,21 @@ func (u *UseCase) Update(ctx context.Context, client modeluser.User, file io.Rea
 
 	uploadPath := filepath.Join("client/", filename)
 	if file != nil {
+		oldClientData, err := u.repo.Show(ctx, client.ID)
+        if err != nil {
+            return fmt.Errorf("failed to get user before update: %w", err)
+        }
+
+        if oldClientData.ImagePath != "" {
+            _ = u.storage.Delete(oldClientData.ImagePath) 
+        }
+
 		if err := u.storage.Save(uploadPath, file); err != nil {
 			return fmt.Errorf("failed to save file: %w", err)
 		}
 		client.ImagePath = uploadPath
 	}
+
 	return u.repo.Update(ctx, client)
 }
 

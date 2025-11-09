@@ -5,10 +5,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 const(
-	sqlTextForUpdateClient = "UPDATE client SET name = $1, email = $2, img_path = $3, user_first_name =$4, user_second_name = $5, company = $6, phone_number = $7 WHERE id = $8"
     sqlTextForShowClient = "SELECT name, email, img_path, user_first_name, user_second_name, company, phone_number FROM client WHERE id = $1"
 	sqlTextForDeleteClient = "DELETE FROM client WHERE id = $1"
 )
@@ -23,41 +23,64 @@ func New(sql *sql.DB) *DB{
 	}
 }
 
-func (r *DB) Update(ctx context.Context, clientID modeluser.ID) error {
-	var UserName, Email ,ImgPath, UserFirstName, UserLastName, Company, Phone sql.NullString
+func (r *DB) Update(ctx context.Context, client modeluser.User) error {
+	var updates []string
 	var args []interface{}
+	argID := 1
 
-	if UserName.Valid && UserName.String != "" {
-		args = append(args, UserName.String)
+	if client.UserName != "" {
+		updates = append(updates, fmt.Sprintf("name = $%d", argID))
+		args = append(args, client.UserName)
+		argID++
 	}
 
-	if Email.Valid && Email.String != "" {
-		args = append(args, Email.String)
+	if client.Email != "" {
+		updates = append(updates, fmt.Sprintf("email = $%d", argID))
+		args = append(args, client.Email)
+		argID++
 	}
 
-	if ImgPath.Valid && ImgPath.String != "" {
-		args = append(args, ImgPath.String)
+	if client.ImagePath != "" {
+		updates = append(updates, fmt.Sprintf("img_path = $%d", argID))
+		args = append(args, client.ImagePath)
+		argID++
 	} 
 
-	if UserFirstName.Valid && UserFirstName.String != "" {
-		args = append(args, UserFirstName.String)
+	if client.UserFirstName != "" {
+		updates = append(updates, fmt.Sprintf("user_first_name = $%d", argID))
+		args = append(args, client.UserFirstName)
+		argID++
 	}
 
-	if UserLastName.Valid && UserLastName.String != "" {
-		args = append(args, UserLastName.String)
+	if client.UserLastName != "" {
+		updates = append(updates, fmt.Sprintf("user_second_name = $%d", argID))
+		args = append(args, client.UserLastName)
+		argID++
 	} 
 
-	if Company.Valid && Company.String != ""{
-		args = append(args, Company.String)
+	if client.Company != ""{
+		updates = append(updates, fmt.Sprintf("company = $%d", argID))
+		args = append(args, client.Company)
+		argID++
 	} 
 
-	if Phone.Valid && Phone.String != ""{ 
-		args = append(args, Phone.String)
+	if client.Phone != ""{ 
+		updates = append(updates, fmt.Sprintf("phone_number = $%d", argID))
+		args = append(args, client.Phone)
+		argID++
 	} 
 
-	args = append(args, clientID)	
-	fmt.Println("Клиент args ", args)
-
+	fmt.Println("Клиент updates ", updates)
+	
+	if len(updates) == 0{
+		return nil
+	}
+	
+	updatesQuery := strings.Join(updates, ", ")
+	sqlTextForUpdateClient := fmt.Sprintf("UPDATE client SET %s WHERE id = $%d", updatesQuery, argID)
+	
+	args = append(args, client.ID)	
+	
 	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateClient, args...)
 	if err != nil {
 		return fmt.Errorf("failed to update profile: %w", err)
@@ -68,18 +91,28 @@ func (r *DB) Update(ctx context.Context, clientID modeluser.ID) error {
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("ad client id %v not found", clientID)
+		return fmt.Errorf("ad client id %v not found", client.ID)
 	}
 
 	return nil
 }
 
 func (r *DB) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error){
+	var ImagePath, UserFirstName, UserLastName, Company, Phone sql.NullString
 	var client modeluser.User
-	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email, &client.ImagePath, &client.UserFirstName, &client.UserLastName, &client.Company, &client.Phone)
+	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email, &ImagePath, &UserFirstName, &UserLastName, &Company, &Phone)
 	if err != nil {
-		return modeluser.User{}, fmt.Errorf("failed to update user: %w", err)
+		if err == sql.ErrNoRows {
+            return modeluser.User{}, fmt.Errorf("user with id %d not found", clientID)
+        }
+		return modeluser.User{}, fmt.Errorf("failed to scan user: %w", err)
 	}
+
+	client.ImagePath = ImagePath.String
+	client.UserFirstName = UserFirstName.String
+	client.UserLastName = UserLastName.String
+	client.Company = Company.String
+	client.Phone = Phone.String
 
 	fmt.Println("Клиент ", client)
 	return client, nil
