@@ -1,3 +1,2 @@
 .env
-keys/jwt_privatekey.pem
-keys/jwt_publickey.pem
+/internal/service/auth/keys

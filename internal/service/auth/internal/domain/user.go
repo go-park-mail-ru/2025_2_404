@@ -10,7 +10,7 @@ import (
 type ID = uuid.UUID
 
 type User struct {
-	ID uuid.UUID 
+	ID ID 
 	UserName string
 	Email string
 	HashedPassword string
