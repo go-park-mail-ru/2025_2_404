@@ -25,18 +25,12 @@ type PostgresConfig struct {
 }
 
 type AppConfig struct {
-	Host			  string
 	Port              string
+	Timeout time.Duration
 	JwtPrivateKeyPath string
 	JwtPublicKeyPath  string
 	JwtPrivateKey     *ecdsa.PrivateKey
 	JwtPublicKey      *ecdsa.PublicKey
-	ImgPath			  string
-}
-
-type GRPCConfig struct {
-	Port int
-	Timeout time.Duration
 }
 
 func GetConfig() *Config {
@@ -71,11 +65,9 @@ func GetPostgresConfig() *PostgresConfig {
 
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
-		Host: os.Getenv("APP_HOST"),
-		Port: os.Getenv("APP_PORT"),
+		Port: os.Getenv("GRPC_PORT_AUTH"),
 		JwtPrivateKeyPath: os.Getenv("JWT_PRIVATE_KEY_PATH"),
 		JwtPublicKeyPath: os.Getenv("JWT_PUBLIC_KEY_PATH"),
-		ImgPath: os.Getenv("IMG_PATH"),
 	}
 }
 

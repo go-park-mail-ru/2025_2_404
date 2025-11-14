@@ -24,7 +24,7 @@ var constLowerCase = regexp.MustCompile(`[a-z]`)
 var constSpecialChar = regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`)
 
 
-func RegisterUser(userName, email, password string) (*User, error){
+func ValidateRegisterUser(userName, email, password string) (*User, error){
 	if len(userName)<4 || len(userName)>20{
 		return nil, errors.New("username must be at least 4 and no more than 20 characters")
 	}
@@ -78,25 +78,38 @@ func RegisterUser(userName, email, password string) (*User, error){
 	}, nil
 }
 
-// func LoginUser(email, password string) (*User, error){
-// 	if !allowedEmail.MatchString(email){
-// 		return nil, errors.New("invalid email name")
-// 	}
+func ValidateLoginUser(email, password string) (error){
+	if email == "" {
+		return errors.New("email required")
+	}
+
+	if !allowedEmail.MatchString(email){
+		return errors.New("invalid email name")
+	}
 	
-// 	if len(password) < 8{
-// 		return nil, errors.New("password less than 8 characters")
-// 	}
-	
-// 	if len(password) > 50 {
-// 		return nil, errors.New("password more than 50 characters")
-// 	}
-	
-// 	if !allowedPassword.MatchString(password){
-// 		return nil, errors.New("invalid values")
-// 	}
-	
-// 	return &User{
-// 		Email:      email,
-// 		HashedPassword: password,
-// 	}, nil
-// }
+	if password == "" {
+		return errors.New("password required")
+	}
+
+	if len(password) < 8 || len(password) > 50 {
+		return errors.New("password must be between 8 and 50 characters")
+	}
+
+	if !allowedPassword.MatchString(password){
+		return errors.New("invalid values")
+	}
+
+	if !constLowerCase.MatchString(password) {
+		return errors.New("password must contain at least one lower case symbol")
+	}
+
+	if !constUpperCase.MatchString(password) {
+		return errors.New("password must contain at least one upper case symbol")
+	}
+
+	if !constSpecialChar.MatchString(password) {
+		return errors.New("password must contain at least one secial symbol")
+	}
+
+	return nil
+}

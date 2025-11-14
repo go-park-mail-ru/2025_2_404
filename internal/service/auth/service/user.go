@@ -1,11 +1,11 @@
 package service
 
 import (
-	modeluser "2025_2_404/internal/service/auth/internal/domain"
+	modeluser "2025_2_404/internal/service/auth/domain"
 	"context"
 	"errors"
 	"fmt"
-	"log"
+	// "log"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -18,7 +18,7 @@ type repositoryI interface {
 
 type tokenUsecaseI interface {
 	GenerateToken(userID modeluser.ID) (string, error)
-	InvalidateToken(tokenString string) (string, error)
+	// InvalidateToken(tokenString string) (string, error)
 }
 
 type UseCase struct {
@@ -33,23 +33,23 @@ func New(repo repositoryI, tokenUsecase tokenUsecaseI) *UseCase {
 	}
 }
 
-func (r *UseCase) Register(ctx context.Context, email, password, userName string) (string, error) {
-	user, err := modeluser.RegisterUser(userName, email, password)
+func (r *UseCase) Register(ctx context.Context, email, password, userName string) (string, modeluser.ID, error) {
+	user, err := modeluser.ValidateRegisterUser(userName, email, password)
 	if err != nil {
-		log.Printf("ОШИБКААА ПИЗДЦ")
-		return "", fmt.Errorf("not validate user: %w", err)
+		// log.Printf("ОШИБКААА ПИЗДЦ")
+		return "", uuid.Nil, fmt.Errorf("not validate user: %w", err)
 	}
 
 	userID, err := r.repo.Create(ctx, user)
 	if err != nil {
-		return "", fmt.Errorf("problem with repository CreateUser: %w", err)
+		return "", uuid.Nil, fmt.Errorf("problem with repository CreateUser: %w", err)
 	}
 
 	token, err := r.tokenUsecase.GenerateToken(userID)
 	if err != nil {
-		return "", fmt.Errorf("auth_login : %w", err)
+		return "", uuid.Nil,fmt.Errorf("auth_login : %w", err)
 	}
-	return token, nil
+	return token, userID, nil
 }
 
 func (u *UseCase) Check(ctx context.Context, email string, password string) (modeluser.ID, error) {
@@ -64,16 +64,26 @@ func (u *UseCase) Check(ctx context.Context, email string, password string) (mod
 	return user.ID, nil
 }
 
-func (u *UseCase) Login(ctx context.Context, email string, password string) (string, error) {
+func (u *UseCase) Login(ctx context.Context, email string, password string) (string, modeluser.ID, error) {
+	err := modeluser.ValidateLoginUser(email, password)
+	if err != nil {
+		return "", uuid.Nil, fmt.Errorf("wrong validation of data: %w", err)
+	}
+	
 	userID, err := u.Check(ctx, email, password)
 	if err != nil {
-		return "", err
+		return "",uuid.Nil, err
 	}
 
 	token, err := u.tokenUsecase.GenerateToken(userID)
 	if err != nil {
-		return  "", fmt.Errorf("auth_login : %w", err)
+		return  "",uuid.Nil, fmt.Errorf("auth_login : %w", err)
 	}
 
-	return token, nil
+	return token, userID, nil
 }
+
+
+// func (u *UseCase) Logout(ctx context.Context, token string) (error) {
+
+// }

@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	modeluser "2025_2_404/internal/service/auth/internal/domain"
+	modeluser "2025_2_404/internal/service/auth/domain"
 	"context"
 	"database/sql"
 	"fmt"
