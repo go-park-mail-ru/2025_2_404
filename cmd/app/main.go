@@ -50,6 +50,7 @@ func main() {
 	balanceSubrouter := mainRouter.PathPrefix("/wallet").Subrouter()
 	feedSurouter := mainRouter.PathPrefix("/feed").Subrouter()
 	supportSubrouter := mainRouter.PathPrefix("/support").Subrouter()
+	supportsSubrouter := mainRouter.PathPrefix("/supports").Subrouter()
 
 	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost, http.MethodOptions)
 	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost, http.MethodOptions)
@@ -74,12 +75,16 @@ func main() {
 	feedSurouter.Use(middle.Peflite)
 
 	supportSubrouter.HandleFunc("/", handlersSupport.Handler).Methods(http.MethodGet, http.MethodOptions)
+	
 	supportSubrouter.HandleFunc("/{uved_id}", handlersSupport.GetOneUved).Methods(http.MethodGet, http.MethodOptions)
 	supportSubrouter.HandleFunc("/", handlersSupport.CreateHandler).Methods(http.MethodPost, http.MethodOptions)
 	supportSubrouter.HandleFunc("/{uved_id}", handlersSupport.UpdateHandler).Methods(http.MethodPut, http.MethodOptions)
 	supportSubrouter.HandleFunc("/{uved_id}", handlersSupport.UpdateHandler).Methods(http.MethodDelete, http.MethodOptions)
-	supportSubrouter.HandleFunc("/supuser", handlersSupport.HandlerGetAll).Methods(http.MethodGet, http.MethodOptions)
 	supportSubrouter.Use(middle.Peflite, middle.Auth)
+
+	supportsSubrouter.HandleFunc("/", handlersSupport.HandlerGetAll).Methods(http.MethodGet, http.MethodOptions)
+	supportsSubrouter.Use(middle.Peflite, middle.Auth)
+
 
 	srv := &http.Server{
         Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
