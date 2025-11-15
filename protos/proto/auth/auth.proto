@@ -2,7 +2,7 @@ syntax="proto3";
 
 package auth;
 
-option go_package = "adnet.v1;adnetv1";
+option go_package = "auth.v1;authv1";
 
 service Auth {
     rpc Register(RegistetRequest) returns (RegisterResponse);
@@ -16,7 +16,7 @@ message RegistetRequest {
 }
 
 message RegisterResponse {
-    int64 user_id = 1;
+    string token = 1;
 }
 
 message LoginRequest {

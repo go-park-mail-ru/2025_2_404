@@ -1,0 +1,45 @@
+syntax="proto3";
+
+package profile;
+
+option go_package = "profile.v1;profileev1";
+
+service Profile {
+    rpc Get(GetRequest) returns (GetResponse);
+    rpc Update(UpdateRequest) returns (UpdateResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message User {
+    string userName = 1;
+    string email = 2;
+    string hashedPassword = 3;
+    string userFirstName = 4;
+    string userLastName = 5;
+    string company = 6;
+    string phone = 7;
+}
+
+message GetRequest{
+    int64 userID = 1;
+}
+
+message GetResponse{
+    User user = 1;
+}
+
+message UpdateRequest{
+    User user = 1;
+}
+
+message UpdateResponse{
+
+}
+
+message DeleteRequest{
+    int64 userID = 1;
+}
+
+message DeleteResponse{
+
+}

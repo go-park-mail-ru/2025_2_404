@@ -17,7 +17,7 @@ type adRepositoryI interface {
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error)
 	Update(ctx context.Context, ad modelad.Ads) error
-	Delete(ctx context.Context, adID int64) error
+	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 }
 
 type fileStorageI interface{
@@ -67,8 +67,8 @@ func (u *UseCase) Update(ctx context.Context, ad modelad.Ads, file io.Reader, ex
 	return u.adRepo.Update(ctx, ad)
 }
 
-func (u *UseCase) Delete(ctx context.Context, adID int64) error {
-	return u.adRepo.Delete(ctx, adID)
+func (u *UseCase) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
+	return u.adRepo.Delete(ctx, adID, clientID)
 }
 
 func (u *UseCase) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, []byte, error) {
