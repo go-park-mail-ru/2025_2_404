@@ -1,13 +1,14 @@
 package supporthandler
 
 import (
-	modeluser "2025_2_404/internal/domain/models/user"
 	modeluved "2025_2_404/internal/domain/models/support"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"2025_2_404/internal/modules"
 	"2025_2_404/pkg"
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"path/filepath"
 	"strconv"
@@ -19,7 +20,7 @@ import (
 type uvedUsecaseI interface {
 	Create(ctx context.Context, uved modeluved.Support, file io.Reader, ext string) (error)
 	FindByUserID(ctx context.Context, clientID modeluser.ID) ([]modeluved.Support, error)
-	GetOneUved(ctx context.Context, uvedID modeluved.ID, clientID modeluser.ID) (modeluved.Support, []byte, error)
+	GetOneUved(ctx context.Context, uvedID modeluved.ID, userID modeluser.ID) (modeluved.Support, []byte, error)
 	Update(ctx context.Context, uved modeluved.Support, file io.Reader, ext string) (error)
 	Delete(ctx context.Context, uvedID modeluved.ID, clientID modeluser.ID) (error)
 	GetAllSups(ctx context.Context, superID int64) ([]modeluved.Support, error)
@@ -38,6 +39,7 @@ func New(uvedUsecase uvedUsecaseI) *Handler {
 func (h *Handler) Handler(w http.ResponseWriter, r *http.Request) {
 
 	clientID, error := modules.Get(r.Context())
+	log.Printf("ОШИБКА ПИЗДА %w", clientID)
 	if error != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return

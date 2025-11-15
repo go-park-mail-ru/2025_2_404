@@ -10,9 +10,9 @@ import (
 )
 
 const(
-	sqlTextForSelectAllSupport = "SELECT id, client_id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM ad WHERE client_id = $1"
+	sqlTextForSelectAllSupport = "SELECT id, client_id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM support WHERE client_id = $1"
     sqlTextForInsertSupport = "INSERT INTO support (client_id, sup_status, category, sup_description, img_path, contact_name, contact_email) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
-    sqlTextForSelectSupport = "SELECT id, client_id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM support WHERE id = $1 AND client.id = $2"
+    sqlTextForSelectSupport = "SELECT id, client_id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM support WHERE id = $1 AND client_id = $2"
 	sqlTextForUpdateSupport = "UPDATE support SET sup_status = $1, category = $2, sup_description = $3, img_path = $4, contact_name = $5, contact_email = $6 WHERE id = $7 AND client_id = $8"
 	sqlTextForAllSupport = "SELECT id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM support WHERE client_id = $1"
 	sqlTextForDeleteSupport = "DELETE FROM support WHERE id = $1"

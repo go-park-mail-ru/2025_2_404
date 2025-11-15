@@ -17,7 +17,7 @@ type repositoryI interface {
 	GetAllSups(ctx context.Context, superID int64) ([]modelsup.Support, error)
 	Update(ctx context.Context, sup modelsup.Support) error 
 	Delete(ctx context.Context, supID modelsup.ID, clientID modeluser.ID) error
-	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelsup.Support, error) 
+	FindByUserID(ctx context.Context, clientID modeluser.ID) ([]modelsup.Support, error) 
 }
 
 type fileStorageI interface {
