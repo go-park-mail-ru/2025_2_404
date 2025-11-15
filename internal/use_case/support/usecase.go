@@ -17,7 +17,7 @@ type repositoryI interface {
 	GetAllSups(ctx context.Context, superID int64) ([]modelsup.Support, error)
 	Update(ctx context.Context, sup modelsup.Support) error 
 	Delete(ctx context.Context, supID modelsup.ID, clientID modeluser.ID) error
-	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelsup.Support, error) 
+	FindByUserID(ctx context.Context, clientID modeluser.ID) ([]modelsup.Support, error) 
 }
 
 type fileStorageI interface {
@@ -77,12 +77,15 @@ func (u *UseCase) GetOneUved(ctx context.Context, supID modelsup.ID, clientID mo
 		return modelsup.Support{}, nil, fmt.Errorf("Failed to get ad with id error %w", err)
 	}
 
-	imgBytes, err := u.fileStorage.ReadImageAsBytes(supInfo.ImagePath)
-	if err != nil {
-		return  modelsup.Support{}, nil, fmt.Errorf("problem in convert")
-	}
+	if supInfo.ImagePath == ""{
+		imgBytes, err := u.fileStorage.ReadImageAsBytes(supInfo.ImagePath)
+		if err != nil {
+			return  modelsup.Support{}, nil, fmt.Errorf("problem in convert")
+		}
 
-	return supInfo, imgBytes, nil 
+		return supInfo, imgBytes, nil 
+	}
+	return  supInfo, nil, nil
 }
 
 func (u *UseCase) FindByUserID(ctx context.Context, clientID modeluser.ID) ([]modelsup.Support, error){

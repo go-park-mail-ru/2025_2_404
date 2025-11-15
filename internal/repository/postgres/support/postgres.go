@@ -126,8 +126,8 @@ func (r *DB) Delete(ctx context.Context, supID modelsup.ID, clientID modeluser.I
 	return nil
 }
 
-func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelsup.Support, error) {
-	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAllSupport, userID)
+func (r *DB) FindByUserID(ctx context.Context, clientID modeluser.ID) ([]modelsup.Support, error) {
+	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAllSupport, clientID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query ads by user ID: %w", err)
 	}
