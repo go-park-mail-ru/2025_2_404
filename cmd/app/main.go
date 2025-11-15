@@ -47,6 +47,7 @@ func main() {
 	clientSubroute := mainRouter.PathPrefix("/profile").Subrouter()
 	balanceSubrouter := mainRouter.PathPrefix("/wallet").Subrouter()
 	feedSurouter := mainRouter.PathPrefix("/feed").Subrouter()
+	supportSubrouter := mainRouter.PathPrefix("/support").Subrouter()
 
 	authSubrouter.HandleFunc("/signup", handlersAuth.RegisterHandler).Methods(http.MethodPost, http.MethodOptions)
 	authSubrouter.HandleFunc("/signin", handlersAuth.LoginHandler).Methods(http.MethodPost, http.MethodOptions)
@@ -69,6 +70,8 @@ func main() {
 
 	feedSurouter.HandleFunc("/{platform_name}", handlersFeed.GetAdFeedHandler).Methods(http.MethodGet, http.MethodOptions)
 	feedSurouter.Use(middle.Peflite)
+
+	supportSubrouter.HandleFunc("/", )
 
 	srv := &http.Server{
         Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),
