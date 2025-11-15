@@ -13,6 +13,9 @@ import (
 type repositoryI interface {
 	Create(ctx context.Context, sup modelsup.Support) (error)
 	GetOneSup(ctx context.Context, supID int64) (modelsup.Support, error)
+	GetAllSups(ctx context.Context, superID int64) ([]modelsup.Support, error)
+	Update(ctx context.Context, sup modelsup.Support) error 
+	Delete(ctx context.Context, supID int64) error
 }
 
 type fileStorageI interface {
@@ -44,4 +47,22 @@ func (u *UseCase) Create(ctx context.Context, sup modelsup.Support, file io.Read
 		sup.ImagePath = uploadPath
 	}
 	return u.supRepo.Create(ctx, sup)
+}
+
+func (u *UseCase) Delete(ctx context.Context, suoID int64) error {
+	return u.supRepo.Delete(ctx, suoID)
+}
+
+func (u *UseCase) GetOneAd(ctx context.Context, supID int64) (modelsup.Support, []byte, error) {
+	supInfo, err := u.supRepo.GetOneSup(ctx, supID)
+	if err != nil {
+		return modelsup.Support{}, nil, fmt.Errorf("Failed to get ad with id error %w", err)
+	}
+
+	imgBytes, err := u.fileStorage.ReadImageAsBytes(supInfo.ImagePath)
+	if err != nil {
+		return  modelsup.Support{}, nil, fmt.Errorf("problem in convert")
+	}
+
+	return supInfo, imgBytes, nil 
 }
