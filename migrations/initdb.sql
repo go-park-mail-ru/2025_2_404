@@ -98,3 +98,19 @@ CREATE TABLE IF NOT EXISTS statistic (
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TYPE support_status AS ENUM ('открыто', 'в работе', 'закрыто');
+CREATE TYPE support_problems AS ENUM ('баг', 'предложение', 'продуктовая жалоба', 'не выбрано','другое');
+
+CREATE TABLE IF NOT EXISTS support (
+	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	client_id INT REFERENCES client(id) ON DELETE CASCADE,
+	sup_status support_status NOT NULL DEFAULT 'открыто',
+	category support_problems NOT NULL,
+	sup_description VARCHAR(255) NOT NULL,
+	img_path VARCHAR(120) NULL,
+	contact_name VARCHAR(255) NOT NULL DEFAULT 'пользователь',
+	contact_email VARCHAR(255) NOT NULL,
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
