@@ -2,6 +2,7 @@ package support
 
 import (
 	modelsup "2025_2_404/internal/domain/models/support"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
 	"database/sql"
 	"fmt"
@@ -42,9 +43,9 @@ func (r *DB) Create(ctx context.Context, sup modelsup.Support) (error) {
 	return nil
 }
 
-func (r *DB) GetOneSup(ctx context.Context, supID int64) (modelsup.Support, error) {
+func (r *DB) GetOneSup(ctx context.Context, supID modelsup.ID, clientID modeluser.ID) (modelsup.Support, error) {
 	var supInfo modelsup.Support
-	row := r.sql.QueryRowContext(ctx, sqlTextForSelectSupport, supID)
+	row := r.sql.QueryRowContext(ctx, sqlTextForSelectSupport, supID, clientID)
 
 	err :=  row.Scan(
 		&supInfo.ID,

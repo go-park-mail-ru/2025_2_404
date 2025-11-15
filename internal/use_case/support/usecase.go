@@ -2,6 +2,7 @@ package support
 
 import (
 	modelsup "2025_2_404/internal/domain/models/support"
+	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
 	"fmt"
 	"io"
@@ -12,7 +13,9 @@ import (
 
 type repositoryI interface {
 	Create(ctx context.Context, sup modelsup.Support) (error)
-	GetOneSup(ctx context.Context, supID int64) (modelsup.Support, error)
+	GetOneSup(ctx context.Context, supID modelsup.ID, clientId modeluser.ID) (modelsup.Support, error)
+	Update(ctx context.Context, sup modelsup.Support) error
+	GetAllSups(ctx context.Context, superID int64) ([]modelsup.Support, error)
 }
 
 type fileStorageI interface {
@@ -44,4 +47,21 @@ func (u *UseCase) Create(ctx context.Context, sup modelsup.Support, file io.Read
 		sup.ImagePath = uploadPath
 	}
 	return u.supRepo.Create(ctx, sup)
+}
+
+func (u *UseCase) Update(ctx context.Context, sup modelsup.Support, file io.Reader, ext string) (error) {
+	filename := uuid.New().String() + ext
+
+	uploadPath := filepath.Join("support/", filename)
+	if file != nil {
+		if err := u.fileStorage.Save(uploadPath, file); err != nil {
+			return fmt.Errorf("failed to save file: %w", err)
+		}
+		sup.ImagePath = uploadPath
+	}
+	return u.supRepo.Update(ctx, sup)
+}
+
+func (u *UseCase) GetAllSups(ctx context.Context, superID int64) ([]modelsup.Support, error){
+	return u.supRepo.GetAllSups(ctx, superID)
 }

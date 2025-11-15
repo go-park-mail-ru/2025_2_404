@@ -10,6 +10,7 @@ import (
 	"2025_2_404/internal/use_case/filestorage"
 	"2025_2_404/internal/use_case/balance"
 	"2025_2_404/internal/use_case/feed"
+	"2025_2_404/internal/use_case/support"
 )
 
 type Config struct	{
@@ -20,6 +21,7 @@ type Config struct	{
 	StorageUsecase	*filestorage.UseCase
 	BalanceUsecase 	*balance.UseCase
 	FeedUsecase *feed.UseCase
+	SupportUsecase *support.UseCase
 }
 
 func New(cfg *config.Config , configRepo *postgres.Config) *Config {
@@ -30,6 +32,7 @@ func New(cfg *config.Config , configRepo *postgres.Config) *Config {
 	profileUsecase := profile.New(configRepo.ProfileRepo, storageUsecase)
 	balanceUsecase := balance.New(configRepo.BalanceRepo)
 	feedUsecase := feed.New(configRepo.FeedRepo)
+	supportUsecase := support.New(configRepo.SupportRepo, storageUsecase)
 	return &Config {
 		AdUsecase:	adUsecase,
 		AuthUsecase:	authUsecase,
@@ -37,5 +40,6 @@ func New(cfg *config.Config , configRepo *postgres.Config) *Config {
 		TokenUsecase:	tokenUsecase,
 		BalanceUsecase: balanceUsecase,
 		FeedUsecase: feedUsecase,
+		SupportUsecase: supportUsecase,
 	}
 }

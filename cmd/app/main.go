@@ -12,6 +12,7 @@ import (
 	repo "2025_2_404/internal/repository/postgres"
 	usecase "2025_2_404/internal/use_case"
 	"fmt"
+	supporthandler "2025_2_404/internal/delivery/http/supporthandler"
 	"log"
 	"net/http"
 	"time"
@@ -39,6 +40,7 @@ func main() {
 	handlersProfile := profilehandler.New(useCaseCfg.ProfileUsecase)
 	handlersBalance := balancehandler.New(useCaseCfg.BalanceUsecase)
 	handlersFeed := feedhandler.New(useCaseCfg.FeedUsecase)
+	handlersSupport := supporthandler.New(useCaseCfg.SupportUsecase)
 
 	
 	mainRouter := mux.NewRouter()
