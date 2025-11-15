@@ -25,7 +25,7 @@ CREATE TRIGGER tr_statistic_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
-CREATE TRIGGER tr_statistic_updated_at
-    BEFORE UPDATE ON statistic
+CREATE TRIGGER tr_support_updated_at
+    BEFORE UPDATE ON support
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();

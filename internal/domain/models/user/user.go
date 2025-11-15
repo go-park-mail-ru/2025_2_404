@@ -14,10 +14,10 @@ type User struct {
 	Email      string	`json:"email"`
 	HashedPassword string	`json:"password"`
 	ImagePath	string		`json:"img_path"`
-	UserFirstName string `json:user_first_name`
-	UserLastName string `json:user_second_name`
-	Company string `json:company`
-	Phone string `json:phone_number`
+	UserFirstName string `json:"user_first_name"`
+	UserLastName string `json:"user_second_name"`
+	Company string `json:"company"`
+	Phone string `json:"phone_number"`
 }
 
 var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)

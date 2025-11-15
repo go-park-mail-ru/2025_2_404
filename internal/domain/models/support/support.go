@@ -4,7 +4,7 @@ import	(
 	modeluser "2025_2_404/internal/domain/models/user"
 )
 
-type ID int
+type ID int64
 
 type Support struct {
 	ID ID `json:"support_id"`
