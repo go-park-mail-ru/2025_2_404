@@ -23,7 +23,7 @@ type uvedUsecaseI interface {
 	GetOneUved(ctx context.Context, uvedID modeluved.ID, userID modeluser.ID) (modeluved.Support, []byte, error)
 	Update(ctx context.Context, uved modeluved.Support, file io.Reader, ext string) (error)
 	Delete(ctx context.Context, uvedID modeluved.ID, clientID modeluser.ID) (error)
-	GetAllSups(ctx context.Context, superID int64) ([]modeluved.Support, error)
+	GetAllSups(ctx context.Context) ([]modeluved.Support, error)
 }
 
 type Handler struct {
@@ -226,13 +226,8 @@ func (h *Handler) GetOneUved(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) HandlerGetAll(w http.ResponseWriter, r *http.Request) {
 
-	clientID, error := modules.Get(r.Context())
-	if error != nil {
-		http.Error(w, "Bad Request", http.StatusBadRequest)
-		return
-	}
 
-	uved, err := h.uvedUsecase.GetAllSups(r.Context(), int64(clientID))
+	uved, err := h.uvedUsecase.GetAllSups(r.Context())
 	if err != nil {
 		http.Error(w, "Don't have ads this user", http.StatusInternalServerError)
 		return

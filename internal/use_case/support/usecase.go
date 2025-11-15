@@ -14,7 +14,7 @@ import (
 type repositoryI interface {
 	Create(ctx context.Context, sup modelsup.Support) (error)
 	GetOneSup(ctx context.Context, supID modelsup.ID, clientID modeluser.ID) (modelsup.Support, error)
-	GetAllSups(ctx context.Context, superID int64) ([]modelsup.Support, error)
+	GetAllSups(ctx context.Context) ([]modelsup.Support, error)
 	Update(ctx context.Context, sup modelsup.Support) error 
 	Delete(ctx context.Context, supID modelsup.ID, clientID modeluser.ID) error
 	FindByUserID(ctx context.Context, clientID modeluser.ID) ([]modelsup.Support, error) 
@@ -64,8 +64,8 @@ func (u *UseCase) Update(ctx context.Context, sup modelsup.Support, file io.Read
 	return u.supRepo.Update(ctx, sup)
 }
 
-func (u *UseCase) GetAllSups(ctx context.Context, superID int64) ([]modelsup.Support, error){
-	return u.supRepo.GetAllSups(ctx, superID)
+func (u *UseCase) GetAllSups(ctx context.Context) ([]modelsup.Support, error){
+	return u.supRepo.GetAllSups(ctx)
 }
 func (u *UseCase) Delete(ctx context.Context, supID modelsup.ID, clientID modeluser.ID) error {
 	return u.supRepo.Delete(ctx, supID, clientID)
