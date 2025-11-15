@@ -22,7 +22,7 @@ type uvedUsecaseI interface {
 	GetOneUved(ctx context.Context, uvedID modeluved.ID, clientID modeluser.ID) (modeluved.Support, []byte, error)
 	Update(ctx context.Context, uved modeluved.Support, file io.Reader, ext string) (error)
 	Delete(ctx context.Context, uvedID modeluved.ID, clientID modeluser.ID) (error)
-	GetAll(ctx context.Context) ([]modeluved.Support, int, []byte, error)
+	GetAllSups(ctx context.Context, superID int64) ([]modeluved.Support, error)
 }
 
 type Handler struct {
@@ -195,7 +195,7 @@ func (h * Handler) DeleteHandler(w http.ResponseWriter, r *http.Request){
 	pkg.JSONResponse(w, http.StatusNoContent, "Successful deleted ad", map[string]interface{}{})	
 }
 
-func (h *Handler) GetOneAd(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) GetOneUved(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	uvedID, err := strconv.ParseInt(vars["uved_id"], 10, 64)
 	fmt.Println(uvedID)
@@ -221,3 +221,22 @@ func (h *Handler) GetOneAd(w http.ResponseWriter, r *http.Request) {
 		"image": bytes,
 	})
 }
+
+func (h *Handler) HandlerGetAll(w http.ResponseWriter, r *http.Request) {
+
+	clientID, error := modules.Get(r.Context())
+	if error != nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	uved, err := h.uvedUsecase.GetAllSups(r.Context(), int64(clientID))
+	if err != nil {
+		http.Error(w, "Don't have ads this user", http.StatusInternalServerError)
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusOK, "Successful authorization", map[string]interface{}{
+		"uved":	uved,
+	})
+}	

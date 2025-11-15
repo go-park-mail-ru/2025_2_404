@@ -73,7 +73,13 @@ func main() {
 	feedSurouter.HandleFunc("/{platform_name}", handlersFeed.GetAdFeedHandler).Methods(http.MethodGet, http.MethodOptions)
 	feedSurouter.Use(middle.Peflite)
 
-	supportSubrouter.HandleFunc("/", )
+	supportSubrouter.HandleFunc("/", handlersSupport.Handler).Methods(http.MethodGet, http.MethodOptions)
+	supportSubrouter.HandleFunc("/{uved_id}", handlersSupport.GetOneUved).Methods(http.MethodGet, http.MethodOptions)
+	supportSubrouter.HandleFunc("/", handlersSupport.CreateHandler).Methods(http.MethodPost, http.MethodOptions)
+	supportSubrouter.HandleFunc("/{uved_id}", handlersSupport.UpdateHandler).Methods(http.MethodPut, http.MethodOptions)
+	supportSubrouter.HandleFunc("/{uved_id}", handlersSupport.UpdateHandler).Methods(http.MethodDelete, http.MethodOptions)
+	supportSubrouter.HandleFunc("/supuser", handlersSupport.HandlerGetAll).Methods(http.MethodGet, http.MethodOptions)
+	supportSubrouter.Use(middle.Peflite, middle.Auth)
 
 	srv := &http.Server{
         Addr:         fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.Port),

@@ -10,10 +10,12 @@ import (
 )
 
 const(
+	sqlTextForSelectAllSupport = "SELECT id, client_id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM ad WHERE client_id = $1"
     sqlTextForInsertSupport = "INSERT INTO support (client_id, sup_status, category, sup_description, img_path, contact_name, contact_email) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id"
     sqlTextForSelectSupport = "SELECT id, client_id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM support WHERE id = $1 AND client.id = $2"
 	sqlTextForUpdateSupport = "UPDATE support SET sup_status = $1, category = $2, sup_description = $3, img_path = $4, contact_name = $5, contact_email = $6 WHERE id = $7 AND client_id = $8"
 	sqlTextForAllSupport = "SELECT id, sup_status, category, sup_description, img_path, contact_name, contact_email FROM support WHERE client_id = $1"
+	sqlTextForDeleteSupport = "DELETE FROM support WHERE id = $1"
 )
 
 type DB struct{
@@ -106,3 +108,53 @@ func (r *DB) Update(ctx context.Context, sup modelsup.Support) error {
 	return nil
 }
 
+func (r *DB) Delete(ctx context.Context, supID modelsup.ID, clientID modeluser.ID) error {
+	
+	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteSupport, supID)
+	if err != nil {
+		return fmt.Errorf("failed to delete ad: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("Failed to get a rows: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("Sup with ID %d not found", supID)
+	}
+	fmt.Printf("Пользователь с ID %d успешно удален. Затронуто строк: %d", supID, rowsAffected)
+	return nil
+}
+
+func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelsup.Support, error) {
+	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAllSupport, userID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query ads by user ID: %w", err)
+	}
+	defer rows.Close()
+
+	var sups []modelsup.Support
+	for rows.Next() {
+		var supInfo modelsup.Support
+		err :=  rows.Scan(
+		&supInfo.ID,
+		&supInfo.UserID,
+		&supInfo.Status,
+		&supInfo.Category,
+		&supInfo.Description,
+		&supInfo.ImagePath,
+		&supInfo.ContactName,
+		&supInfo.ContactEmail,
+	)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan ad: %w", err)
+		}
+		sups = append(sups, supInfo)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
+
+	return sups, nil
+}
