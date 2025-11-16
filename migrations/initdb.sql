@@ -1,3 +1,5 @@
+CREATE TYPE role_users AS ENUM ('user', 'support');
+
 CREATE TABLE IF NOT EXISTS client (
 	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name TEXT NOT NULL CHECK (
@@ -14,6 +16,7 @@ CREATE TABLE IF NOT EXISTS client (
 	user_second_name VARCHAR(20),
 	company VARCHAR(80),
 	phone_number VARCHAR(30),
+	role role_users NOT NULL DEFAULT 'user'
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
