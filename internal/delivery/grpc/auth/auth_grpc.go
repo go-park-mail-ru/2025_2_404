@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"2025_2_404/internal/service/auth/service"
+	modeluser "2025_2_404/internal/service/auth/domain"
 	"2025_2_404/protos/auth"
 	"context"
 
@@ -9,12 +9,17 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type AuthServer struct {
-	auth.UnimplementedAuthServer 
-	useCase *service.UseCase
+type UseCase interface {
+	Register(ctx context.Context, email, password, userName string) (string, modeluser.ID, error)	
+	Login(ctx context.Context, email string, password string) (string, modeluser.ID, error)
 }
 
-func NewAuthServer(useCase *service.UseCase) *AuthServer {
+type AuthServer struct {
+	auth.UnimplementedAuthServer 
+	useCase UseCase
+}
+
+func NewAuthServer(useCase UseCase) *AuthServer {
 	return &AuthServer{
 		useCase: useCase,
 	}

@@ -1,1 +1,1 @@
-package profile
+package main

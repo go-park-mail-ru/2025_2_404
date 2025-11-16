@@ -1,4 +1,4 @@
-package pkg
+package service 
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
@@ -8,13 +8,13 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type UseCase struct {
+type UseCaseJWT struct {
 	privateKey	*ecdsa.PrivateKey
 	publicKey	*ecdsa.PublicKey
 }
 
-func New(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey) *UseCase {
-	return &UseCase{
+func NewJWT(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey) *UseCaseJWT {
+	return &UseCaseJWT{
 		privateKey: privateKey,
 		publicKey:  publicKey,
 	}
@@ -25,7 +25,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 } 
 
-func (u *UseCase) GenerateToken(userID modeluser.ID) (string, error) {
+func (u *UseCaseJWT) GenerateToken(userID modeluser.ID) (string, error) {
 	expTime := time.Now().Add(24 * time.Hour)
 	claims := &Claims{
 		UserID: userID,
@@ -40,7 +40,7 @@ func (u *UseCase) GenerateToken(userID modeluser.ID) (string, error) {
 	return ss, err
 }
 
-func (u *UseCase) ValidateToken(tokenString string) (modeluser.ID, error) {
+func (u *UseCaseJWT) ValidateToken(tokenString string) (modeluser.ID, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {

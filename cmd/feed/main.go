@@ -1,1 +1,1 @@
-package feed
+package main
