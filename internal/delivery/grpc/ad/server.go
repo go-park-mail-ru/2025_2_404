@@ -45,7 +45,7 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 	return &adv1.CreateResponse{}, nil
 }
 
-func (s *adService) GetAds(ctx context.Context, req *adv1.GetAllAdsRequest) (*adv1.GetAllAdsResponse, error){
+func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (*adv1.GetAllAdsResponse, error){
 	clientID := req.GetClientID()
 
 	ads, err := s.adUsecase.FindByUserID(ctx, modeluser.ID(clientID))
@@ -96,7 +96,24 @@ func (s *adService) Delete(ctx context.Context, req *adv1.DeleteRequest) (*adv1.
 	return &adv1.DeleteResponse{}, nil
 }
 
-func (s *adService) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, []byte, error){
-	adID := 
+func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.GetAdResponse, error){
+	adID := req.GetId()
+	clientID := req.GetClientID()
+
+	adFull, _, _, err := s.adUsecase.GetOneAd(ctx, adID)
+	if err != nil{
+		return &adv1.GetAdResponse{}, err
+	}
+
+	ad := &adv1.Ad{
+		Id: int64(adFull.ID),
+		ClientID: int64(clientID),
+		Title: adFull.Title,
+		Content: adFull.Content,
+		Targeturl: adFull.TargetUrl,
+	}
+
+	return &adv1.GetAdResponse{Ad: ad}, nil
 }
+
 

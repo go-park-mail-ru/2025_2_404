@@ -21,12 +21,22 @@ services:
       start_period: 30s
     
 
-  app:
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "${APP_PORT}:${APP_PORT}"
+  #   depends_on:
+  #     - db
+  ad-service:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: internal/service/ad/build/Dockerfile
     restart: always
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${GRPC_AD_PORT}:${GRPC_AD_PORT}"
     depends_on:
-      - db
+      db:
+        condition: service_healthy

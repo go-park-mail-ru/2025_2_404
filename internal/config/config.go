@@ -26,6 +26,7 @@ type PostgresConfig struct {
 type AppConfig struct {
 	Host			  string
 	Port              string
+	PortAD			  string
 	JwtPrivateKeyPath string
 	JwtPublicKeyPath  string
 	JwtPrivateKey     *ecdsa.PrivateKey
@@ -67,6 +68,7 @@ func GetAppConfig() *AppConfig {
 	return &AppConfig{
 		Host: os.Getenv("APP_HOST"),
 		Port: os.Getenv("APP_PORT"),
+		PortAD: os.Getenv("GRPC_AD_PORT"),
 		JwtPrivateKeyPath: os.Getenv("JWT_PRIVATE_KEY_PATH"),
 		JwtPublicKeyPath: os.Getenv("JWT_PUBLIC_KEY_PATH"),
 		ImgPath: os.Getenv("IMG_PATH"),
