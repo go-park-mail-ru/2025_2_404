@@ -5,6 +5,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -12,7 +13,7 @@ import (
 const(
 	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1"
 	sqlTextForInsertBalance = "INSERT INTO client_wallet (client_id, balance) VALUES ($1, $2)"
-	sqlTextForInsertUsers = "INSERT INTO client (id, email, password_hash, name) VALUES ($1, $2, $3, $4)"
+	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id"
 )
 
 type DB struct {
@@ -26,12 +27,18 @@ func New(sql *sql.DB) *DB {
 }
 
 func (r *DB) Create(ctx context.Context, user *modeluser.User) (modeluser.ID, error) {
-	err := r.sql.QueryRowContext(ctx, sqlTextForInsertUsers, user.ID, user.Email, user.HashedPassword, user.UserName).Scan(&user.ID)
+	err := r.sql.QueryRowContext(ctx, sqlTextForInsertUsers, user.Email, user.HashedPassword, user.UserName).Scan(&user.ID)
+	// if err == sql.ErrNoRows {
+	// 	fmt.Println("Пользователь с таким ID не существует")
+	// 	return uuid.Nil, fmt.Errorf("Пользователь с таким ID не существует")
+	// }
 	if err != nil {
+		log.Println("Не удалось создать пользователя, причина: %w", err)
 		return uuid.Nil, fmt.Errorf("failed to create user: %w", err)
 	}
-	_, err = r.sql.ExecContext(ctx, sqlTextForInsertBalance, user.ID, 0)
+	_, err = r.sql.ExecContext(ctx, sqlTextForInsertBalance, user.ID, 100)
 	if err != nil {
+		log.Println("Не удалось создать баланс пользователя, причина: %w", err)
 		return user.ID, fmt.Errorf("balance not added: %w", err)
 	}
 	return user.ID, nil
@@ -41,6 +48,7 @@ func (r *DB) FindByEmail(ctx context.Context, email string) (modeluser.User, err
 	var user modeluser.User
 	err := r.sql.QueryRowContext(ctx, sqlTextForSelectUsers, email).Scan(&user.ID, &user.HashedPassword)
 	if err != nil {
+		log.Println("Не удалось найти пользователя по email, причина: %w", err)
 		return user, fmt.Errorf("failed to find user by email: %w", err)
 	}
 	return user, nil

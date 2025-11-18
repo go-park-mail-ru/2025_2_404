@@ -2,6 +2,7 @@ package main
 
 import (
 	handler "2025_2_404/internal/delivery/grpc/auth"
+	jwt "2025_2_404/internal/pkg/jwt"
 	"2025_2_404/internal/delivery/grpc/interceptor"
 	"2025_2_404/internal/service/auth/config"
 	"2025_2_404/internal/service/auth/connections"
@@ -27,7 +28,7 @@ func main(){
 	defer db.CloseAll()
 
 	userRepo := postgres.New(db.PostgresSQL)
-	jwtUseCase := service.NewJWT(cfg.AppConfig.JwtPrivateKey, cfg.AppConfig.JwtPublicKey)
+	jwtUseCase := jwt.NewJWT(cfg.AppConfig.JwtPrivateKey, cfg.AppConfig.JwtPublicKey)
 	authUseCase := service.New(userRepo, jwtUseCase)
 
 	authServer := handler.NewAuthServer(authUseCase)

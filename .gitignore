@@ -1,2 +1,3 @@
 .env
 /internal/service/auth/keys/
+/internal/service/auth/build/

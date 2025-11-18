@@ -5,6 +5,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -34,17 +35,17 @@ type AppConfig struct {
 }
 
 func GetConfig() *Config {
-	err := godotenv.Load()
+	err := godotenv.Load(os.Getenv("ENV_FILE"))
 	if err != nil {
-		panic("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 
 	appCfg := GetAppConfig()
 	if err := LoadJwtPrivateKey(appCfg); err != nil {
-		panic(fmt.Errorf("ошибка загрузки JWT приватного ключа: %v", err))
+		log.Println(fmt.Errorf("ошибка загрузки JWT приватного ключа: %v", err))
 	}
 	if err := LoadJwtPublicKey(appCfg); err != nil {
-		panic(fmt.Errorf("ошибка загрузки JWT публичного ключа: %v", err))
+		log.Println(fmt.Errorf("ошибка загрузки JWT публичного ключа: %v", err))
 	}
 
 	return &Config{

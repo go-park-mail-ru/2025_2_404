@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
+
 	// "log"
 
 	"github.com/google/uuid"
@@ -37,16 +39,19 @@ func (r *UseCase) Register(ctx context.Context, email, password, userName string
 	user, err := modeluser.ValidateRegisterUser(userName, email, password)
 	if err != nil {
 		// log.Printf("ОШИБКААА ПИЗДЦ")
+		log.Println("Не валидированный пользователь %w", err)
 		return "", uuid.Nil, fmt.Errorf("not validate user: %w", err)
 	}
 
 	userID, err := r.repo.Create(ctx, user)
 	if err != nil {
+		log.Println("Траблы с созданием пользвоателя %w", err)
 		return "", uuid.Nil, fmt.Errorf("problem with repository CreateUser: %w", err)
 	}
 
 	token, err := r.tokenUsecase.GenerateToken(userID)
 	if err != nil {
+		log.Println("Не получилось создать токен, ошибка %w", err)
 		return "", uuid.Nil,fmt.Errorf("auth_login : %w", err)
 	}
 	return token, userID, nil
@@ -55,10 +60,12 @@ func (r *UseCase) Register(ctx context.Context, email, password, userName string
 func (u *UseCase) Check(ctx context.Context, email string, password string) (modeluser.ID, error) {
 	user, err := u.repo.FindByEmail(ctx, email)
 	if err != nil {
+		log.Println("Не валидированный пользователь %w", err)
 		return uuid.Nil, err
 	}
 	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
 	if err != nil {
+		log.Println("Неправильный пароль %w", err)
 		return uuid.Nil, errors.New("invalid password")
 	}
 	return user.ID, nil
@@ -67,16 +74,19 @@ func (u *UseCase) Check(ctx context.Context, email string, password string) (mod
 func (u *UseCase) Login(ctx context.Context, email string, password string) (string, modeluser.ID, error) {
 	err := modeluser.ValidateLoginUser(email, password)
 	if err != nil {
+		log.Println("Валидация пароля или emaik не прошла, ошибка валидейт логин  %w", err)
 		return "", uuid.Nil, fmt.Errorf("wrong validation of data: %w", err)
 	}
 	
 	userID, err := u.Check(ctx, email, password)
 	if err != nil {
+		log.Println("Валидация пароля или emaik не прошла, ошибка чек %w", err)
 		return "",uuid.Nil, err
 	}
 
 	token, err := u.tokenUsecase.GenerateToken(userID)
 	if err != nil {
+		log.Println("Токен не сгенерировался, %w", err)
 		return  "",uuid.Nil, fmt.Errorf("auth_login : %w", err)
 	}
 
