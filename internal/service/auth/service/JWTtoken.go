@@ -1,10 +1,11 @@
-package service 
+package service
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
 	"crypto/ecdsa"
 	"fmt"
 	"time"
+
 	"github.com/golang-jwt/jwt/v5"
 )
 

@@ -2,8 +2,7 @@ package main
 
 import (
 	handler "2025_2_404/internal/delivery/grpc/auth"
-	jwt "2025_2_404/internal/pkg/jwt"
-	"2025_2_404/internal/delivery/grpc/interceptor"
+	jwt "2025_2_404/internal/service/auth/service"
 	"2025_2_404/internal/service/auth/config"
 	"2025_2_404/internal/service/auth/connections"
 	"2025_2_404/internal/service/auth/storage/postgres"
@@ -33,11 +32,7 @@ func main(){
 
 	authServer := handler.NewAuthServer(authUseCase)
 
-	grpcServer := grpc.NewServer(
-		grpc.ChainUnaryInterceptor(
-			interceptor.AuthInterceptor(jwtUseCase),
-		),
-	)
+	grpcServer := grpc.NewServer()
 
 	auth.RegisterAuthServer(grpcServer, authServer)
 	lis, err := net.Listen("tcp", ":"+cfg.AppConfig.Port)

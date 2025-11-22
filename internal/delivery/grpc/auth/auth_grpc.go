@@ -12,11 +12,17 @@ import (
 type UseCase interface {
 	Register(ctx context.Context, email, password, userName string) (string, modeluser.ID, error)	
 	Login(ctx context.Context, email string, password string) (string, modeluser.ID, error)
+	// ValidateToken(ctx context.Context, tokenString string) (modeluser.ID, error)
+}
+
+type UseCaseJWT interface {
+	ValidateToken(ctx context.Context, tokenString string) (modeluser.ID, error)
 }
 
 type AuthServer struct {
 	auth.UnimplementedAuthServer 
 	useCase UseCase
+	useCaseJWT UseCaseJWT
 }
 
 func NewAuthServer(useCase UseCase) *AuthServer {
@@ -46,5 +52,16 @@ func (s *AuthServer) Login(ctx context.Context, req *auth.LoginRequest) (*auth.L
 	return &auth.LoginResponse{
 		Token:  token,
 		UserId: userID.String(),
+	}, nil
+}
+
+func (s *AuthServer) ValidateToken(ctx context.Context, req *auth.TokenRequest) (*auth.TokenResponse, error) {
+	userID, err := s.useCaseJWT.ValidateToken(ctx, req.Token)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "invalid token")
+	}
+
+	return &auth.TokenResponse{
+		UserId:  userID.String(),
 	}, nil
 }
