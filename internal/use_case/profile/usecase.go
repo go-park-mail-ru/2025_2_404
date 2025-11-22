@@ -4,10 +4,6 @@ import (
 	modeluser "2025_2_404/internal/domain/models/user"
 	"context"
 	"fmt"
-	"io"
-	"path/filepath"
-
-	"github.com/google/uuid"
 )
 
 type repositoryI interface{
@@ -16,72 +12,25 @@ type repositoryI interface{
 	Delete(ctx context.Context, clientID modeluser.ID) error
 }
 
-type fileStorageI interface{
-	Save(uploadPath string, data io.Reader) error
-	ReadImageAsBytes(path string) ([]byte, error)
-	Delete(path string) error
-}
-
 type UseCase struct{
 	repo repositoryI
-	storage fileStorageI
 }
 
-func New(repo repositoryI, storage fileStorageI) *UseCase{
+func New(repo repositoryI) *UseCase{
 	return &UseCase{
 		repo: repo,
-		storage: storage,
 	}
 }
 
-func (u *UseCase) Update(ctx context.Context, client modeluser.User, file io.Reader, ext string) error {
-	filename := uuid.New().String() + ext
-
-	uploadPath := filepath.Join("client/", filename)
-	if file != nil {
-		oldClientData, err := u.repo.Show(ctx, client.ID)
-        if err != nil {
-            return fmt.Errorf("failed to get user before update: %w", err)
-        }
-
-        if oldClientData.ImagePath != "" {
-            _ = u.storage.Delete(oldClientData.ImagePath) 
-        }
-
-		if err := u.storage.Save(uploadPath, file); err != nil {
-			return fmt.Errorf("failed to save file: %w", err)
-		}
-		client.ImagePath = uploadPath
-	}
-
+func (u *UseCase) Update(ctx context.Context, client modeluser.User) error {
 	return u.repo.Update(ctx, client)
 }
 
-func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, []byte, error){
-	
-	client, err := u.repo.Show(ctx, clientID)
-	if err != nil {
-		return modeluser.User{}, nil, fmt.Errorf("problem with show in repo")
-	}
-	imgBytes, err := u.storage.ReadImageAsBytes(client.ImagePath)
-	if err != nil {
-		return  modeluser.User{}, nil, fmt.Errorf("problem in convert")
-	}
-
-	return client, imgBytes, nil
+func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error){
+	return u.repo.Show(ctx, clientID)
 }
 
 func (u *UseCase) Delete(ctx context.Context, clientID modeluser.ID) error {
-	client, err := u.repo.Show(ctx, clientID)
-	if err != nil {
-		return fmt.Errorf("failed to get user for deletion: %w", err)
-	}
-
-	if client.ImagePath != "" {
-		if err := u.storage.Delete(client.ImagePath); err != nil {
-			return fmt.Errorf("failed to delete user photo: %w", err)
-		}
-	}
 
 	if err := u.repo.Delete(ctx, clientID); err != nil {
 		return fmt.Errorf("failed to delete user from repository: %w", err)

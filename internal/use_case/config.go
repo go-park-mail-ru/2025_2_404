@@ -26,8 +26,8 @@ func New(cfg *config.Config , configRepo *postgres.Config) *Config {
 	tokenUsecase := token.New(cfg)
 	storageUsecase := filestorage.New(cfg)
 	authUsecase := auth.New(configRepo.AuthRepo, tokenUsecase)
-	adUsecase := ad.New(configRepo.AdRepo, storageUsecase)
-	profileUsecase := profile.New(configRepo.ProfileRepo, storageUsecase)
+	adUsecase := ad.New(configRepo.AdRepo)
+	profileUsecase := profile.New(configRepo.ProfileRepo)
 	balanceUsecase := balance.New(configRepo.BalanceRepo)
 	feedUsecase := feed.New(configRepo.FeedRepo)
 	return &Config {
@@ -37,5 +37,6 @@ func New(cfg *config.Config , configRepo *postgres.Config) *Config {
 		TokenUsecase:	tokenUsecase,
 		BalanceUsecase: balanceUsecase,
 		FeedUsecase: feedUsecase,
+		StorageUsecase: storageUsecase,
 	}
 }

@@ -6,15 +6,14 @@ import (
 	modeluser "2025_2_404/internal/domain/models/user"
 	adv1 "2025_2_404/protos/gen/go/ad"
 	"context"
-	"io"
 )
 
 type adUsecaseI interface{
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
-	Create(ctx context.Context, ad modelad.Ads, file io.Reader, ext string) (error)
-	Update(ctx context.Context, ad modelad.Ads, file io.Reader, ext string) error
+	Create(ctx context.Context, ad modelad.Ads) (error)
+	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
-	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, []byte, error)
+	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, error)
 }
 
 type adService struct{
@@ -38,7 +37,7 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 		Content: protoAd.Content,
 		TargetUrl: protoAd.Targeturl,
 	}
-	if err := s.adUsecase.Create(ctx, ad, nil, ""); err != nil{
+	if err := s.adUsecase.Create(ctx, ad); err != nil{
 		return nil, err
 	}
 
@@ -78,7 +77,7 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 		TargetUrl: protoAd.Targeturl,
 	}
 
-	if err := s.adUsecase.Update(ctx, ad, nil, ""); err != nil{
+	if err := s.adUsecase.Update(ctx, ad); err != nil{
 		return nil, err
 	}
 
@@ -100,7 +99,7 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 	adID := req.GetId()
 	clientID := req.GetClientID()
 
-	adFull, _, _, err := s.adUsecase.GetOneAd(ctx, adID)
+	adFull, _, err := s.adUsecase.GetOneAd(ctx, adID)
 	if err != nil{
 		return &adv1.GetAdResponse{}, err
 	}

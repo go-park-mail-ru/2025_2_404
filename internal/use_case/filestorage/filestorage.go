@@ -2,8 +2,8 @@ package filestorage
 
 import (
 	"2025_2_404/internal/config"
+	"context"
 	"fmt"
-	"io"
 	"os"
 	"path/filepath"
 )
@@ -18,20 +18,19 @@ func New(cfg *config.Config) *UseCase{
 	}
 }
 
-func (u *UseCase) Save(uploadPath string, data io.Reader) error {
-	fullPath := filepath.Join(u.baseDir, uploadPath)
+func (u *UseCase) Create(ctx context.Context, imageData []byte, imagePath string) error {
 
-	if err := os.MkdirAll(filepath.Dir(fullPath), os.ModePerm); err != nil {
+	if err := os.MkdirAll(filepath.Dir(imagePath), os.ModePerm); err != nil {
     return err
 	}
 
-	file, err := os.Create(fullPath)
+	file, err := os.Create(imagePath)
 	if err != nil {
 		return fmt.Errorf("failed to create file: %w", err)
 	}
 	defer file.Close()
 
-	_, err = io.Copy(file, data)
+	_, err = file.Write(imageData)
 	if err != nil {
 		return fmt.Errorf("failed to write file: %w", err)
 	}
@@ -39,30 +38,30 @@ func (u *UseCase) Save(uploadPath string, data io.Reader) error {
 	return nil
 }
 
-func (u *UseCase) ReadImageAsBytes(path string) ([]byte, error) {
-	if path == ""{
-		return nil, nil
+func (u *UseCase) Get(ctx context.Context, imagePath string) ([]byte, string, error) {
+	if imagePath == ""{
+		return nil, "", nil
 	}
-	fullpath := u.baseDir + path
-    data, err := os.ReadFile(fullpath)
+
+    data, err := os.ReadFile(imagePath)
     if err != nil {
-        return nil, fmt.Errorf("failed to read image file %q: %w", path, err)
+        return nil,"", fmt.Errorf("failed to read image file %q: %w", imagePath, err)
     }
-    return data, nil
+    return data,"", nil
 }
 
-func (u *UseCase) Delete(path string) error {
-	if path == ""{
+func (u *UseCase) Delete(ctx context.Context, imagePath string) error {
+	if imagePath == ""{
 		return nil
 	}
 
-	if _, err := os.Stat(path); os.IsNotExist(err) {
+	if _, err := os.Stat(imagePath); os.IsNotExist(err) {
 		return nil
 	}
 
-	err := os.Remove(path)
+	err := os.Remove(imagePath)
 	if err != nil {
-		return fmt.Errorf("failed to delete file %q: %w", path, err)
+		return fmt.Errorf("failed to delete file %q: %w", imagePath, err)
 	}
 
 	return nil

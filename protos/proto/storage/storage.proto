@@ -6,30 +6,31 @@ option go_package = "storage.v1;storagev1";
 
 service Storage {
     rpc Create(CreateRequest) returns (CreateResponse);
-    rpc Update(UpdateRequest) returns (UpdateResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc Get(GetRequest) returns (GetResponse);
 }
 
 message CreateRequest{
-    string byteImage = 1;
+    bytes image_data = 1;
+    string image_path = 2;
 }
 
 message CreateResponse{
-
-}
-
-message UpdateRequest{
-    string byteImage = 1;
-}
-
-message UpdateResponse{
-
 }
 
 message DeleteRequest{
-
+    string image_path = 1;
 }
 
 message DeleteResponse{
+    bool success = 1;
+}
 
+message GetRequest{
+    string image_path = 1;
+}
+
+message GetResponse{
+    bytes image_data = 1;
+    string content_type = 3;
 }
