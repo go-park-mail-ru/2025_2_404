@@ -25,9 +25,10 @@ type AuthServer struct {
 	useCaseJWT UseCaseJWT
 }
 
-func NewAuthServer(useCase UseCase) *AuthServer {
+func NewAuthServer(useCase UseCase, useCaseJWT UseCaseJWT) *AuthServer {
 	return &AuthServer{
 		useCase: useCase,
+		useCaseJWT: useCaseJWT,
 	}
 }
 
@@ -62,6 +63,8 @@ func (s *AuthServer) ValidateToken(ctx context.Context, req *auth.TokenRequest) 
 	}
 
 	return &auth.TokenResponse{
+		Valid: true,
 		UserId:  userID.String(),
+		Error: "",
 	}, nil
 }

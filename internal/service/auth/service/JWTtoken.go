@@ -2,6 +2,7 @@ package service
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
+	"context"
 	"crypto/ecdsa"
 	"fmt"
 	"time"
@@ -41,7 +42,7 @@ func (u *UseCaseJWT) GenerateToken(userID modeluser.ID) (string, error) {
 	return ss, err
 }
 
-func (u *UseCaseJWT) ValidateToken(tokenString string) (modeluser.ID, error) {
+func (u *UseCaseJWT) ValidateToken(ctx context.Context, tokenString string) (modeluser.ID, error) {
 	claims := &Claims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {

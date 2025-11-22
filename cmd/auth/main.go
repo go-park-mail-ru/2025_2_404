@@ -30,7 +30,7 @@ func main(){
 	jwtUseCase := jwt.NewJWT(cfg.AppConfig.JwtPrivateKey, cfg.AppConfig.JwtPublicKey)
 	authUseCase := service.New(userRepo, jwtUseCase)
 
-	authServer := handler.NewAuthServer(authUseCase)
+	authServer := handler.NewAuthServer(authUseCase, jwtUseCase)
 
 	grpcServer := grpc.NewServer()
 
