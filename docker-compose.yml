@@ -13,6 +13,8 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - main
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 1m30s
@@ -40,3 +42,45 @@ services:
     depends_on:
       db:
         condition: service_healthy
+  auth:
+    build:
+      context: .
+      dockerfile: internal/service/auth/build/Dockerfile
+    container_name: auth_service
+    restart: always
+    ports:
+      - "${GRPC_PORT_AUTH}:${GRPC_PORT_AUTH}"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      GRPC_PORT_AUTH: ${GRPC_PORT_AUTH}
+    networks:
+      - main
+    depends_on:
+      - db
+
+  profile:
+    build:
+      context: .
+      dockerfile: internal/service/profile/build/Dockerfile
+    container_name: profile_service
+    restart: always
+    ports:
+      - "${GRPC_PORT_PROFILE}:${GRPC_PORT_PROFILE}"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      GRPC_PORT_AUTH: ${GRPC_PORT_PROFILE}
+    networks:
+      - main
+    depends_on:
+      - db
+
+networks:
+  main:
