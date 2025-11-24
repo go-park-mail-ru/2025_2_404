@@ -4,18 +4,15 @@ import (
 	"2025_2_404/internal/delivery/grpc/interceptor"
 	modeluser "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/protos/profile"
-	"bytes"
 	"context"
-	"io"
-	"net/http"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type ProfileUsecaseI interface{
-	Update(ctx context.Context, client modeluser.User, file io.Reader, ext string) error
-	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, []byte, error)
+	Update(ctx context.Context, client modeluser.User) error
+	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
 	Delete(ctx context.Context, clientID modeluser.ID) error
 }
 
@@ -46,30 +43,7 @@ func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) 
 		Phone:         req.GetPhone(),
 	}
 	
-	var fileReader io.Reader
-	var ext string
-
-	avatarBytes := req.GetAvatar()
-	if len(avatarBytes) > 0 {
-		fileReader = bytes.NewReader(avatarBytes)
-		mimeType := http.DetectContentType(avatarBytes)
-
-		switch mimeType {
-		case "image/jpeg":
-			ext = ".jpg"
-		case "image/png":
-			ext = ".png"
-		case "image/gif":
-			ext = ".gif"
-		default:
-			return nil, status.Errorf(codes.InvalidArgument, "unsupported image format: %s", mimeType)
-		}
-	} else {
-		fileReader = nil
-		ext = ""
-	}
-	
-	err = h.profileUsecase.Update(ctx, client, fileReader, ext)
+	err = h.profileUsecase.Update(ctx, client)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update profile: %v", err)
 	}
@@ -90,7 +64,7 @@ func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*pr
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	user, imgBytes, err := h.profileUsecase.Show(ctx, clientID)
+	user, err := h.profileUsecase.Show(ctx, clientID)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to show profile: %v", err)
 	}
@@ -102,7 +76,6 @@ func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*pr
 		LastName:    user.UserLastName,
 		Company:       user.Company,
 		Phone:         user.Phone,
-		Avatar: imgBytes, 
 	}, nil
 }
 

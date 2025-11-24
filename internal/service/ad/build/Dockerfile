@@ -43,7 +43,7 @@ WORKDIR /app
 
 COPY --from=builder /app/.env .
 
-COPY --from=builder /app/keys ./keys
+COPY internal/service/auth/keys ./internal/service/auth/keys
 
 COPY --from=builder /app/main ./main
 

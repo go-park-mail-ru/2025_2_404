@@ -5,7 +5,6 @@ import (
 	handler "2025_2_404/internal/delivery/grpc/profile"
 	"2025_2_404/internal/service/profile/config"
 	"2025_2_404/internal/service/profile/connections"
-	filestorage "2025_2_404/internal/service/profile/filestorage"
 	service "2025_2_404/internal/service/profile/service"
 	repository "2025_2_404/internal/service/profile/storage/postgres"
 	"log"
@@ -40,9 +39,8 @@ func main() {
 	authClient := authProto.NewAuthClient(authConn)
 
 	userRepo := repository.New(db.PostgresSQL)
-	fileStorage := filestorage.New("./static/images")
 	authInterceptor := interceptor.AuthInterceptor(authClient)
-	profileUseCase := service.New(userRepo, fileStorage)
+	profileUseCase := service.New(userRepo)
 	profileServer := handler.NewProfileServer(profileUseCase)
 
 	grpcServer := grpc.NewServer(

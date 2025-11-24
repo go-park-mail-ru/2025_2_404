@@ -1,11 +1,16 @@
 package ad
 
 import (
-	modelad "2025_2_404/internal/domain/models/ad"
-	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
-	modeluser "2025_2_404/internal/domain/models/user"
+	"2025_2_404/internal/delivery/grpc/interceptor"
+	modelad "2025_2_404/internal/service/ad/domain/ad"
+	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
+	modeluser "2025_2_404/internal/service/ad/domain/user"
 	adv1 "2025_2_404/protos/gen/go/ad"
 	"context"
+
+	"github.com/google/uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type adUsecaseI interface{
@@ -13,7 +18,7 @@ type adUsecaseI interface{
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
-	GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, int, error)
+	GetOneAd(ctx context.Context, adID modelad.ID) (modelfullad.AdFullInfo, int, error)
 }
 
 type adService struct{
@@ -28,11 +33,14 @@ func New(adUsecase adUsecaseI) *adService{
 }
 
 func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.CreateResponse, error){
+	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
 	protoAd := req.GetAd()
 	
 	ad := modelad.Ads{
-		ID:	modelad.ID(protoAd.Id),
-		ClientID: 	modeluser.ID(protoAd.ClientID),
+		ClientID: 	modeluser.ID(clientID),
 		Title: protoAd.Title,
 		Content: protoAd.Content,
 		TargetUrl: protoAd.Targeturl,
@@ -45,7 +53,10 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 }
 
 func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (*adv1.GetAllAdsResponse, error){
-	clientID := req.GetClientID()
+	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
 
 	ads, err := s.adUsecase.FindByUserID(ctx, modeluser.ID(clientID))
 	if err != nil {
@@ -55,8 +66,8 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 	var grpcAds []*adv1.Ad
 	for _, a := range ads {
 		grpcAds = append(grpcAds, &adv1.Ad{
-			Id:        int64(a.ID),
-			ClientID:  int64(a.ClientID),
+			Id:        uuid.UUID(a.ID).String(),
+			ClientID:  uuid.UUID(a.ClientID).String(),
 			Title:     a.Title,
 			Content:   a.Content,
 			Targeturl: a.TargetUrl,
@@ -67,11 +78,20 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 }
 
 func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.UpdateResponse, error){
+	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
 	protoAd := req.GetAd()
 
+	id, err := uuid.Parse(protoAd.Id)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
+	}
+
 	ad := modelad.Ads {
-		ID: modelad.ID(protoAd.Id),
-		ClientID: modeluser.ID(protoAd.ClientID),
+		ID: modelad.ID(id),
+		ClientID: modeluser.ID(clientID),
 		Title: protoAd.Title,
 		Content: protoAd.Content,
 		TargetUrl: protoAd.Targeturl,
@@ -85,8 +105,14 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 }
 
 func (s *adService) Delete(ctx context.Context, req *adv1.DeleteRequest) (*adv1.DeleteResponse, error){
-	adID := req.GetId()
-	clientID := req.GetClientID()
+	id, err := uuid.Parse(req.GetId())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
+	}
+	adID := modelad.ID(id)
+
+	
+	
 
 	if err := s.adUsecase.Delete(ctx, modelad.ID(adID), modeluser.ID(clientID)); err != nil{
 		return nil, err

@@ -1,12 +1,12 @@
-package ad
+package postgres
 
 import (
 	"database/sql"
 	"context"
 	"fmt"
-	modelad "2025_2_404/internal/domain/models/ad"
-	modeluser "2025_2_404/internal/domain/models/user"
-	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
+	modelad "2025_2_404/internal/service/ad/domain/ad"
+	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
+	modeluser "2025_2_404/internal/service/ad/domain/user"
 )
 
 const(

@@ -1,12 +1,12 @@
 package main
 
 import (
-	"2025_2_404/internal/config"
+	"2025_2_404/internal/service/ad/config"
 	adpb "2025_2_404/protos/gen/go/ad"
-	db "2025_2_404/internal/connections"
+	db "2025_2_404/internal/service/ad/connections"
 	adhandler "2025_2_404/internal/delivery/grpc/ad"
-	repo "2025_2_404/internal/repository/postgres"
-	usecase "2025_2_404/internal/use_case"
+	repo "2025_2_404/internal/service/ad/repository/postgres"
+	usecase "2025_2_404/internal/service/ad/usecase/ad"
 	"fmt"
 	"log"
 	"net"
@@ -22,10 +22,10 @@ func main() {
 	}
 	defer connCfg.CloseAll()
 
-	repoCfg := repo.New(connCfg)
-	useCaseCfg := usecase.New(config, repoCfg)
+	repoCfg := repo.New(connCfg.PostgresSQL)
+	useCaseCfg := usecase.New(repoCfg)
 
-	adHandler := adhandler.New(useCaseCfg.AdUsecase)
+	adHandler := adhandler.New(useCaseCfg)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortAD))
 	if err != nil {

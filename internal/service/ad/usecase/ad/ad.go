@@ -1,9 +1,9 @@
 package ad
 
 import (
-	modelad "2025_2_404/internal/domain/models/ad"
-	modelfullad "2025_2_404/internal/domain/models/ad_full_info"
-	modeluser "2025_2_404/internal/domain/models/user"
+	modelad "2025_2_404/internal/service/ad/domain/ad"
+	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
+	modeluser "2025_2_404/internal/service/ad/domain/user"
 	"context"
 	"fmt"
 )

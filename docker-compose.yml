@@ -39,6 +39,8 @@ services:
     restart: always
     ports:
       - "${GRPC_AD_PORT}:${GRPC_AD_PORT}"
+    networks:
+      - main
     depends_on:
       db:
         condition: service_healthy
@@ -50,17 +52,11 @@ services:
     restart: always
     ports:
       - "${GRPC_PORT_AUTH}:${GRPC_PORT_AUTH}"
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
-      GRPC_PORT_AUTH: ${GRPC_PORT_AUTH}
     networks:
       - main
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   profile:
     build:

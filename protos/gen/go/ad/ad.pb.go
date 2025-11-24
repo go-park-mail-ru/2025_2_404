@@ -23,8 +23,8 @@ const (
 
 type Ad struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	ClientID      int64                  `protobuf:"varint,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	ClientID      string                 `protobuf:"bytes,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
 	Targeturl     string                 `protobuf:"bytes,5,opt,name=targeturl,proto3" json:"targeturl,omitempty"`
@@ -62,18 +62,18 @@ func (*Ad) Descriptor() ([]byte, []int) {
 	return file_ad_ad_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *Ad) GetId() int64 {
+func (x *Ad) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
-func (x *Ad) GetClientID() int64 {
+func (x *Ad) GetClientID() string {
 	if x != nil {
 		return x.ClientID
 	}
-	return 0
+	return ""
 }
 
 func (x *Ad) GetTitle() string {
@@ -179,7 +179,7 @@ func (*CreateResponse) Descriptor() ([]byte, []int) {
 
 type GetAllAdsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientID      int64                  `protobuf:"varint,1,opt,name=clientID,proto3" json:"clientID,omitempty"`
+	ClientID      string                 `protobuf:"bytes,1,opt,name=clientID,proto3" json:"clientID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -214,11 +214,11 @@ func (*GetAllAdsRequest) Descriptor() ([]byte, []int) {
 	return file_ad_ad_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *GetAllAdsRequest) GetClientID() int64 {
+func (x *GetAllAdsRequest) GetClientID() string {
 	if x != nil {
 		return x.ClientID
 	}
-	return 0
+	return ""
 }
 
 type GetAllAdsResponse struct {
@@ -267,8 +267,8 @@ func (x *GetAllAdsResponse) GetAds() []*Ad {
 
 type GetAdRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	ClientID      int64                  `protobuf:"varint,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	ClientID      string                 `protobuf:"bytes,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -303,18 +303,18 @@ func (*GetAdRequest) Descriptor() ([]byte, []int) {
 	return file_ad_ad_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *GetAdRequest) GetId() int64 {
+func (x *GetAdRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
-func (x *GetAdRequest) GetClientID() int64 {
+func (x *GetAdRequest) GetClientID() string {
 	if x != nil {
 		return x.ClientID
 	}
-	return 0
+	return ""
 }
 
 type GetAdResponse struct {
@@ -443,8 +443,8 @@ func (*UpdateResponse) Descriptor() ([]byte, []int) {
 
 type DeleteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	ClientID      int64                  `protobuf:"varint,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	ClientID      string                 `protobuf:"bytes,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -479,18 +479,18 @@ func (*DeleteRequest) Descriptor() ([]byte, []int) {
 	return file_ad_ad_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *DeleteRequest) GetId() int64 {
+func (x *DeleteRequest) GetId() string {
 	if x != nil {
 		return x.Id
 	}
-	return 0
+	return ""
 }
 
-func (x *DeleteRequest) GetClientID() int64 {
+func (x *DeleteRequest) GetClientID() string {
 	if x != nil {
 		return x.ClientID
 	}
-	return 0
+	return ""
 }
 
 type DeleteResponse struct {
@@ -535,8 +535,8 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\n" +
 	"\vad/ad.proto\x12\x02ad\"~\n" +
 	"\x02Ad\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
-	"\bclientID\x18\x02 \x01(\x03R\bclientID\x12\x14\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
+	"\bclientID\x18\x02 \x01(\tR\bclientID\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12\x18\n" +
 	"\acontent\x18\x04 \x01(\tR\acontent\x12\x1c\n" +
 	"\ttargeturl\x18\x05 \x01(\tR\ttargeturl\"'\n" +
@@ -544,20 +544,20 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\x02ad\x18\x01 \x01(\v2\x06.ad.AdR\x02ad\"\x10\n" +
 	"\x0eCreateResponse\".\n" +
 	"\x10GetAllAdsRequest\x12\x1a\n" +
-	"\bclientID\x18\x01 \x01(\x03R\bclientID\"-\n" +
+	"\bclientID\x18\x01 \x01(\tR\bclientID\"-\n" +
 	"\x11GetAllAdsResponse\x12\x18\n" +
 	"\x03ads\x18\x01 \x03(\v2\x06.ad.AdR\x03ads\":\n" +
 	"\fGetAdRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
-	"\bclientID\x18\x02 \x01(\x03R\bclientID\"'\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
+	"\bclientID\x18\x02 \x01(\tR\bclientID\"'\n" +
 	"\rGetAdResponse\x12\x16\n" +
 	"\x02ad\x18\x01 \x01(\v2\x06.ad.AdR\x02ad\"'\n" +
 	"\rUpdateRequest\x12\x16\n" +
 	"\x02ad\x18\x01 \x01(\v2\x06.ad.AdR\x02ad\"\x10\n" +
 	"\x0eUpdateResponse\";\n" +
 	"\rDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1a\n" +
-	"\bclientID\x18\x02 \x01(\x03R\bclientID\"\x10\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
+	"\bclientID\x18\x02 \x01(\tR\bclientID\"\x10\n" +
 	"\x0eDeleteResponse2\x83\x02\n" +
 	"\x06AdServ\x12/\n" +
 	"\x06Create\x12\x11.ad.CreateRequest\x1a\x12.ad.CreateResponse\x128\n" +
