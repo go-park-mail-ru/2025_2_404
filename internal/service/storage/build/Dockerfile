@@ -1,28 +1,28 @@
-FROM golang:alpine AS builder
+# FROM golang:alpine AS builder
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY . .
+# COPY . .
 
-RUN go mod download
+# RUN go mod download
 
-# RUN go build main.go
+# # RUN go build main.go
 
-RUN go build -o /app/main ./cmd/storage
+# RUN go build -o /app/main ./cmd/storage
 
-FROM alpine:latest
+# FROM alpine:latest
 
-WORKDIR /app
+# WORKDIR /app
 
-COPY --from=builder /app/.env .
+# COPY --from=builder /app/.env .
 
-COPY internal/service/auth/keys ./internal/service/auth/keys
+# COPY internal/service/auth/keys ./internal/service/auth/keys
 
-COPY --from=builder /app/main ./main
+# COPY --from=builder /app/main ./main
 
-EXPOSE 8078
+# EXPOSE 8078
 
-CMD ["./storage"]
+# CMD ["./storage"]
 
 # FROM golang:1.24-alpine AS builder
 
@@ -40,11 +40,40 @@ CMD ["./storage"]
 # FROM alpine:latest
 
 # RUN apk --no-cache add ca-certificates
+
 # WORKDIR /root/
 
 # COPY .env /root/.env
 # COPY --from=builder /storage .
+# RUN chmod +x ./storage
 # ENV ENV_FILE=/root/.env
 
 # EXPOSE 8078
 # CMD ["./storage"]
+FROM  golang:1.24-alpine AS builder
+
+WORKDIR /app
+
+# Копируем зависимости
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Копируем исходники
+COPY . .
+
+# Собираем без CGO, нативно под текущую архитектуру (Docker сам определит)
+RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/storage ./cmd/storage
+
+
+FROM alpine:latest
+
+RUN apk --no-cache add ca-certificates
+
+WORKDIR /app
+
+COPY --from=builder /app/bin/storage ./storage
+RUN chmod +x ./storage
+
+EXPOSE 8078
+
+ENTRYPOINT ["./storage"]

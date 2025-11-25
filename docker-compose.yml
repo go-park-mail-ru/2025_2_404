@@ -89,6 +89,7 @@ services:
       - "${GRPC_STORAGE_PORT}:${GRPC_STORAGE_PORT}"
     environment:
       GRPC_STORAGE_PORT: ${GRPC_STORAGE_PORT}
+      GRPC_PORT_AUTH: ${GRPC_PORT_PROFILE}
     networks:
       - main
 
