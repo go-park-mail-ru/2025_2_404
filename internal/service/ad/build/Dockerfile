@@ -61,7 +61,7 @@ COPY internal/delivery/grpc/ad ./internal/delivery/grpc/ad
 COPY internal/delivery/grpc/interceptor ./internal/delivery/grpc/interceptor
 COPY internal/service/ad ./internal/service/ad
 COPY protos ./protos
-COPY cmd/ad ./cmd/ad
+COPY cmd/ad ./cmd/ad    
 RUN go build -o /ad ./cmd/ad/main.go
 
 FROM alpine:latest

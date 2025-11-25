@@ -40,6 +40,13 @@ services:
     restart: always
     ports:
       - "${GRPC_AD_PORT}:${GRPC_AD_PORT}"
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      APP_PORT: ${GRPC_AD_PORT}
     networks:
       - main
     depends_on:
@@ -53,6 +60,13 @@ services:
     restart: always
     ports:
       - "${GRPC_PORT_AUTH}:${GRPC_PORT_AUTH}"
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      APP_PORT: ${GRPC_PORT_AUTH}
     networks:
       - main
     depends_on:
@@ -73,7 +87,7 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
       POSTGRES_PORT: ${POSTGRES_PORT}
-      GRPC_PORT_AUTH: ${GRPC_PORT_PROFILE}
+      APP_PORT: ${GRPC_PORT_PROFILE}
     networks:
       - main
     depends_on:
@@ -88,10 +102,28 @@ services:
     ports:
       - "${GRPC_STORAGE_PORT}:${GRPC_STORAGE_PORT}"
     environment:
-      GRPC_STORAGE_PORT: ${GRPC_STORAGE_PORT}
-      GRPC_PORT_AUTH: ${GRPC_PORT_PROFILE}
+      APP_PORT: ${GRPC_STORAGE_PORT}
+      GRPC_PORT_AUTH: ${GRPC_PORT_AUTH}
     networks:
       - main
+  gateway:
+    build:
+      context: .
+      dockerfile: cmd/gateway/Dockerfile
+    ports:
+      - "${APP_PORT}:${APP_PORT}" 
+    environment:
+      AUTH_ADDR: auth_service:${GRPC_PORT_AUTH}
+      PROFILE_ADDR: profile_service:${GRPC_PORT_PROFILE}
+      AD_ADDR: ad_service:${GRPC_AD_PORT}
+      STORAGE_ADDR: storage:${GRPC_STORAGE_PORT}
+      APP_PORT: ${APP_PORT}
+    networks:
+      - main
+    depends_on:
+      - auth
+      - profile
+      - ad-service
 
 networks:
   main:

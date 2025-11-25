@@ -53,7 +53,7 @@ func GetPostgresConfig() *PostgresConfig {
 
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
-		Port: os.Getenv("GRPC_PORT_AUTH"),
+		Port: os.Getenv("GRPC_PORT_PROFILE"),
 		ImgPath: os.Getenv("IMG_PATH"),
 	}
 }

@@ -9,24 +9,24 @@ import (
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	pb "2025_2_404/protos/profile"
+
+	"2025_2_404/pkg/utils"
+	pbProfile "2025_2_404/protos/profile"
 )
 
 type ProfileHandler struct {
-	client pb.ProfileClient
+	client pbProfile.ProfileClient
 }
 
-func NewProfileHandler(client pb.ProfileClient) *ProfileHandler {
-	return &ProfileHandler{
-		client: client,
-	}
+func NewProfileHandler(client pbProfile.ProfileClient) *ProfileHandler {
+	return &ProfileHandler{client: client}
 }
 
 func (h *ProfileHandler) RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/api/profile")
 	{
 		api.GET("", h.Show)
-		api.POST("/update", h.Update)
+		api.POST("/update", h.Update) 
 		api.DELETE("", h.Delete)
 	}
 }
@@ -35,15 +35,16 @@ func (h *ProfileHandler) Show(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	// Проброс токена
 	authHeader := c.GetHeader("Authorization")
 	if authHeader != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
 	}
 
-	resp, err := h.client.Show(ctx, &pb.ShowRequest{})
+	resp, err := h.client.Show(ctx, &pbProfile.ShowRequest{})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
 		return
 	}
 
@@ -59,37 +60,39 @@ func (h *ProfileHandler) Update(c *gin.Context) {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
 	}
 
-	req := &pb.UpdateRequest{
-		UserName:  c.PostForm("user_name"),
-		Email:     c.PostForm("email"),
-		FirstName: c.PostForm("user_first_name"),
-		LastName:  c.PostForm("user_second_name"),
-		Company:   c.PostForm("company"),
-		Phone:     c.PostForm("phone_number"),
+	req := &pbProfile.UpdateRequest{
+		UserName:    c.PostForm("user_name"),
+		Email:       c.PostForm("email"),
+		Password:    c.PostForm("password"),
+		FirstName:   c.PostForm("first_name"),
+		LastName:    c.PostForm("last_name"),
+		Company:     c.PostForm("company"),
+		Phone:       c.PostForm("phone"),
+		ProfileType: c.PostForm("profile_type"),
 	}
 
-	fileHeader, err := c.FormFile("img")
+	// Обработка файла (поле "avatar")
+	fileHeader, err := c.FormFile("avatar")
 	if err == nil {
 		file, err := fileHeader.Open()
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "bad image file"})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid avatar file"})
 			return
 		}
 		defer file.Close()
 
-		imgBytes, err := io.ReadAll(file)
+		bytesData, err := io.ReadAll(file)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read image"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read avatar"})
 			return
 		}
-		
-		req.Avatar = imgBytes
+		req.Avatar = bytesData
 	}
 
 	resp, err := h.client.Update(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
 		return
 	}
 
@@ -105,16 +108,12 @@ func (h *ProfileHandler) Delete(c *gin.Context) {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
 	}
 
-	_, err := h.client.Delete(ctx, &pb.DeleteRequest{})
+	_, err := h.client.Delete(ctx, &pbProfile.DeleteRequest{})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
 		return
 	}
 
 	c.Status(http.StatusNoContent)
 }
-
-func HTTPStatusFromCode(code interface{}) int {
-	return http.StatusInternalServerError
-} 

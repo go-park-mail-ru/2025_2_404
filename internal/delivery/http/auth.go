@@ -7,6 +7,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc/status"
+
+	"2025_2_404/pkg/utils"
 	pbAuth "2025_2_404/protos/auth"
 )
 
@@ -15,9 +17,7 @@ type AuthHandler struct {
 }
 
 func NewAuthHandler(client pbAuth.AuthClient) *AuthHandler {
-	return &AuthHandler{
-		client: client,
-	}
+	return &AuthHandler{client: client}
 }
 
 func (h *AuthHandler) RegisterRoutes(r *gin.Engine) {
@@ -28,20 +28,20 @@ func (h *AuthHandler) RegisterRoutes(r *gin.Engine) {
 	}
 }
 
+type registerDTO struct {
+	Email    string `json:"email" binding:"required,email"`
+	Password string `json:"password" binding:"required,min=6"`
+	UserName string `json:"user_name" binding:"required"`
+}
+
 type loginDTO struct {
 	Email    string `json:"email" binding:"required,email"`
 	Password string `json:"password" binding:"required"`
 }
 
-type registerDTO struct {
-	Email     string `json:"email" binding:"required,email"`
-	Password  string `json:"password" binding:"required,min=6"`
-	UserName  string `json:"user_name" binding:"required"` 
-}
-
 func (h *AuthHandler) Register(c *gin.Context) {
-	var input registerDTO
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var req registerDTO
+	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -50,14 +50,14 @@ func (h *AuthHandler) Register(c *gin.Context) {
 	defer cancel()
 
 	resp, err := h.client.Register(ctx, &pbAuth.RegisterRequest{
-		Email:    input.Email,
-		Password: input.Password,
-		UserName: input.UserName,
+		Email:    req.Email,
+		Password: req.Password,
+		UserName: req.UserName,
 	})
 
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
 		return
 	}
 
@@ -65,9 +65,9 @@ func (h *AuthHandler) Register(c *gin.Context) {
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
-	var input loginDTO
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+	var req loginDTO
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -75,18 +75,15 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	defer cancel()
 
 	resp, err := h.client.Login(ctx, &pbAuth.LoginRequest{
-		Email:    input.Email,
-		Password: input.Password,
+		Email:    req.Email,
+		Password: req.Password,
 	})
 
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
 		return
 	}
-	c.JSON(http.StatusOK, resp)
-}
 
-func HTTPStatusFromCode(code interface{}) int {
-	return http.StatusInternalServerError 
+	c.JSON(http.StatusOK, resp)
 }
