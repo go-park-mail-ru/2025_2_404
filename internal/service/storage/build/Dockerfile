@@ -50,30 +50,68 @@
 
 # EXPOSE 8078
 # CMD ["./storage"]
-FROM  golang:1.24-alpine AS builder
+# FROM  golang:1.24-alpine AS builder
 
-WORKDIR /app
+# WORKDIR /app
 
+
+# COPY go.mod go.sum ./
+# RUN go mod download
+
+
+# COPY . .
+
+
+# RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/storage ./cmd/storage
+
+
+# FROM --platform=linux/amd64 alpine:latest
+
+# RUN apk --no-cache add ca-certificates
+
+# WORKDIR /app
+
+# COPY --from=builder /app/bin/storage ./storage
+# RUN chmod +x ./storage
+
+# EXPOSE 8078
+
+# ENTRYPOINT ["./storage"]
+
+# 1. BUILDER STAGE
+# Добавляем --platform=linux/amd64, чтобы сборка шла в "стандартном" режиме
+FROM --platform=linux/amd64 golang:1.24-alpine AS builder
+
+WORKDIR /build
 
 COPY go.mod go.sum ./
 RUN go mod download
 
-
 COPY . .
 
+# ЖЕСТКО задаем параметры компиляции:
+# CGO_ENABLED=0 - отключает зависимость от системных библиотек (важно для Alpine)
+# GOOS=linux - собираем под Линукс
+# GOARCH=amd64 - собираем под процессоры Intel/AMD (стандарт)
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /storage_app ./cmd/storage/main.go
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/storage ./cmd/storage
-
-
-FROM alpine:latest
+# 2. RUNNER STAGE
+# Тут тоже форсируем платформу, чтобы Alpine понимал наш бинарник
+FROM --platform=linux/amd64 alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
-WORKDIR /app
+WORKDIR /root/
 
-COPY --from=builder /app/bin/storage ./storage
-RUN chmod +x ./storage
+# Копируем бинарник
+COPY --from=builder /storage_app .
+
+# Создаем папку
+RUN mkdir -p /root/storage
+
+# Даем права (хотя для linux/amd64 это часто происходит само, но не повредит)
+RUN chmod +x ./storage_app
 
 EXPOSE 8078
 
-ENTRYPOINT ["./storage"]
+CMD ["./storage_app"]

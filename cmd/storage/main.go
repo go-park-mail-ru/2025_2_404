@@ -1,4 +1,4 @@
-package storage
+package main
 
 import (
 	"2025_2_404/internal/service/storage/config"
