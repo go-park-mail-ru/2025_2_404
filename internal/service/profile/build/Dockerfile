@@ -21,5 +21,5 @@ COPY .env /root/.env
 COPY --from=builder /profile .
 ENV ENV_FILE=/root/.env
 
-EXPOSE 50001
+EXPOSE 8076
 CMD ["./profile"]

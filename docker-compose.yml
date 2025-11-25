@@ -36,6 +36,7 @@ services:
     build:
       context: .
       dockerfile: internal/service/ad/build/Dockerfile
+    container_name: ad_service
     restart: always
     ports:
       - "${GRPC_AD_PORT}:${GRPC_AD_PORT}"
@@ -77,6 +78,19 @@ services:
       - main
     depends_on:
       - db
+  
+  storage:
+    build:
+      context: .
+      dockerfile: internal/service/storage/build/Dockerfile
+    container_name: storage_service
+    restart: always
+    ports:
+      - "${GRPC_STORAGE_PORT}:${GRPC_STORAGE_PORT}"
+    environment:
+      GRPC_STORAGE_PORT: ${GRPC_STORAGE_PORT}
+    networks:
+      - main
 
 networks:
   main:

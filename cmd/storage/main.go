@@ -1,12 +1,10 @@
 package storage
 
 import (
-	"2025_2_404/internal/config"
-	db "2025_2_404/internal/connections"
+	"2025_2_404/internal/service/storage/config"
 	storagepb "2025_2_404/protos/gen/go/storage"
 	storagehandler "2025_2_404/internal/delivery/grpc/storage"
-	repo "2025_2_404/internal/repository/postgres"
-	usecase "2025_2_404/internal/use_case"
+	usecase "2025_2_404/internal/service/storage/usecase/filestorage"
 	"fmt"
 	"log"
 	"net"
@@ -16,15 +14,8 @@ import (
 
 func main(){
 	config := config.GetConfig()
-	connCfg, err := db.New(config)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer connCfg.CloseAll()
-
-	repoCfg := repo.New(connCfg)
-	useCaseCfg := usecase.New(config, repoCfg)
-	storageHandler := storagehandler.New(useCaseCfg.StorageUsecase)
+	useCaseCfg := usecase.New(config)
+	storageHandler := storagehandler.New(useCaseCfg)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortStorage))
 	if err != nil {

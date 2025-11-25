@@ -22,5 +22,5 @@ COPY --from=builder /auth .
 COPY internal/service/auth/keys ./internal/service/auth/keys
 ENV ENV_FILE=/root/.env
 
-EXPOSE 50001
+EXPOSE 8077
 CMD ["./auth"]

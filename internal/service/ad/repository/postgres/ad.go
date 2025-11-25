@@ -51,7 +51,7 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.A
 	return ads, nil
 }
 
-func (r *DB) GetOneAd(ctx context.Context, adID int64) (modelfullad.AdFullInfo, error) {
+func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID) (modelfullad.AdFullInfo, error) {
 	var adInfo modelfullad.AdFullInfo
 	row := r.sql.QueryRowContext(ctx, sqlTextForFullAdInfo, adID)
 

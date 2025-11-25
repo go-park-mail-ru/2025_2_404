@@ -28,7 +28,7 @@ func main() {
 	}
 	defer db.CloseAll()
 
-	authServiceAddr := "auth:50001" 
+	authServiceAddr := "auth:8077" 
 
 	authConn, err := grpc.NewClient(authServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {

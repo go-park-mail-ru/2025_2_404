@@ -105,14 +105,12 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 }
 
 func (s *adService) Delete(ctx context.Context, req *adv1.DeleteRequest) (*adv1.DeleteResponse, error){
+	clientID, err := interceptor.GetUserID(ctx)
 	id, err := uuid.Parse(req.GetId())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
 	}
 	adID := modelad.ID(id)
-
-	
-	
 
 	if err := s.adUsecase.Delete(ctx, modelad.ID(adID), modeluser.ID(clientID)); err != nil{
 		return nil, err
@@ -122,8 +120,12 @@ func (s *adService) Delete(ctx context.Context, req *adv1.DeleteRequest) (*adv1.
 }
 
 func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.GetAdResponse, error){
-	adID := req.GetId()
-	clientID := req.GetClientID()
+	clientID, err := interceptor.GetUserID(ctx)
+	id, err := uuid.Parse(req.GetId())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
+	}
+	adID := modelad.ID(id)
 
 	adFull, _, err := s.adUsecase.GetOneAd(ctx, adID)
 	if err != nil{
@@ -131,8 +133,8 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 	}
 
 	ad := &adv1.Ad{
-		Id: int64(adFull.ID),
-		ClientID: int64(clientID),
+		Id: uuid.UUID(adFull.ID).String(),
+		ClientID: uuid.UUID(clientID).String(),
 		Title: adFull.Title,
 		Content: adFull.Content,
 		Targeturl: adFull.TargetUrl,
