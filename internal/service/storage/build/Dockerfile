@@ -54,14 +54,14 @@ FROM  golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-# Копируем зависимости
+
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Копируем исходники
+
 COPY . .
 
-# Собираем без CGO, нативно под текущую архитектуру (Docker сам определит)
+
 RUN CGO_ENABLED=0 GOOS=linux go build -o ./bin/storage ./cmd/storage
 
 
