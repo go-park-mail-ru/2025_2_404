@@ -26,14 +26,14 @@ func NewSlotHandler(client slotpb.SlotServClient, adClient adpb.AdServClient) *S
 }
 
 func (h *SlotHandler) RegisterRoutes(r *gin.Engine) {
-	r.Group("/slots")
+	slots := r.Group("/slots") 
 	{
-		r.GET("/serving/:id", h.ServeSlot)
-		r.POST("", h.Create)
-		r.GET("", h.GetAll)
-		r.GET("/:id", h.GetOne)
-		r.PUT("/:id", h.Update)
-		r.DELETE("/:id", h.Delete)
+		slots.GET("/serving/:id", h.ServeSlot)
+		slots.POST("", h.Create)
+		slots.GET("", h.GetAll)
+		slots.GET("/:id", h.GetOne)
+		slots.PUT("/:id", h.Update)
+		slots.DELETE("/:id", h.Delete)
 	}
 }
 

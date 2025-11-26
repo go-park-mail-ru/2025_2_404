@@ -15,7 +15,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	authProto "2025_2_404/protos/auth"
+	// authProto "2025_2_404/protos/auth"
 	pb "2025_2_404/protos/profile"
 )
 
@@ -36,10 +36,11 @@ func main() {
 	}
 	defer authConn.Close()
 
-	authClient := authProto.NewAuthClient(authConn)
+	// authClient := authProto.NewAuthClient(authConn)
 
 	userRepo := repository.New(db.PostgresSQL)
-	authInterceptor := interceptor.AuthInterceptor(authClient)
+	authInterceptor, authConn := interceptor.InitAuthInterceptor()
+    defer authConn.Close()
 	profileUseCase := service.New(userRepo)
 	profileServer := handler.NewProfileServer(profileUseCase)
 

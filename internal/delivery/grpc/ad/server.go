@@ -7,6 +7,7 @@ import (
 	modeluser "2025_2_404/internal/service/ad/domain/user"
 	adv1 "2025_2_404/protos/gen/go/ad"
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -34,13 +35,15 @@ func New(adUsecase adUsecaseI) *adService{
 
 func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.CreateResponse, error){
 	clientID, err := interceptor.GetUserID(ctx)
+	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
+
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 	protoAd := req.GetAd()
 	
 	ad := modelad.Ads{
-		ClientID: 	modeluser.ID(clientID),
+		ClientID: 	clientID,
 		Title: protoAd.Title,
 		Content: protoAd.Content,
 		TargetUrl: protoAd.Targeturl,
@@ -54,11 +57,13 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 
 func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (*adv1.GetAllAdsResponse, error){
 	clientID, err := interceptor.GetUserID(ctx)
+	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
+
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	ads, err := s.adUsecase.FindByUserID(ctx, modeluser.ID(clientID))
+	ads, err := s.adUsecase.FindByUserID(ctx, clientID)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +72,7 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 	for _, a := range ads {
 		grpcAds = append(grpcAds, &adv1.Ad{
 			Id:        uuid.UUID(a.ID).String(),
-			ClientID:  uuid.UUID(a.ClientID).String(),
+			ClientID:  clientID.String(),
 			Title:     a.Title,
 			Content:   a.Content,
 			Targeturl: a.TargetUrl,
@@ -79,6 +84,8 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 
 func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.UpdateResponse, error){
 	clientID, err := interceptor.GetUserID(ctx)
+	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
+	
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -91,7 +98,7 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 
 	ad := modelad.Ads {
 		ID: modelad.ID(id),
-		ClientID: modeluser.ID(clientID),
+		ClientID: clientID,
 		Title: protoAd.Title,
 		Content: protoAd.Content,
 		TargetUrl: protoAd.Targeturl,

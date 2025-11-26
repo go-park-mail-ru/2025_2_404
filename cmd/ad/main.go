@@ -7,7 +7,7 @@ import (
 	db "2025_2_404/internal/service/ad/connections"
 	repo "2025_2_404/internal/service/ad/repository/postgres"
 	usecase "2025_2_404/internal/service/ad/usecase/ad"
-	authProto "2025_2_404/protos/auth"
+	// authProto "2025_2_404/protos/auth"
 	adpb "2025_2_404/protos/gen/go/ad"
 	"fmt"
 	"log"
@@ -36,11 +36,13 @@ func main() {
 	}
 	defer authConn.Close()
 
-	authClient := authProto.NewAuthClient(authConn)
+	// authClient := authProto.NewAuthClient(authConn)
 
 	repoCfg := repo.New(connCfg.PostgresSQL)
 	useCaseCfg := usecase.New(repoCfg)
-	authInterceptor := interceptor.AuthInterceptor(authClient)
+	// authInterceptor := interceptor.AuthInterceptor(authClient)
+	authInterceptor, authConn := interceptor.InitAuthInterceptor()
+    defer authConn.Close()
 	adHandler := adhandler.New(useCaseCfg)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortAD))

@@ -2,7 +2,7 @@ package adfullinfo
 
 import "github.com/google/uuid"
 
-type ID uuid.UUID
+type ID = uuid.UUID
 
 type AdFullInfo struct {
 	ID        ID     `json:"add_id"`

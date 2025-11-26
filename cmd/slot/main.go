@@ -1,6 +1,7 @@
 package main
 
 import (
+	"2025_2_404/internal/delivery/grpc/interceptor"
 	"2025_2_404/internal/delivery/grpc/slot"
 	"2025_2_404/internal/service/slot/config"
 	db "2025_2_404/internal/service/slot/connections"
@@ -28,13 +29,18 @@ func main() {
 	repoCfg := repo.New(connCfg.PostgresSQL)
 	useCaseCfg := usecase.New(repoCfg)
 	slotHandler := slot.New(useCaseCfg)
+	
+	authInterceptor, authConn := interceptor.InitAuthInterceptor()
+    defer authConn.Close()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortSlot))
 	if err != nil {
 		log.Fatalln("cant listen port", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+        grpc.UnaryInterceptor(authInterceptor),
+    )
 
 	slotpb.RegisterSlotServServer(grpcServer, slotHandler)
 

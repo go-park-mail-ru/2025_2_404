@@ -1,8 +1,10 @@
 package config
 
 import (
+	"log"
 	"os"
 
+	// "github.com/enfein/mieru/v3/pkg/log"
 	"github.com/joho/godotenv"
 )
 
@@ -28,9 +30,9 @@ type AppConfig struct {
 }
 
 func GetConfig() *Config {
-	err := godotenv.Load()
+	err := godotenv.Load(os.Getenv("ENV_FILE"))	
 	if err != nil {
-		panic("Error loading .env file")
+		log.Println("Error loading .env file")
 	}
 
 	appCfg := GetAppConfig()

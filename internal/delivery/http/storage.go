@@ -22,7 +22,7 @@ func NewStorageHandler(client pbStorage.StorageClient) *StorageHandler {
 }
 
 func (h *StorageHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/api/profile")
+	api := r.Group("/api/storage")
 	{
 		api.GET("", h.Get)
 		api.POST("", h.Create) 
