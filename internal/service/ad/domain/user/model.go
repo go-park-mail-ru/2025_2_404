@@ -8,7 +8,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type ID uuid.UUID
+type ID = uuid.UUID
 
 type User struct {
 	ID          ID	`json:"id"`

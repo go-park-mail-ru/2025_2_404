@@ -5,6 +5,7 @@ import (
 	modeluser "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/protos/profile"
 	"context"
+	"fmt"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -32,7 +33,7 @@ func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) 
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
-
+	fmt.Printf("DEBUG HANDLER: Получен ID из контекста: %v\n", clientID)
 	client := modeluser.User{
 		ID:            clientID,
 		Email:         req.GetEmail(),

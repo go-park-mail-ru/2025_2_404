@@ -2,19 +2,20 @@ package interceptor
 
 import (
 	"context"
+	"fmt"
 	"strings"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-    
+
+	authProto "2025_2_404/protos/auth"
 
 	"github.com/google/uuid"
-	authProto "2025_2_404/protos/auth"
 )
 
-type ctxKey string
+type ctxKey = string
 const UserIDKey ctxKey = "userID"
 
 func AuthInterceptor(authClient authProto.AuthClient) grpc.UnaryServerInterceptor {
@@ -41,13 +42,16 @@ func AuthInterceptor(authClient authProto.AuthClient) grpc.UnaryServerIntercepto
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, "token validation failed: %v", err)
 		}
-
+		fmt.Printf("DEBUG INTERCEPTOR: Auth returned UserID string: '%s'\n", resp.GetUserId())
         userID, err := uuid.Parse(resp.GetUserId())
+		fmt.Printf("DEBUG INTERCEPTOR: Auth returned UserID string: '%s'\n", userID)
         if err != nil {
             return nil, status.Errorf(codes.Internal, "invalid user id from auth service")
         }
 
 		newCtx := context.WithValue(ctx, UserIDKey, userID)
+		fmt.Printf("DEBUG INTERCEPTOR: Auth returned UserID string: '%s'\n", newCtx)
+
 		return handler(newCtx, req)
 	}
 }
