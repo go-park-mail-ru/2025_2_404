@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package slot;
+
+option go_package = "2025_2_404/protos/gen/go/slot";
+
+message Slot {
+    string id = 1;
+    string user_id = 2;
+    string slot_name = 3;
+    int32 min_cost_adv = 4;
+    string format_of_banner = 5;  
+    string status = 6;      
+    string back_color = 7; 
+    string text_color = 8;
+}
+
+message CreateSlotRequest {
+    Slot slot = 1;
+}
+
+message CreateSlotResponse {
+    string id = 1;
+}
+
+message GetSlotRequest {
+    string id = 1;
+}
+
+message GetSlotResponse {
+    Slot slot = 1;
+}
+
+message ListSlotsRequest {}
+message ListSlotsResponse {
+    repeated Slot slots = 1;
+}
+
+message UpdateSlotRequest {
+    Slot slot = 1;
+}
+message UpdateSlotResponse {}
+
+message DeleteSlotRequest {
+    string id = 1;
+}
+message DeleteSlotResponse {}
+
+service SlotServ {
+    rpc CreateSlot(CreateSlotRequest) returns (CreateSlotResponse);
+    rpc GetSlot(GetSlotRequest) returns (GetSlotResponse);
+    rpc ListSlots(ListSlotsRequest) returns (ListSlotsResponse);
+    rpc UpdateSlot(UpdateSlotRequest) returns (UpdateSlotResponse);
+    rpc DeleteSlot(DeleteSlotRequest) returns (DeleteSlotResponse);
+}

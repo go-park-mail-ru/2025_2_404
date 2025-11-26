@@ -15,6 +15,7 @@
     # (Опционально) Если нужны SSL сертификаты для внешних запросов
     # RUN apk --no-cache add ca-certificates
 
+    COPY templates ./templates
     COPY --from=builder /app/gateway-app .
     
     # Если у вас есть .env файл или папка configs, их нужно скопировать тоже

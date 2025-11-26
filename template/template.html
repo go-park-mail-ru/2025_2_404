@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advertisement</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden;
+            font-family: 'Manrope', sans-serif;
+            cursor: pointer;
+        }
+
+        .ad-link {
+            text-decoration: none;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .card {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: opacity 0.2s;
+            /* Цвета по умолчанию*/
+            background-color: #ffffff; 
+            color: #000000;
+        }
+
+        .card:hover { opacity: 0.98; }
+
+        /* Вертикальный режим */
+        .card { flex-direction: column; }
+
+        .image-container {
+            width: 100%;
+            height: 60%;
+            position: relative;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+
+        .ad-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .badge {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            pointer-events: none;
+        }
+
+        .content {
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+        .title {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .description {
+            font-size: 13px;
+            line-height: 1.4;
+            opacity: 0.85;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        @media (max-height: 150px) {
+            .card { flex-direction: row; }
+            .image-container { width: 120px; height: 100%; }
+            .content { padding: 8px 12px; align-items: flex-start; }
+            .title { font-size: 15px; margin-bottom: 4px; -webkit-line-clamp: 1; }
+            .description { font-size: 12px; -webkit-line-clamp: 2; }
+        }
+    </style>
+</head>
+<body>
+    <a class="ad-link" href="{{.Link}}" target="_blank" id="click-area">
+        <div class="card" id="ad-card" 
+             data-bg="{{.BgColor}}" 
+             data-text="{{.TextColor}}">
+            <div class="image-container">
+                <img class="ad-image" src="{{.ImageSrc}}" alt="Реклама">
+                <span class="badge">Реклама</span>
+            </div>
+
+            <div class="content">
+                <div class="title">{{.Title}}</div>
+                <div class="description">{{.Description}}</div>
+            </div>
+            
+        </div>
+    </a>
+
+    <script>
+        (function applyColors() {
+            const card = document.getElementById('ad-card');
+            const bg = card.getAttribute('data-bg');
+            const text = card.getAttribute('data-text');
+            if (bg && bg.trim() !== "") card.style.backgroundColor = bg;
+            if (text && text.trim() !== "") card.style.color = text;
+        })();
+
+        // 2. МЕТРИКИ
+        const METRIC_URL = "https://re-target.ru/api/v1/adv/metrics/";
+        const BANNER_ID = "{{.Banner}}";
+        const SLOT_ID = "{{.Slot}}";
+
+        let hasSentShown = false;
+        let hasSentClick = false;
+
+        function sendEvent(action) {
+            if (action === 'shown') {
+                if (hasSentShown) return;
+                hasSentShown = true;
+            } 
+            if (action === 'click') {
+                if (hasSentClick) return;
+                hasSentClick = true;
+            }
+
+            const url = `${METRIC_URL}?banner=${BANNER_ID}&slot=${SLOT_ID}&action=${action}`;
+
+            fetch(url, {
+                method: 'GET',
+                mode: 'no-cors',
+                cache: 'no-cache'
+            }).catch(err => console.error("Metric error:", err));
+        }
+
+        setTimeout(() => { sendEvent('shown'); }, 3000);
+
+        document.getElementById('click-area').addEventListener('click', () => {
+            sendEvent('click');
+        });
+    </script>
+</body>
+</html>

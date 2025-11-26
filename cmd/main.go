@@ -9,6 +9,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	
 	gatewayHttp "2025_2_404/internal/delivery/http"
+	slotpb "2025_2_404/protos/gen/go/slot"
 	pbAuth "2025_2_404/protos/auth"
 	pbAd "2025_2_404/protos/gen/go/ad"
 	pbProfile "2025_2_404/protos/profile"
@@ -39,7 +40,19 @@ func main() {
 	gatewayPort := os.Getenv("APP_PORT")
 	if gatewayPort == "" {
 		gatewayPort = "8080"
-	}																																																							
+	}		
+	
+	slotAddr := os.Getenv("SLOT_ADDR")
+	if slotAddr == "" {
+		slotAddr = "localhost:8081"
+	}
+
+	connSlot, err := grpc.NewClient(slotAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+		if err != nil {
+			log.Fatalf("Failed to connect to Slot: %v", err)
+		}
+	defer connSlot.Close()
+	slotClient := slotpb.NewSlotServClient(connSlot)
 
 	connAuth, err := grpc.NewClient(authAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
@@ -89,6 +102,9 @@ func main() {
 
 	adHandler := gatewayHttp.NewAdHandler(adClient)
 	adHandler.RegisterRoutes(r)
+
+	slotHandler := gatewayHttp.NewSlotHandler(slotClient)
+	slotHandler.RegisterRoutes(r)
 
 	storageHandler := gatewayHttp.NewStorageHandler(storageClient)
 	storageHandler.RegisterRoutes(r)
