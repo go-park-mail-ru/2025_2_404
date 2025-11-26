@@ -75,18 +75,14 @@ func GetUserID(ctx context.Context) (uuid.UUID, error) {
 func InitAuthInterceptor() (grpc.UnaryServerInterceptor, *grpc.ClientConn) {
 	authAddr := os.Getenv("AUTH_ADDR")
 	if authAddr == "" {
-		authAddr = "auth_service:8077" // Дефолт для докера
+		authAddr = "auth_service:8077"
 	}
 
-	// Подключаемся
 	conn, err := grpc.NewClient(authAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("CRITICAL: Failed to connect to Auth Service: %v", err)
 	}
 
-	// Создаем клиента
 	authClient := authProto.NewAuthClient(conn)
-
-	// Возвращаем готовый интерсептор и коннект
 	return AuthInterceptor(authClient), conn
 }

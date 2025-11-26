@@ -10,7 +10,7 @@ import (
 )
 
 type slotUsecase interface {
-	Create(ctx context.Context, s slot.Slot) error
+	Create(ctx context.Context, s slot.Slot) (slot.ID, error) 
 	GetByID(ctx context.Context, id slot.ID) (slot.Slot, error)
 	ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error)
 	Update(ctx context.Context, s slot.Slot) error
@@ -35,19 +35,20 @@ func (s *slotService) CreateSlot(ctx context.Context, req *slotpb.CreateSlotRequ
 	pbSlot := req.GetSlot()
 	domainSlot := slot.Slot{
 		UserID:         slot.UserID(userID.String()),
-		SlotName:       pbSlot.SlotName,
-		MinCostAdv:     pbSlot.MinCostAdv,
-		FormatOfBanner: pbSlot.FormatOfBanner,
-		Status:         pbSlot.Status,
-		BackColor:      pbSlot.BackColor,
-		TextColor:      pbSlot.TextColor,
+		SlotName:       pbSlot.GetSlotName(),
+		MinCostAdv:     pbSlot.GetMinCostAdv(),
+		FormatOfBanner: pbSlot.GetFormatOfBanner(),
+		Status:         pbSlot.GetStatus(),
+		BackColor:      pbSlot.GetBackColor(),
+		TextColor:      pbSlot.GetTextColor(),
 	}
 
-	if err := s.slotUsecase.Create(ctx, domainSlot); err != nil {
+	slotID, err := s.slotUsecase.Create(ctx, domainSlot)
+	if err != nil {
 		return nil, status.Errorf(codes.Internal, "create slot: %v", err)
 	}
 
-	return &slotpb.CreateSlotResponse{Id: string(domainSlot.ID)}, nil
+	return &slotpb.CreateSlotResponse{Id: string(slotID)}, nil
 }
 
 func (s *slotService) GetSlot(ctx context.Context, req *slotpb.GetSlotRequest) (*slotpb.GetSlotResponse, error) {

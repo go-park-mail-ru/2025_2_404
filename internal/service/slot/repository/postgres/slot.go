@@ -48,15 +48,15 @@ func New(sql *sql.DB) *DB {
 	return &DB{sql: sql}
 }
 
-func (r *DB) Create(ctx context.Context, s slot.Slot) error {
+func (r *DB) Create(ctx context.Context, s slot.Slot) (slot.ID, error) {
 	id, err := uuid.Parse(string(s.ID))
 	if err != nil {
-		return fmt.Errorf("invalid slot ID: %w", err)
+		return "", fmt.Errorf("invalid slot ID: %w", err)
 	}
 
 	userID, err := uuid.Parse(string(s.UserID))
 	if err != nil {
-		return fmt.Errorf("invalid user ID: %w", err)
+		return "",fmt.Errorf("invalid user ID: %w", err)
 	}
 
 	_, err = r.sql.ExecContext(
@@ -72,19 +72,25 @@ func (r *DB) Create(ctx context.Context, s slot.Slot) error {
 		s.TextColor,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to insert slot: %w", err)
+		return "", fmt.Errorf("failed to insert slot: %w", err)
 	}
 
-	return nil
+	return s.ID, nil
 }
 
 func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
 	var s slot.Slot
-	row := r.sql.QueryRowContext(ctx, sqlTextForSelectSlotByID, id)
-
-	err := row.Scan(
-		&s.ID,
-		&s.UserID,
+	idUUID, err := uuid.Parse(string(id))
+	if err != nil {
+		return slot.Slot{}, fmt.Errorf("invalid slot id: %w", err)
+	}
+	row := r.sql.QueryRowContext(ctx, sqlTextForSelectSlotByID, idUUID)
+	var idUuid, userUuid uuid.UUID 
+	err = row.Scan(
+		&idUuid,
+		&userUuid,
+		// &s.ID,
+		// &s.UserID,q
 		&s.SlotName,
 		&s.MinCostAdv,
 		&s.FormatOfBanner,
@@ -97,11 +103,18 @@ func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
 		return slot.Slot{}, fmt.Errorf("failed to get slot by ID: %w", err)
 	}
 
+	s.ID = slot.ID(idUuid.String())
+	s.UserID = slot.UserID(userUuid.String())
+
 	return s, nil
 }
 
 func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error) {
-	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectSlots, userID)
+	userUUID, err := uuid.Parse(string(userID))
+	if err != nil {
+		return nil, fmt.Errorf("invalid user id: %w", err)
+	}
+	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectSlots, userUUID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to query slots: %w", err)
 	}
@@ -110,9 +123,12 @@ func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot,
 	var slots []slot.Slot
 	for rows.Next() {
 		var s slot.Slot
+		var idUuid, userUuid uuid.UUID
 		err := rows.Scan(
-			&s.ID,
-			&s.UserID,
+			// &s.ID,
+			&idUuid,    
+			&userUuid,
+			// &s.UserID,
 			&s.SlotName,
 			&s.MinCostAdv,
 			&s.FormatOfBanner,
@@ -123,6 +139,8 @@ func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot,
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan slot: %w", err)
 		}
+		s.ID = slot.ID(idUuid.String())
+		s.UserID = slot.UserID(userUuid.String())
 		slots = append(slots, s)
 	}
 

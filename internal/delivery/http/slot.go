@@ -1,16 +1,19 @@
 package http
 
 import (
-	slotpb "2025_2_404/protos/gen/go/slot"
 	adpb "2025_2_404/protos/gen/go/ad"
+	slotpb "2025_2_404/protos/gen/go/slot"
 	"context"
+	"fmt"
 	"html/template"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc/metadata"
 	"2025_2_404/pkg/utils"
+
+	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -28,11 +31,11 @@ func NewSlotHandler(client slotpb.SlotServClient, adClient adpb.AdServClient) *S
 func (h *SlotHandler) RegisterRoutes(r *gin.Engine) {
 	slots := r.Group("/slots") 
 	{
-		slots.GET("/serving/:id", h.ServeSlot)
+		slots.GET("/serving/:id", h.ServeSlot) // не работает 
 		slots.POST("", h.Create)
 		slots.GET("", h.GetAll)
 		slots.GET("/:id", h.GetOne)
-		slots.PUT("/:id", h.Update)
+		slots.PUT("/:id", h.Update) // не работает тут мб такая же проблема с типом id slot должен быть uuid а передается string 
 		slots.DELETE("/:id", h.Delete)
 	}
 }
@@ -160,6 +163,11 @@ func (h *SlotHandler) GetAll(c *gin.Context) {
 
 func (h *SlotHandler) GetOne(c *gin.Context) {
 	id := c.Param("id")
+	slotID, err := uuid.Parse(id)
+	if err != nil {
+		fmt.Println("can`t parse into uuid err %w", err)
+		return 
+	} 
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -169,7 +177,7 @@ func (h *SlotHandler) GetOne(c *gin.Context) {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
 	}
 
-	req := &slotpb.GetSlotRequest{Id: id}
+	req := &slotpb.GetSlotRequest{Id: slotID.String()}
 	resp, err := h.client.GetSlot(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
