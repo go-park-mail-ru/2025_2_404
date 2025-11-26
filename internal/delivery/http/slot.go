@@ -1,8 +1,8 @@
 package http
 
 import (
-	"google.golang.org/grpc/codes"
 	slotpb "2025_2_404/protos/gen/go/slot"
+	adpb "2025_2_404/protos/gen/go/ad"
 	"context"
 	"html/template"
 	"net/http"
@@ -16,12 +16,13 @@ import (
 
 type SlotHandler struct {
 	client slotpb.SlotServClient
+	adClient adpb.AdServClient
 	tmpl   *template.Template
 }
 
-func NewSlotHandler(client slotpb.SlotServClient) *SlotHandler {
+func NewSlotHandler(client slotpb.SlotServClient, adClient adpb.AdServClient) *SlotHandler {
 	tmpl := template.Must(template.ParseFiles("template/template.html"))
-	return &SlotHandler{client: client, tmpl: tmpl}
+	return &SlotHandler{client: client,adClient: adClient, tmpl: tmpl}
 }
 
 func (h *SlotHandler) RegisterRoutes(r *gin.Engine) {
@@ -37,22 +38,24 @@ func (h *SlotHandler) RegisterRoutes(r *gin.Engine) {
 }
 
 type slotRenderData struct {
-	Title      string
-	Background string
-	Color      string
+	Title      string 
+	ImageSrc   string 
+	Link       string 
+	Background string 
+	Color      string 
 }
 
 func (h *SlotHandler) ServeSlot(c *gin.Context) {
-	id := c.Param("id")
+	slotID := c.Param("id")
 
-	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	req := &slotpb.GetSlotRequest{Id: id}
-	resp, err := h.client.GetSlot(ctx, req)
+	slotReq := &slotpb.GetSlotRequest{Id: slotID}
+	slotResp, err := h.client.GetSlot(ctx, slotReq)
 	if err != nil {
 		st, _ := status.FromError(err)
-		if st.Code() == codes.NotFound {
+		if st.Code() == 5 { 
 			c.Status(http.StatusNotFound)
 		} else {
 			c.Status(http.StatusInternalServerError)
@@ -60,10 +63,27 @@ func (h *SlotHandler) ServeSlot(c *gin.Context) {
 		return
 	}
 
+	adReq := &adpb.GetAllAdsRequest{}
+	adResp, err := h.adClient.GetAllAds(ctx, adReq)
+	if err != nil {
+		st, _ := status.FromError(err)
+		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": "failed to fetch ads"})
+		return
+	}
+
+	if len(adResp.Ads) == 0 {
+		c.Status(http.StatusNotFound) 
+		return
+	}
+
+	ad := adResp.Ads[0]
+
 	data := slotRenderData{
-		Title:      resp.Slot.SlotName,
-		Background: resp.Slot.BackColor,
-		Color:      resp.Slot.TextColor,
+		Title:      ad.Title,
+		ImageSrc:   "", 
+		Link:       ad.Targeturl,
+		Background: slotResp.Slot.BackColor,
+		Color:      slotResp.Slot.TextColor,
 	}
 
 	c.Header("Content-Type", "text/html; charset=utf-8")

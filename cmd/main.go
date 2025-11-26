@@ -103,7 +103,7 @@ func main() {
 	adHandler := gatewayHttp.NewAdHandler(adClient, storageClient)
 	adHandler.RegisterRoutes(r)
 
-	slotHandler := gatewayHttp.NewSlotHandler(slotClient)
+	slotHandler := gatewayHttp.NewSlotHandler(slotClient, adClient)
 	slotHandler.RegisterRoutes(r)
 
 	//  r.Run(":" + gatewayPort)
