@@ -100,14 +100,11 @@ func main() {
 	profileHandler := gatewayHttp.NewProfileHandler(profileClient)
 	profileHandler.RegisterRoutes(r)
 
-	adHandler := gatewayHttp.NewAdHandler(adClient)
+	adHandler := gatewayHttp.NewAdHandler(adClient, storageClient)
 	adHandler.RegisterRoutes(r)
 
 	slotHandler := gatewayHttp.NewSlotHandler(slotClient)
 	slotHandler.RegisterRoutes(r)
-
-	storageHandler := gatewayHttp.NewStorageHandler(storageClient)
-	storageHandler.RegisterRoutes(r)
 
 	//  r.Run(":" + gatewayPort)
 	log.Printf("API Gateway running on %s", gatewayPort)

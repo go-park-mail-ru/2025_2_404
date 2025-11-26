@@ -18,7 +18,7 @@ type SlotHandler struct {
 }
 
 func NewSlotHandler(client slotpb.SlotServClient) *SlotHandler {
-	tmpl := template.Must(template.ParseFiles("templates/slot.html"))
+	tmpl := template.Must(template.ParseFiles("template/template.html"))
 	return &SlotHandler{client: client, tmpl: tmpl}
 }
 

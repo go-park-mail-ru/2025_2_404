@@ -21,7 +21,7 @@ func NewAuthHandler(client pbAuth.AuthClient) *AuthHandler {
 }
 
 func (h *AuthHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/api/auth")
+	api := r.Group("/auth")
 	{
 		api.POST("/register", h.Register)
 		api.POST("/login", h.Login)

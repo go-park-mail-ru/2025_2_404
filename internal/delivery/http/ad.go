@@ -2,27 +2,34 @@ package http
 
 import (
 	"context"
+	"errors"
+	"io"
+	"log"
 	"net/http"
+	"path/filepath"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"2025_2_404/pkg/utils"
-	pbAd "2025_2_404/protos/gen/go/ad" 
+	pbAd "2025_2_404/protos/gen/go/ad"
+	pbStorage "2025_2_404/protos/gen/go/storage"
 )
 
 type AdHandler struct {
 	client pbAd.AdServClient
+	storageClient pbStorage.StorageClient
 }
 
-func NewAdHandler(client pbAd.AdServClient) *AdHandler {
-	return &AdHandler{client: client}
+func NewAdHandler(client pbAd.AdServClient, storageClient pbStorage.StorageClient) *AdHandler {
+	return &AdHandler{client: client, storageClient: storageClient}
 }
 
 func (h *AdHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/api/ads")
+	api := r.Group("/ads")
 	{
 		api.POST("", h.Create)
 		api.GET("", h.GetAll)
@@ -39,9 +46,41 @@ type adDTO struct {
 }
 
 func (h *AdHandler) Create(c *gin.Context) {
-	var dto adDTO
-	if err := c.ShouldBindJSON(&dto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	var fileBytes []byte
+	var imageFilename string
+
+	fileHeader, err := c.FormFile("image")
+	if err == nil {
+		file, err := fileHeader.Open()
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "cannot open image"})
+			return
+		}
+		defer file.Close()
+
+		fileBytes, err = io.ReadAll(file)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot read image"})
+			return
+		}
+
+		extension := filepath.Ext(fileHeader.Filename)
+		if extension == "" {
+			extension = ".jpg" // по умолчанию
+		}
+		uuid := uuid.New().String()
+		imageFilename = "storage/ad/" + uuid + extension
+	} else if !errors.Is(err, http.ErrMissingFile) {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid image"})
+		return
+	}
+	
+	title := c.PostForm("title")
+	content := c.PostForm("content")
+	targetURL := c.PostForm("target_url")
+
+	if title == "" || content == "" || targetURL == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "title, content and target_url are required"})
 		return
 	}
 
@@ -55,9 +94,9 @@ func (h *AdHandler) Create(c *gin.Context) {
 
 	req := &pbAd.CreateRequest{
 		Ad: &pbAd.Ad{
-			Title:     dto.Title,
-			Content:   dto.Content,
-			Targeturl: dto.TargetURL,
+			Title:     title,
+			Content:   content,
+			Targeturl: targetURL,
 		},
 	}
 
@@ -66,6 +105,24 @@ func (h *AdHandler) Create(c *gin.Context) {
 		st, _ := status.FromError(err)
 		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
 		return
+	}
+
+	if len(fileBytes) > 0 {
+		storageCtx, storageCancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer storageCancel()
+
+		_, err := h.storageClient.Create(storageCtx, &pbStorage.CreateRequest{
+			ImagePath: imageFilename,
+			ImageData: fileBytes,
+		})
+		if err != nil {
+			log.Printf("Warning: ad created but image upload failed: %v", err)
+			c.JSON(http.StatusCreated, gin.H{
+				"ad":       resp,
+				"warning":  "image upload failed",
+			})
+			return
+		}
 	}
 
 	c.JSON(http.StatusCreated, resp)

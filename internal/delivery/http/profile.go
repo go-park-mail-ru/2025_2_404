@@ -23,7 +23,7 @@ func NewProfileHandler(client pbProfile.ProfileClient) *ProfileHandler {
 }
 
 func (h *ProfileHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/api/profile")
+	api := r.Group("/profile")
 	{
 		api.GET("", h.Show)
 		api.POST("/update", h.Update) 
