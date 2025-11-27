@@ -12,7 +12,7 @@ import (
 
 const(
 	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1"
-	sqlTextForInsertBalance = "INSERT INTO client_wallet (client_id, balance) VALUES ($1, $2)"
+	// sqlTextForInsertBalance = "INSERT INTO client_wallet (client_id, balance) VALUES ($1, $2)"
 	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id"
 )
 
@@ -36,11 +36,11 @@ func (r *DB) Create(ctx context.Context, user *modeluser.User) (modeluser.ID, er
 		log.Println("Не удалось создать пользователя, причина: %w", err)
 		return uuid.Nil, fmt.Errorf("failed to create user: %w", err)
 	}
-	_, err = r.sql.ExecContext(ctx, sqlTextForInsertBalance, user.ID, 100)
-	if err != nil {
-		log.Println("Не удалось создать баланс пользователя, причина: %w", err)
-		return user.ID, fmt.Errorf("balance not added: %w", err)
-	}
+	// _, err = r.sql.ExecContext(ctx, sqlTextForInsertBalance, user.ID, 0)
+	// if err != nil {
+	// 	log.Println("Не удалось создать баланс пользователя, причина: %w", err)
+	// 	return user.ID, fmt.Errorf("balance not added: %w", err)
+	// }
 	return user.ID, nil
 }
 

@@ -10,6 +10,9 @@ type repositoryI interface{
 	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
 	Update(ctx context.Context, client modeluser.User) error
 	Delete(ctx context.Context, clientID modeluser.ID) error
+	ShowBalance(ctx context.Context, clientID modeluser.ID) (uint32, error)
+	AddBalance(ctx context.Context, clientID modeluser.ID, addAmount uint32) error
+	SubtractBalance(ctx context.Context, clientID modeluser.ID, subAmount uint32) error
 }
 
 type UseCase struct{

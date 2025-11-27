@@ -29,3 +29,8 @@ CREATE TRIGGER tr_slots_updated_at
     BEFORE UPDATE ON slots
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER trigger_create_wallet_after_client_insert
+    AFTER INSERT ON client
+    FOR EACH ROW
+    EXECUTE FUNCTION create_wallet_for_new_client();

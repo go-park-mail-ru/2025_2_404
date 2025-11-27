@@ -8,6 +8,10 @@ service Profile {
     rpc Update(UpdateRequest) returns (UpdateResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse); 
     rpc Show(ShowRequest) returns (ShowResponse);
+    rpc ShowBalance(ShowBalanceRequest) returns (ShowBalanceResponse);
+    rpc AddBalance(AddBalanceRequest) returns (AddBalanceResponse);
+    rpc SubtractBalance(SubtractBalanceRequest) returns (SubtractBalanceResponse);
+
     // rpc ValidateToken(TokenRequest) returns (TokenResponse); можно прописать метод смены пароля но в авторизации а также методы смены имейла и юзернейма
 }
 
@@ -58,3 +62,22 @@ message ShowResponse{
     string profile_type = 10; 
 }
 
+message ShowBalanceRequest {}
+
+message ShowBalanceResponse {
+    uint32 balance = 1;
+}
+
+message AddBalanceRequest {
+    uint32 add_amount = 1;
+}
+
+message AddBalanceResponse {
+}
+
+message SubtractBalanceRequest {
+    uint32 sub_amount = 1;
+}
+
+message SubtractBalanceResponse {
+}

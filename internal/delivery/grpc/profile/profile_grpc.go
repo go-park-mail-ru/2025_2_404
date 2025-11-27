@@ -15,6 +15,9 @@ type ProfileUsecaseI interface{
 	Update(ctx context.Context, client modeluser.User) error
 	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
 	Delete(ctx context.Context, clientID modeluser.ID) error
+	ShowBalance(ctx context.Context, clientID modeluser.ID) (uint32, error)
+	AddBalance(ctx context.Context, clientID modeluser.ID, addAmount uint32) error
+	SubtractBalance(ctx context.Context, clientID modeluser.ID, subAmount uint32) error
 }
 
 type ProfileServer struct {
@@ -94,4 +97,47 @@ func (h *ProfileServer) Delete(ctx context.Context, req *profile.DeleteRequest) 
 	return &profile.DeleteResponse{}, nil
 }
 
+func (h *ProfileServer) ShowBalance(ctx context.Context, req *profile.ShowBalanceRequest) (*profile.ShowBalanceResponse, error){
+	clientID, err := interceptor.GetUserID(ctx) 
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	balance, err := h.profileUsecase.ShowBalance(ctx, clientID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to show balance: %v", err)
+	}
+
+	return &profile.ShowBalanceResponse{
+		Balance: balance,
+	}, nil
+}
+
+func (h *ProfileServer) AddBalance(ctx context.Context, req *profile.AddBalanceRequest) (*profile.AddBalanceResponse, error){
+	clientID, err := interceptor.GetUserID(ctx) 
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	err = h.profileUsecase.AddBalance(ctx, clientID, req.GetAddAmount())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to add balance: %v", err)
+	}
+
+	return &profile.AddBalanceResponse{}, nil
+}
+
+func (h *ProfileServer) SubtractBalance(ctx context.Context, req *profile.SubtractBalanceRequest) (*profile.SubtractBalanceResponse, error){
+	clientID, err := interceptor.GetUserID(ctx) 
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	err = h.profileUsecase.SubtractBalance(ctx, clientID, req.GetSubAmount())
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to subtract balance: %v", err)
+	}
+
+	return &profile.SubtractBalanceResponse{}, nil
+}
 

@@ -91,6 +91,9 @@ func main() {
 	adRouter := r.PathPrefix("/ads").Subrouter()
 	slotRouter := r.PathPrefix("/slots").Subrouter()
 	storageRouter := r.PathPrefix("/api/storage").Subrouter()
+	balanceRouter := r.PathPrefix("/balance").Subrouter()
+
+	// --- HTTP Handlers ---
 
 	authHandler := httphandler.NewAuthHandler(authClient)
 	profileHandler := httphandler.NewProfileHandler(profileClient)
@@ -106,6 +109,11 @@ func main() {
 	profileRouter.HandleFunc("", profileHandler.Show).Methods("GET")
 	profileRouter.HandleFunc("/update", profileHandler.Update).Methods("POST")
 	profileRouter.HandleFunc("", profileHandler.Delete).Methods("DELETE")
+
+	// Balance
+	balanceRouter.HandleFunc("", profileHandler.ShowBalance).Methods("GET")
+	balanceRouter.HandleFunc("/add", profileHandler.AddBalance).Methods("POST")
+	balanceRouter.HandleFunc("/subtract", profileHandler.SubtractBalance).Methods("POST")
 
 	// Ads
 	adRouter.HandleFunc("", adHandler.Create).Methods("POST")
