@@ -80,7 +80,7 @@
 
 # 1. BUILDER STAGE
 # Добавляем --platform=linux/amd64, чтобы сборка шла в "стандартном" режиме
-FROM --platform=linux/amd64 golang:1.24-alpine AS builder
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /build
 
@@ -89,22 +89,19 @@ RUN go mod download
 
 COPY . .
 
-# ЖЕСТКО задаем параметры компиляции:
-# CGO_ENABLED=0 - отключает зависимость от системных библиотек (важно для Alpine)
-# GOOS=linux - собираем под Линукс
-# GOARCH=amd64 - собираем под процессоры Intel/AMD (стандарт)
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o /storage_app ./cmd/storage/main.go
+
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o storage_app ./cmd/storage
 
 # 2. RUNNER STAGE
 # Тут тоже форсируем платформу, чтобы Alpine понимал наш бинарник
-FROM --platform=linux/amd64 alpine:latest
+FROM  alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
 # Копируем бинарник
-COPY --from=builder /storage_app .
+COPY --from=builder /build/storage_app .
 
 # Создаем папку
 RUN mkdir -p /root/storage

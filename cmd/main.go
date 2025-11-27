@@ -32,9 +32,9 @@ func main() {
 		adAddr = "localhost:8079"
 	}
 	
-	StoragePort := os.Getenv("STORAGE_ADDR")
-	if adAddr == "" {
-		adAddr = "localhost:8078"
+	storageAddr := os.Getenv("STORAGE_ADDR")
+	if storageAddr == "" {
+		storageAddr = "localhost:8078"
 	}
 
 	gatewayPort := os.Getenv("APP_PORT")
@@ -75,7 +75,7 @@ func main() {
 	defer connAd.Close()
 	adClient := pbAd.NewAdServClient(connAd)
 
-	connStorage, err := grpc.NewClient(StoragePort, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connStorage, err := grpc.NewClient(storageAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("Failed to connect to Storage: %v", err)
 	}
