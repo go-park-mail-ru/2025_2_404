@@ -85,7 +85,7 @@ func main() {
 	r := gin.Default()
 	r.Use(func(c *gin.Context) {
 	origin := c.GetHeader("Origin")
-	if origin == "http://89.208.230.119:8000" {
+	if origin == "http://89.208.230.119:8000" || origin == "http://localhost:8000" {
 		c.Header("Access-Control-Allow-Origin", origin)
 	}
 	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -99,7 +99,6 @@ func main() {
 	c.Next()
 	})
 
-	// Добавьте глобальный обработчик OPTIONS
 	r.OPTIONS("/*path", func(c *gin.Context) {
 		c.Status(204)
 	})
