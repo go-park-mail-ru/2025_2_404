@@ -21,8 +21,15 @@ import (
 type ctxKey string
 const UserIDKey ctxKey = "userID"
 
+var publicMethods = map[string]bool{
+	"/slot.SlotServ/GetSlot": true,
+}
+
 func AuthInterceptor(authClient authProto.AuthClient) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+		if publicMethods[info.FullMethod] {
+		return handler(ctx, req)
+	}
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, status.Error(codes.Unauthenticated, "no metadata")
