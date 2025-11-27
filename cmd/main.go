@@ -84,14 +84,24 @@ func main() {
 
 	r := gin.Default()
 	r.Use(func(c *gin.Context) {
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(204)
-			return
-		}
-		c.Next()
+	origin := c.GetHeader("Origin")
+	if origin == "http://89.208.230.119:8000" {
+		c.Header("Access-Control-Allow-Origin", origin)
+	}
+	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+	c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if c.Request.Method == "OPTIONS" {
+		c.AbortWithStatus(204)
+		return
+	}
+
+	c.Next()
+	})
+
+	// Добавьте глобальный обработчик OPTIONS
+	r.OPTIONS("/*path", func(c *gin.Context) {
+		c.Status(204)
 	})
 
 	authHandler := gatewayHttp.NewAuthHandler(authClient)
