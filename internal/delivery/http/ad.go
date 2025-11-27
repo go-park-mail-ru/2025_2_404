@@ -1,16 +1,17 @@
 package http
 
 import (
+	"2025_2_404/pkg"
 	"context"
-	"errors"
+	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 	"path/filepath"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
@@ -20,23 +21,12 @@ import (
 )
 
 type AdHandler struct {
-	client pbAd.AdServClient
+	client        pbAd.AdServClient
 	storageClient pbStorage.StorageClient
 }
 
 func NewAdHandler(client pbAd.AdServClient, storageClient pbStorage.StorageClient) *AdHandler {
 	return &AdHandler{client: client, storageClient: storageClient}
-}
-
-func (h *AdHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/ads")
-	{
-		api.POST("", h.Create)
-		api.GET("", h.GetAll)
-		api.GET("/:id", h.GetOne)
-		api.PUT("/:id", h.Update)
-		api.DELETE("/:id", h.Delete)
-	}
 }
 
 type adDTO struct {
@@ -45,51 +35,53 @@ type adDTO struct {
 	TargetURL string `json:"target_url"`
 }
 
-func (h *AdHandler) Create(c *gin.Context) {
+func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
+	if err := parseMultipartForm(r); err != nil {
+		http.Error(w, `{"error":"invalid form"}`, http.StatusBadRequest)
+		return
+	}
+
 	var fileBytes []byte
 	var imageFilename string
 
-	fileHeader, err := c.FormFile("image")
-	if err == nil {
+	if _, fileHeader, err := r.FormFile("image"); err == nil {
 		file, err := fileHeader.Open()
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "cannot open image"})
+			http.Error(w, `{"error":"cannot open image"}`, http.StatusBadRequest)
 			return
 		}
 		defer file.Close()
 
 		fileBytes, err = io.ReadAll(file)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot read image"})
+			http.Error(w, `{"error":"cannot read image"}`, http.StatusInternalServerError)
 			return
 		}
 
-		extension := filepath.Ext(fileHeader.Filename)
-		if extension == "" {
-			extension = ".jpg" // по умолчанию
+		ext := filepath.Ext(fileHeader.Filename)
+		if ext == "" {
+			ext = ".jpg"
 		}
-		uuid := uuid.New().String()
-		imageFilename = "storage/ad/" + uuid + extension
-	} else if !errors.Is(err, http.ErrMissingFile) {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid image"})
+		imageFilename = "storage/ad/" + uuid.New().String() + ext
+	} else if !isMissingFileError(err) {
+		http.Error(w, `{"error":"invalid image"}`, http.StatusBadRequest)
 		return
 	}
-	
-	title := c.PostForm("title")
-	content := c.PostForm("content")
-	targetURL := c.PostForm("target_url")
+
+	title := r.FormValue("title")
+	content := r.FormValue("content")
+	targetURL := r.FormValue("target_url")
 
 	if title == "" || content == "" || targetURL == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "title, content and target_url are required"})
+		http.Error(w, `{"error":"title, content and target_url are required"}`, http.StatusBadRequest)
 		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
 	req := &pbAd.CreateRequest{
@@ -103,88 +95,89 @@ func (h *AdHandler) Create(c *gin.Context) {
 	resp, err := h.client.Create(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
 	if len(fileBytes) > 0 {
-		storageCtx, storageCancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer storageCancel()
-
+		storageCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
 		_, err := h.storageClient.Create(storageCtx, &pbStorage.CreateRequest{
 			ImagePath: imageFilename,
 			ImageData: fileBytes,
 		})
 		if err != nil {
 			log.Printf("Warning: ad created but image upload failed: %v", err)
-			c.JSON(http.StatusCreated, gin.H{
-				"ad":       resp,
-				"warning":  "image upload failed",
+			pkg.JSONResponse(w, http.StatusCreated, map[string]interface{}{
+				"ad": resp,
 			})
 			return
 		}
 	}
 
-	c.JSON(http.StatusCreated, resp)
+	pkg.JSONResponse(w, http.StatusCreated, resp)
 }
 
-func (h *AdHandler) GetAll(c *gin.Context) {
+func isMissingFileError(err error) bool {
+	return err == http.ErrMissingFile
+}
+
+func (h *AdHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
-	
-	req := &pbAd.GetAllAdsRequest{}
 
-	resp, err := h.client.GetAllAds(ctx, req)
+	resp, err := h.client.GetAllAds(ctx, &pbAd.GetAllAdsRequest{})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp.Ads)
+	pkg.JSONResponse(w, http.StatusOK, resp.Ads)
 }
 
-func (h *AdHandler) GetOne(c *gin.Context) {
-	id := c.Param("id")
-	
+func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
-	req := &pbAd.GetAdRequest{Id: id}
-	resp, err := h.client.GetAd(ctx, req)
+	resp, err := h.client.GetAd(ctx, &pbAd.GetAdRequest{Id: id})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		code := utils.HTTPStatusFromCode(st.Code())
+		if code == http.StatusNotFound {
+			http.Error(w, `{"error":"ad not found"}`, http.StatusNotFound)
+		} else {
+			http.Error(w, `{"error":"`+st.Message()+`"}`, code)
+		}
 		return
 	}
 
-	c.JSON(http.StatusOK, resp.Ad)
+	pkg.JSONResponse(w, http.StatusOK, resp.Ad)
 }
 
-func (h *AdHandler) Update(c *gin.Context) {
-	id := c.Param("id")
+func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
 	var dto adDTO
-	if err := c.ShouldBindJSON(&dto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
 		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
 	req := &pbAd.UpdateRequest{
@@ -196,34 +189,32 @@ func (h *AdHandler) Update(c *gin.Context) {
 		},
 	}
 
-	resp, err := h.client.Update(ctx, req)
+	_, err := h.client.Update(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	w.WriteHeader(http.StatusOK)
 }
 
-func (h *AdHandler) Delete(c *gin.Context) {
-	id := c.Param("id")
-	
+func (h *AdHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
-	req := &pbAd.DeleteRequest{Id: id}
-	_, err := h.client.Delete(ctx, req)
+	_, err := h.client.Delete(ctx, &pbAd.DeleteRequest{Id: id})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }

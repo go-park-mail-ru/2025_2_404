@@ -6,12 +6,12 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
-
+	"2025_2_404/pkg"
 	"2025_2_404/pkg/utils"
 	pbProfile "2025_2_404/protos/profile"
+
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 type ProfileHandler struct {
@@ -22,68 +22,64 @@ func NewProfileHandler(client pbProfile.ProfileClient) *ProfileHandler {
 	return &ProfileHandler{client: client}
 }
 
-func (h *ProfileHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/profile")
-	{
-		api.GET("", h.Show)
-		api.POST("/update", h.Update) 
-		api.DELETE("", h.Delete)
-	}
-}
-
-func (h *ProfileHandler) Show(c *gin.Context) {
+func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Проброс токена
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
 	resp, err := h.client.Show(ctx, &pbProfile.ShowRequest{})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	pkg.JSONResponse(w, http.StatusOK, resp)
 }
 
-func (h *ProfileHandler) Update(c *gin.Context) {
+func parseMultipartForm(r *http.Request) error {
+	const maxMemory = 32 << 20 // 32 MB
+	return r.ParseMultipartForm(maxMemory)
+}
+
+func (h *ProfileHandler) Update(w http.ResponseWriter, r *http.Request) {
+	if err := parseMultipartForm(r); err != nil {
+		http.Error(w, `{"error":"failed to parse form"}`, http.StatusBadRequest)
+		return
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
 	req := &pbProfile.UpdateRequest{
-		UserName:    c.PostForm("user_name"),
-		Email:       c.PostForm("email"),
-		Password:    c.PostForm("password"),
-		FirstName:   c.PostForm("first_name"),
-		LastName:    c.PostForm("last_name"),
-		Company:     c.PostForm("company"),
-		Phone:       c.PostForm("phone"),
-		ProfileType: c.PostForm("profile_type"),
+		UserName:    r.FormValue("user_name"),
+		Email:       r.FormValue("email"),
+		Password:    r.FormValue("password"),
+		FirstName:   r.FormValue("first_name"),
+		LastName:    r.FormValue("last_name"),
+		Company:     r.FormValue("company"),
+		Phone:       r.FormValue("phone"),
+		ProfileType: r.FormValue("profile_type"),
 	}
 
-	// Обработка файла (поле "avatar")
-	fileHeader, err := c.FormFile("avatar")
-	if err == nil {
+	if _, fileHeader, err := r.FormFile("avatar"); err == nil {
 		file, err := fileHeader.Open()
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "invalid avatar file"})
+			http.Error(w, `{"error":"invalid avatar file"}`, http.StatusBadRequest)
 			return
 		}
 		defer file.Close()
 
 		bytesData, err := io.ReadAll(file)
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read avatar"})
+			http.Error(w, `{"error":"failed to read avatar"}`, http.StatusInternalServerError)
 			return
 		}
 		req.Avatar = bytesData
@@ -92,28 +88,27 @@ func (h *ProfileHandler) Update(c *gin.Context) {
 	resp, err := h.client.Update(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	pkg.JSONResponse(w, http.StatusOK, resp)
 }
 
-func (h *ProfileHandler) Delete(c *gin.Context) {
+func (h *ProfileHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
 	_, err := h.client.Delete(ctx, &pbProfile.DeleteRequest{})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -2,122 +2,140 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"os"
+	"time"
 
-	"github.com/gin-gonic/gin"
+	httphandler "2025_2_404/internal/delivery/http"
+    "2025_2_404/internal/delivery/http/middleware"
+
+	"github.com/gorilla/mux"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	
-	gatewayHttp "2025_2_404/internal/delivery/http"
+
 	slotpb "2025_2_404/protos/gen/go/slot"
 	pbAuth "2025_2_404/protos/auth"
 	pbAd "2025_2_404/protos/gen/go/ad"
 	pbProfile "2025_2_404/protos/profile"
-	pbStorage "2025_2_404/protos/gen/go/storage" 
+	pbStorage "2025_2_404/protos/gen/go/storage"
 )
 
 func main() {
 	authAddr := os.Getenv("AUTH_ADDR")
 	if authAddr == "" {
-		authAddr = "localhost:8077" 
+		authAddr = "localhost:8077"
 	}
-
 	profileAddr := os.Getenv("PROFILE_ADDR")
 	if profileAddr == "" {
 		profileAddr = "localhost:8076"
 	}
-
 	adAddr := os.Getenv("AD_ADDR")
 	if adAddr == "" {
 		adAddr = "localhost:8079"
 	}
-	
 	storageAddr := os.Getenv("STORAGE_ADDR")
 	if storageAddr == "" {
 		storageAddr = "localhost:8078"
 	}
-
-	gatewayPort := os.Getenv("APP_PORT")
-	if gatewayPort == "" {
-		gatewayPort = "8080"
-	}		
-	
 	slotAddr := os.Getenv("SLOT_ADDR")
 	if slotAddr == "" {
 		slotAddr = "localhost:8081"
 	}
+	gatewayPort := os.Getenv("APP_PORT")
+	if gatewayPort == "" {
+		gatewayPort = "8080"
+	}
 
-	connSlot, err := grpc.NewClient(slotAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-		if err != nil {
-			log.Fatalf("Failed to connect to Slot: %v", err)
-		}
-	defer connSlot.Close()
-	slotClient := slotpb.NewSlotServClient(connSlot)
+	// --- gRPC соединения ---
+	dialOpts := grpc.WithTransportCredentials(insecure.NewCredentials())
 
-	connAuth, err := grpc.NewClient(authAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connAuth, err := grpc.NewClient(authAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Auth: %v", err)
 	}
 	defer connAuth.Close()
 	authClient := pbAuth.NewAuthClient(connAuth)
 
-	connProfile, err := grpc.NewClient(profileAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connProfile, err := grpc.NewClient(profileAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Profile: %v", err)
 	}
 	defer connProfile.Close()
 	profileClient := pbProfile.NewProfileClient(connProfile)
 
-	connAd, err := grpc.NewClient(adAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connAd, err := grpc.NewClient(adAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Ad: %v", err)
 	}
 	defer connAd.Close()
 	adClient := pbAd.NewAdServClient(connAd)
 
-	connStorage, err := grpc.NewClient(storageAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connStorage, err := grpc.NewClient(storageAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Storage: %v", err)
 	}
 	defer connStorage.Close()
 	storageClient := pbStorage.NewStorageClient(connStorage)
 
-	r := gin.Default()
-	r.Use(func(c *gin.Context) {
-	origin := c.GetHeader("Origin")
-	if origin == "http://89.208.230.119:8000" || origin == "http://localhost:8000" {
-		c.Header("Access-Control-Allow-Origin", origin)
+	connSlot, err := grpc.NewClient(slotAddr, dialOpts)
+	if err != nil {
+		log.Fatalf("Failed to connect to Slot: %v", err)
 	}
-	c.Header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-	c.Header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	defer connSlot.Close()
+	slotClient := slotpb.NewSlotServClient(connSlot)
 
-	if c.Request.Method == "OPTIONS" {
-		c.AbortWithStatus(204)
-		return
-	}
+	r := mux.NewRouter()
 
-	c.Next()
-	})
+	authRouter := r.PathPrefix("/auth").Subrouter()
+	profileRouter := r.PathPrefix("/profile").Subrouter()
+	adRouter := r.PathPrefix("/ads").Subrouter()
+	slotRouter := r.PathPrefix("/slots").Subrouter()
+	storageRouter := r.PathPrefix("/api/storage").Subrouter()
 
-	r.OPTIONS("/*path", func(c *gin.Context) {
-		c.Status(204)
-	})
+	authHandler := httphandler.NewAuthHandler(authClient)
+	profileHandler := httphandler.NewProfileHandler(profileClient)
+	adHandler := httphandler.NewAdHandler(adClient, storageClient)
+	slotHandler := httphandler.NewSlotHandler(slotClient, adClient)
+	storageHandler := httphandler.NewStorageHandler(storageClient)
 
-	authHandler := gatewayHttp.NewAuthHandler(authClient)
-	authHandler.RegisterRoutes(r)
+	// Auth
+	authRouter.HandleFunc("/register", authHandler.Register).Methods("POST")
+	authRouter.HandleFunc("/login", authHandler.Login).Methods("POST")
 
-	profileHandler := gatewayHttp.NewProfileHandler(profileClient)
-	profileHandler.RegisterRoutes(r)
+	// Profile
+	profileRouter.HandleFunc("", profileHandler.Show).Methods("GET")
+	profileRouter.HandleFunc("/update", profileHandler.Update).Methods("POST")
+	profileRouter.HandleFunc("", profileHandler.Delete).Methods("DELETE")
 
-	adHandler := gatewayHttp.NewAdHandler(adClient, storageClient)
-	adHandler.RegisterRoutes(r)
+	// Ads
+	adRouter.HandleFunc("", adHandler.Create).Methods("POST")
+	adRouter.HandleFunc("", adHandler.GetAll).Methods("GET")
+	adRouter.HandleFunc("/{id}", adHandler.GetOne).Methods("GET")
+	adRouter.HandleFunc("/{id}", adHandler.Update).Methods("PUT")
+	adRouter.HandleFunc("/{id}", adHandler.Delete).Methods("DELETE")
 
-	slotHandler := gatewayHttp.NewSlotHandler(slotClient, adClient)
-	slotHandler.RegisterRoutes(r)
+	// Slots
+	slotRouter.HandleFunc("/serving/{id}", slotHandler.ServeSlot).Methods("GET")
+	slotRouter.HandleFunc("", slotHandler.Create).Methods("POST")
+	slotRouter.HandleFunc("", slotHandler.GetAll).Methods("GET")
+	slotRouter.HandleFunc("/{id}", slotHandler.GetOne).Methods("GET")
+	slotRouter.HandleFunc("/{id}", slotHandler.Update).Methods("PUT")
+	slotRouter.HandleFunc("/{id}", slotHandler.Delete).Methods("DELETE")
 
-	//  r.Run(":" + gatewayPort)
+	// Storage
+	storageRouter.HandleFunc("", storageHandler.Get).Methods("GET")
+	storageRouter.HandleFunc("", storageHandler.Create).Methods("POST")
+	storageRouter.HandleFunc("", storageHandler.Delete).Methods("DELETE")
+
+	handler := middleware.CorsMiddleware(r)
 	log.Printf("API Gateway running on %s", gatewayPort)
-	if err := r.Run(":" + gatewayPort); err != nil {
+	srv := &http.Server{
+		Addr:         ":" + gatewayPort,
+		Handler:      handler,
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+	}
+	if err := srv.ListenAndServe(); err != nil {
 		log.Fatalf("Failed to run gateway: %v", err)
 	}
 }

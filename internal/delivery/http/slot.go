@@ -1,123 +1,97 @@
 package http
 
 import (
-	adpb "2025_2_404/protos/gen/go/ad"
-	slotpb "2025_2_404/protos/gen/go/slot"
 	"context"
-	"fmt"
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"time"
 
-	"2025_2_404/pkg/utils"
-
-	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+
+	"2025_2_404/pkg"
+	"2025_2_404/pkg/utils"
+	adpb "2025_2_404/protos/gen/go/ad"
+	slotpb "2025_2_404/protos/gen/go/slot"
 )
 
 type SlotHandler struct {
-	client slotpb.SlotServClient
+	client   slotpb.SlotServClient
 	adClient adpb.AdServClient
-	tmpl   *template.Template
+	tmpl     *template.Template
 }
 
 func NewSlotHandler(client slotpb.SlotServClient, adClient adpb.AdServClient) *SlotHandler {
 	tmpl := template.Must(template.ParseFiles("template/template.html"))
-	return &SlotHandler{client: client,adClient: adClient, tmpl: tmpl}
-}
-
-func (h *SlotHandler) RegisterRoutes(r *gin.Engine) {
-	slots := r.Group("/slots") 
-	{
-		slots.GET("/serving/:id", h.ServeSlot) // не работает 
-		slots.POST("", h.Create)
-		slots.GET("", h.GetAll)
-		slots.GET("/:id", h.GetOne)
-		slots.PUT("/:id", h.Update) // не работает тут мб такая же проблема с типом id slot должен быть uuid а передается string 
-		slots.DELETE("/:id", h.Delete)
-	}
+	return &SlotHandler{client: client, adClient: adClient, tmpl: tmpl}
 }
 
 type slotRenderData struct {
-	Title      string 
-	ImageSrc   string 
-	Link       string 
-	Background string 
-	Color      string 
+	Title      string
+	ImageSrc   string
+	Link       string
+	Background string
+	Color      string
 }
 
-func (h *SlotHandler) ServeSlot(c *gin.Context) {
-	slotID := c.Param("id")
+func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	slotID := vars["id"]
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	slotReq := &slotpb.GetSlotRequest{Id: slotID}
-	slotResp, err := h.client.GetSlot(ctx, slotReq)
+	resp, err := h.client.GetSlot(ctx, &slotpb.GetSlotRequest{Id: slotID})
 	if err != nil {
 		st, _ := status.FromError(err)
-		if st.Code() == 5 { 
-			c.Status(http.StatusNotFound)
+		if st.Code() == 5 { // NotFound
+			http.Error(w, "", http.StatusNotFound)
 		} else {
-			c.Status(http.StatusInternalServerError)
+			http.Error(w, "", http.StatusInternalServerError)
 		}
 		return
 	}
 
-	adReq := &adpb.GetAllAdsRequest{}
-	adResp, err := h.adClient.GetAllAds(ctx, adReq)
-	if err != nil {
-		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": "failed to fetch ads"})
-		return
-	}
-
-	if len(adResp.Ads) == 0 {
-		c.Status(http.StatusNotFound) 
-		return
-	}
-
-	ad := adResp.Ads[0]
-
 	data := slotRenderData{
-		Title:      ad.Title,
-		ImageSrc:   "", 
-		Link:       ad.Targeturl,
-		Background: slotResp.Slot.BackColor,
-		Color:      slotResp.Slot.TextColor,
+		Title:      "Hello, world",
+		ImageSrc:   "",
+		Link:       "https://habr.com/ru/companies/otus/articles/782812/",
+		Background: resp.Slot.BackColor,
+		Color:      resp.Slot.TextColor,
 	}
 
-	c.Header("Content-Type", "text/html; charset=utf-8")
-	c.Header("X-Content-Type-Options", "nosniff")
-	if err := h.tmpl.Execute(c.Writer, data); err != nil {
-		c.Status(http.StatusInternalServerError)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self' http://localhost:8000 http://89.208.230.119:8000;")
+
+	if err := h.tmpl.Execute(w, data); err != nil {
+		http.Error(w, "", http.StatusInternalServerError)
 	}
 }
 
 type slotDTO struct {
-	SlotName       string `json:"slot_name" binding:"required"`
-	MinCostAdv     int32  `json:"min_cost_adv" binding:"required"`
-	FormatOfBanner string `json:"format_of_banner" binding:"required"`
+	SlotName       string `json:"slot_name"`
+	MinCostAdv     int32  `json:"min_cost_adv"`
+	FormatOfBanner string `json:"format_of_banner"`
 	Status         string `json:"status"`
-	BackColor      string `json:"back_color" binding:"required"`
-	TextColor      string `json:"text_color" binding:"required"`
+	BackColor      string `json:"back_color"`
+	TextColor      string `json:"text_color"`
 }
 
-func (h *SlotHandler) Create(c *gin.Context) {
+func (h *SlotHandler) Create(w http.ResponseWriter, r *http.Request) {
 	var dto slotDTO
-	if err := c.ShouldBindJSON(&dto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
 		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
 	req := &slotpb.CreateSlotRequest{
@@ -134,74 +108,69 @@ func (h *SlotHandler) Create(c *gin.Context) {
 	resp, err := h.client.CreateSlot(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"id": resp.Id})
+	pkg.JSONResponse(w, http.StatusCreated, map[string]string{"id": resp.Id})
 }
 
-func (h *SlotHandler) GetAll(c *gin.Context) {
+func (h *SlotHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
-	req := &slotpb.ListSlotsRequest{}
-	resp, err := h.client.ListSlots(ctx, req)
+	resp, err := h.client.ListSlots(ctx, &slotpb.ListSlotsRequest{})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp.Slots)
+	pkg.JSONResponse(w, http.StatusOK, resp.Slots)
 }
 
-func (h *SlotHandler) GetOne(c *gin.Context) {
-	id := c.Param("id")
-	slotID, err := uuid.Parse(id)
-	if err != nil {
-		fmt.Println("can`t parse into uuid err %w", err)
-		return 
-	} 
+func (h *SlotHandler) GetOne(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	if _, err := uuid.Parse(id); err != nil {
+		http.Error(w, `{"error":"invalid UUID"}`, http.StatusBadRequest)
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
-	req := &slotpb.GetSlotRequest{Id: slotID.String()}
-	resp, err := h.client.GetSlot(ctx, req)
+	resp, err := h.client.GetSlot(ctx, &slotpb.GetSlotRequest{Id: id})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp.Slot)
+	pkg.JSONResponse(w, http.StatusOK, resp.Slot)
 }
 
-func (h *SlotHandler) Update(c *gin.Context) {
-	id := c.Param("id")
+func (h *SlotHandler) Update(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
 	var dto slotDTO
-	if err := c.ShouldBindJSON(&dto); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
 		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
 	req := &slotpb.UpdateSlotRequest{
@@ -219,31 +188,29 @@ func (h *SlotHandler) Update(c *gin.Context) {
 	_, err := h.client.UpdateSlot(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.Status(http.StatusOK)
+	w.WriteHeader(http.StatusOK)
 }
 
-func (h *SlotHandler) Delete(c *gin.Context) {
-	id := c.Param("id")
+func (h *SlotHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-
-	authHeader := c.GetHeader("Authorization")
-	if authHeader != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", authHeader)
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
-	req := &slotpb.DeleteSlotRequest{Id: id}
-	_, err := h.client.DeleteSlot(ctx, req)
+	_, err := h.client.DeleteSlot(ctx, &slotpb.DeleteSlotRequest{Id: id})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }

@@ -2,14 +2,13 @@ package http
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc/status"
-
 	"2025_2_404/pkg/utils"
 	pbAuth "2025_2_404/protos/auth"
+	"google.golang.org/grpc/status"
 )
 
 type AuthHandler struct {
@@ -20,29 +19,30 @@ func NewAuthHandler(client pbAuth.AuthClient) *AuthHandler {
 	return &AuthHandler{client: client}
 }
 
-func (h *AuthHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/auth")
-	{
-		api.POST("/register", h.Register)
-		api.POST("/login", h.Login)
-	}
-}
-
 type registerDTO struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=6"`
-	UserName string `json:"user_name" binding:"required"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+	UserName string `json:"user_name"`
 }
 
 type loginDTO struct {
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
-func (h *AuthHandler) Register(c *gin.Context) {
+func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerDTO
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
+		return
+	}
+
+	if req.Email == "" || req.Password == "" || req.UserName == "" {
+		http.Error(w, `{"error":"email, password, and user_name are required"}`, http.StatusBadRequest)
+		return
+	}
+	if len(req.Password) < 6 {
+		http.Error(w, `{"error":"password must be at least 6 characters"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -54,20 +54,26 @@ func (h *AuthHandler) Register(c *gin.Context) {
 		Password: req.Password,
 		UserName: req.UserName,
 	})
-
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusCreated, resp)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(resp)
 }
 
-func (h *AuthHandler) Login(c *gin.Context) {
+func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginDTO
-	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
+		return
+	}
+
+	if req.Email == "" || req.Password == "" {
+		http.Error(w, `{"error":"email and password are required"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -78,12 +84,12 @@ func (h *AuthHandler) Login(c *gin.Context) {
 		Email:    req.Email,
 		Password: req.Password,
 	})
-
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusOK, resp)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }

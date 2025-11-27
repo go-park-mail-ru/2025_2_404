@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gin-gonic/gin"
-	"google.golang.org/grpc/status"
-
+	"2025_2_404/pkg"
 	"2025_2_404/pkg/utils"
 	pbStorage "2025_2_404/protos/gen/go/storage"
+
+	"google.golang.org/grpc/status"
 )
 
 type StorageHandler struct {
@@ -21,36 +21,25 @@ func NewStorageHandler(client pbStorage.StorageClient) *StorageHandler {
 	return &StorageHandler{client: client}
 }
 
-func (h *StorageHandler) RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/api/storage")
-	{
-		api.GET("", h.Get)
-		api.POST("", h.Create) 
-		api.DELETE("", h.Delete)
-	}
-}
-func (h *StorageHandler) Get(c *gin.Context) {
-	path := c.Query("path")
+func (h *StorageHandler) Get(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Query().Get("path")
 	if path == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "path query param is required"})
+		http.Error(w, `{"error":"path query param is required"}`, http.StatusBadRequest)
 		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	resp, err := h.client.Get(ctx, &pbStorage.GetRequest{
-		ImagePath: path,
-	})
-
+	resp, err := h.client.Get(ctx, &pbStorage.GetRequest{ImagePath: path})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
 	if len(resp.ImageData) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "image not found"})
+		http.Error(w, `{"error":"image not found"}`, http.StatusNotFound)
 		return
 	}
 
@@ -59,71 +48,73 @@ func (h *StorageHandler) Get(c *gin.Context) {
 		contentType = http.DetectContentType(resp.ImageData)
 	}
 
-	c.Data(http.StatusOK, contentType, resp.ImageData)
+	w.Header().Set("Content-Type", contentType)
+	w.Write(resp.ImageData)
 }
 
-func (h *StorageHandler) Create(c *gin.Context) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
-	path := c.PostForm("path") 
-	if path == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "path is required"})
+func (h *StorageHandler) Create(w http.ResponseWriter, r *http.Request) {
+	if err := parseMultipartForm(r); err != nil {
+		http.Error(w, `{"error":"invalid form"}`, http.StatusBadRequest)
 		return
 	}
 
-	fileHeader, err := c.FormFile("file")
+	path := r.FormValue("path")
+	if path == "" {
+		http.Error(w, `{"error":"path is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	_, fileHeader, err := r.FormFile("file")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "file is required"})
+		http.Error(w, `{"error":"file is required"}`, http.StatusBadRequest)
 		return
 	}
 
 	file, err := fileHeader.Open()
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "cannot open file"})
+		http.Error(w, `{"error":"cannot open file"}`, http.StatusBadRequest)
 		return
 	}
 	defer file.Close()
 
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "cannot read file"})
+		http.Error(w, `{"error":"cannot read file"}`, http.StatusInternalServerError)
 		return
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
 
 	_, err = h.client.Create(ctx, &pbStorage.CreateRequest{
 		ImagePath: path,
 		ImageData: fileBytes,
 	})
-
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "file uploaded"})
+	pkg.JSONResponse(w, http.StatusCreated, nil)
 }
 
-func (h *StorageHandler) Delete(c *gin.Context) {
-	path := c.Query("path")
+func (h *StorageHandler) Delete(w http.ResponseWriter, r *http.Request) {
+	path := r.URL.Query().Get("path")
 	if path == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "path is required"})
+		http.Error(w, `{"error":"path is required"}`, http.StatusBadRequest)
 		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	_, err := h.client.Delete(ctx, &pbStorage.DeleteRequest{
-		ImagePath: path,
-	})
-
+	_, err := h.client.Delete(ctx, &pbStorage.DeleteRequest{ImagePath: path})
 	if err != nil {
 		st, _ := status.FromError(err)
-		c.JSON(utils.HTTPStatusFromCode(st.Code()), gin.H{"error": st.Message()})
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
-	c.Status(http.StatusNoContent)
+	w.WriteHeader(http.StatusNoContent)
 }
