@@ -6,8 +6,8 @@ import (
 )
 
 const(
-	sqlTextForShowBalance = "SELECT balance FROM client_wallet WHERE id = $1"
-	sqlTextForUpdateBalance = "UPDATE client_wallet SET balance = $1 WHERE id = $2"
+	sqlTextForShowBalance = "SELECT balance FROM client_wallet WHERE client_id = $1"
+	sqlTextForUpdateBalance = "UPDATE client_wallet SET balance = $1 WHERE client_id = $2"
 )
 
 func (r *DB) ShowBalance(ctx context.Context, clientID modelclient.ID) (uint32, error) {
