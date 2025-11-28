@@ -90,7 +90,6 @@ func main() {
 	profileRouter := r.PathPrefix("/profile").Subrouter()
 	adRouter := r.PathPrefix("/ads").Subrouter()
 	slotRouter := r.PathPrefix("/slots").Subrouter()
-	storageRouter := r.PathPrefix("/api/storage").Subrouter()
 	balanceRouter := r.PathPrefix("/balance").Subrouter()
 
 	// --- HTTP Handlers ---
@@ -99,7 +98,6 @@ func main() {
 	profileHandler := httphandler.NewProfileHandler(profileClient)
 	adHandler := httphandler.NewAdHandler(adClient, storageClient)
 	slotHandler := httphandler.NewSlotHandler(slotClient, adClient)
-	storageHandler := httphandler.NewStorageHandler(storageClient)
 
 	// Auth
 	authRouter.HandleFunc("/register", authHandler.Register).Methods("POST")
@@ -129,11 +127,6 @@ func main() {
 	slotRouter.HandleFunc("/{id}", slotHandler.GetOne).Methods("GET")
 	slotRouter.HandleFunc("/{id}", slotHandler.Update).Methods("PUT")
 	slotRouter.HandleFunc("/{id}", slotHandler.Delete).Methods("DELETE")
-
-	// Storage
-	storageRouter.HandleFunc("", storageHandler.Get).Methods("GET")
-	storageRouter.HandleFunc("", storageHandler.Create).Methods("POST")
-	storageRouter.HandleFunc("", storageHandler.Delete).Methods("DELETE")
 
 	handler := middleware.CorsMiddleware(r)
 	log.Printf("API Gateway running on %s", gatewayPort)

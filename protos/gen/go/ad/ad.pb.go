@@ -27,7 +27,11 @@ type Ad struct {
 	ClientID      string                 `protobuf:"bytes,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
 	Title         string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
 	Content       string                 `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"`
-	Targeturl     string                 `protobuf:"bytes,5,opt,name=targeturl,proto3" json:"targeturl,omitempty"`
+	ImgPath       string                 `protobuf:"bytes,5,opt,name=imgPath,proto3" json:"imgPath,omitempty"`
+	Targeturl     string                 `protobuf:"bytes,6,opt,name=targeturl,proto3" json:"targeturl,omitempty"`
+	Budget        uint32                 `protobuf:"varint,7,opt,name=budget,proto3" json:"budget,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,8,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	UpdatedAt     string                 `protobuf:"bytes,9,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -90,9 +94,37 @@ func (x *Ad) GetContent() string {
 	return ""
 }
 
+func (x *Ad) GetImgPath() string {
+	if x != nil {
+		return x.ImgPath
+	}
+	return ""
+}
+
 func (x *Ad) GetTargeturl() string {
 	if x != nil {
 		return x.Targeturl
+	}
+	return ""
+}
+
+func (x *Ad) GetBudget() uint32 {
+	if x != nil {
+		return x.Budget
+	}
+	return 0
+}
+
+func (x *Ad) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+func (x *Ad) GetUpdatedAt() string {
+	if x != nil {
+		return x.UpdatedAt
 	}
 	return ""
 }
@@ -179,7 +211,6 @@ func (*CreateResponse) Descriptor() ([]byte, []int) {
 
 type GetAllAdsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	ClientID      string                 `protobuf:"bytes,1,opt,name=clientID,proto3" json:"clientID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -212,13 +243,6 @@ func (x *GetAllAdsRequest) ProtoReflect() protoreflect.Message {
 // Deprecated: Use GetAllAdsRequest.ProtoReflect.Descriptor instead.
 func (*GetAllAdsRequest) Descriptor() ([]byte, []int) {
 	return file_ad_ad_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *GetAllAdsRequest) GetClientID() string {
-	if x != nil {
-		return x.ClientID
-	}
-	return ""
 }
 
 type GetAllAdsResponse struct {
@@ -444,7 +468,6 @@ func (*UpdateResponse) Descriptor() ([]byte, []int) {
 type DeleteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ClientID      string                 `protobuf:"bytes,2,opt,name=clientID,proto3" json:"clientID,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -482,13 +505,6 @@ func (*DeleteRequest) Descriptor() ([]byte, []int) {
 func (x *DeleteRequest) GetId() string {
 	if x != nil {
 		return x.Id
-	}
-	return ""
-}
-
-func (x *DeleteRequest) GetClientID() string {
-	if x != nil {
-		return x.ClientID
 	}
 	return ""
 }
@@ -533,18 +549,21 @@ var File_ad_ad_proto protoreflect.FileDescriptor
 
 const file_ad_ad_proto_rawDesc = "" +
 	"\n" +
-	"\vad/ad.proto\x12\x02ad\"~\n" +
+	"\vad/ad.proto\x12\x02ad\"\xec\x01\n" +
 	"\x02Ad\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\bclientID\x18\x02 \x01(\tR\bclientID\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\x12\x18\n" +
-	"\acontent\x18\x04 \x01(\tR\acontent\x12\x1c\n" +
-	"\ttargeturl\x18\x05 \x01(\tR\ttargeturl\"'\n" +
+	"\acontent\x18\x04 \x01(\tR\acontent\x12\x18\n" +
+	"\aimgPath\x18\x05 \x01(\tR\aimgPath\x12\x1c\n" +
+	"\ttargeturl\x18\x06 \x01(\tR\ttargeturl\x12\x16\n" +
+	"\x06budget\x18\a \x01(\rR\x06budget\x12\x1c\n" +
+	"\tcreatedAt\x18\b \x01(\tR\tcreatedAt\x12\x1c\n" +
+	"\tupdatedAt\x18\t \x01(\tR\tupdatedAt\"'\n" +
 	"\rCreateRequest\x12\x16\n" +
 	"\x02ad\x18\x01 \x01(\v2\x06.ad.AdR\x02ad\"\x10\n" +
-	"\x0eCreateResponse\".\n" +
-	"\x10GetAllAdsRequest\x12\x1a\n" +
-	"\bclientID\x18\x01 \x01(\tR\bclientID\"-\n" +
+	"\x0eCreateResponse\"\x12\n" +
+	"\x10GetAllAdsRequest\"-\n" +
 	"\x11GetAllAdsResponse\x12\x18\n" +
 	"\x03ads\x18\x01 \x03(\v2\x06.ad.AdR\x03ads\":\n" +
 	"\fGetAdRequest\x12\x0e\n" +
@@ -554,10 +573,9 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\x02ad\x18\x01 \x01(\v2\x06.ad.AdR\x02ad\"'\n" +
 	"\rUpdateRequest\x12\x16\n" +
 	"\x02ad\x18\x01 \x01(\v2\x06.ad.AdR\x02ad\"\x10\n" +
-	"\x0eUpdateResponse\";\n" +
+	"\x0eUpdateResponse\"\x1f\n" +
 	"\rDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
-	"\bclientID\x18\x02 \x01(\tR\bclientID\"\x10\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"\x10\n" +
 	"\x0eDeleteResponse2\x83\x02\n" +
 	"\x06AdServ\x12/\n" +
 	"\x06Create\x12\x11.ad.CreateRequest\x1a\x12.ad.CreateResponse\x128\n" +

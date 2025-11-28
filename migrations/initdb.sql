@@ -51,17 +51,6 @@ CREATE TABLE IF NOT EXISTS notification_user (
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS slot_ad_assignment (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    slot_id UUID NOT NULL REFERENCES slots(id) ON DELETE CASCADE,
-    ad_id UUID NOT NULL REFERENCES ad(id) ON DELETE CASCADE,
-    weight INT NOT NULL DEFAULT 1 CHECK (weight > 0),
-    start_at TIMESTAMP,
-    end_at TIMESTAMP,
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(slot_id, ad_id)
-);
-
 CREATE TABLE IF NOT EXISTS ad (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	client_id UUID REFERENCES client(id) ON DELETE CASCADE,
@@ -81,11 +70,24 @@ CREATE TABLE IF NOT EXISTS ad (
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS slots (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES client(id) ON DELETE CASCADE,
+    slot_name VARCHAR(100) NOT NULL CHECK (length(slot_name) BETWEEN 1 AND 100),
+    min_cost_adv INT NOT NULL CHECK (min_cost_adv >= 0),
+    format_of_banner VARCHAR(20) NOT NULL CHECK (format_of_banner IN ('horizontal', 'vertical', 'square')),
+    status VARCHAR(10) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused')),
+    back_color VARCHAR(7) NOT NULL DEFAULT '#ffffff' CHECK (back_color ~ '^#[0-9A-Fa-f]{6}$'),
+    text_color VARCHAR(7) NOT NULL DEFAULT '#000000' CHECK (text_color ~ '^#[0-9A-Fa-f]{6}$'),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS ad_detail (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	ad_id UUID REFERENCES ad(id) ON DELETE CASCADE,
-	platform_id UUID REFERENCES platform(id) ON DELETE CASCADE,
-	amount_for_ad NUMERIC(12, 2) NOT NULL CHECK (amount_for_ad > 0),
+	slot_id UUID REFERENCES slots(id) ON DELETE CASCADE,
+	budget INT NOT NULL CHECK (budget > 0),
     status TEXT NOT NULL CHECK (
 		length(status) >= 1 AND length(status) <= 40
 	),
@@ -102,15 +104,3 @@ CREATE TABLE IF NOT EXISTS statistic (
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );;
 
-CREATE TABLE IF NOT EXISTS slots (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES client(id) ON DELETE CASCADE,
-    slot_name VARCHAR(100) NOT NULL CHECK (length(slot_name) BETWEEN 1 AND 100),
-    min_cost_adv INT NOT NULL CHECK (min_cost_adv >= 0),
-    format_of_banner VARCHAR(20) NOT NULL CHECK (format_of_banner IN ('horizontal', 'vertical', 'square')),
-    status VARCHAR(10) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused')),
-    back_color VARCHAR(7) NOT NULL DEFAULT '#ffffff' CHECK (back_color ~ '^#[0-9A-Fa-f]{6}$'),
-    text_color VARCHAR(7) NOT NULL DEFAULT '#000000' CHECK (text_color ~ '^#[0-9A-Fa-f]{6}$'),
-    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);

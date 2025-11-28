@@ -11,7 +11,7 @@ import (
 type adRepositoryI interface {
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
 	Create(ctx context.Context, ad modelad.Ads) (error)
-	GetOneAd(ctx context.Context, adID modelad.ID) (modelfullad.AdFullInfo, error)
+	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 }
@@ -42,8 +42,8 @@ func (u *UseCase) Delete(ctx context.Context, adID modelad.ID, clientID modeluse
 	return u.adRepo.Delete(ctx, adID, clientID)
 }
 
-func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID) (modelfullad.AdFullInfo, int, error) {
-	adInfo, err := u.adRepo.GetOneAd(ctx, adID)
+func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error) {
+	adInfo, err := u.adRepo.GetOneAd(ctx, adID, clientID)
 	conversion := -1
 	if err != nil {
 		return modelfullad.AdFullInfo{}, conversion, fmt.Errorf("Failed to get ad with id error %w", err)

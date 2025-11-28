@@ -11,7 +11,7 @@ type AdFullInfo struct {
 	ImgPath    string `json:"img_bin"`
 	TargetUrl string `json:"target_url"`
 
-	AmountForAd int `json:"amount_for_ad"`
+	Budget uint32 `json:"budget"`
 
 	Clicks      int `json:"clicks"`
 	Impressions int `json:"impressions"`

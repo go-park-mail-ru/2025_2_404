@@ -17,7 +17,11 @@ message Ad {
     string clientID = 2;
     string title = 3;
     string content = 4;
-    string targeturl = 5;
+    string imgPath = 5;
+    string targeturl = 6;
+    uint32 budget = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
 }
 
 message CreateRequest{
@@ -29,7 +33,6 @@ message CreateResponse{
 }
 
 message GetAllAdsRequest{
-    string clientID = 1;
 }
 
 message GetAllAdsResponse{
@@ -55,7 +58,6 @@ message UpdateResponse{
 
 message DeleteRequest{
     string id = 1; 
-    string clientID = 2;
 }
 
 message DeleteResponse{

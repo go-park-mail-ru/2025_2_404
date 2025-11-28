@@ -19,7 +19,7 @@ type adUsecaseI interface{
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
-	GetOneAd(ctx context.Context, adID modelad.ID) (modelfullad.AdFullInfo, int, error)
+	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
 }
 
 type adService struct{
@@ -42,10 +42,12 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 	}
 	protoAd := req.GetAd()
 	
-	ad := modelad.Ads{
-		ClientID: 	clientID,
+	ad := modelad.Ads {
 		Title: protoAd.Title,
+		ClientID: clientID,
 		Content: protoAd.Content,
+		Budget: protoAd.Budget,
+		ImagePath: protoAd.ImgPath,
 		TargetUrl: protoAd.Targeturl,
 	}
 	if err := s.adUsecase.Create(ctx, ad); err != nil{
@@ -134,17 +136,18 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 	}
 	adID := modelad.ID(id)
 
-	adFull, _, err := s.adUsecase.GetOneAd(ctx, adID)
+	adFull, _, err := s.adUsecase.GetOneAd(ctx, adID, modeluser.ID(clientID))
 	if err != nil{
 		return &adv1.GetAdResponse{}, err
 	}
 
 	ad := &adv1.Ad{
 		Id: uuid.UUID(adFull.ID).String(),
-		ClientID: uuid.UUID(clientID).String(),
 		Title: adFull.Title,
 		Content: adFull.Content,
 		Targeturl: adFull.TargetUrl,
+		ImgPath: adFull.ImgPath,
+		Budget: adFull.Budget,
 	}
 
 	return &adv1.GetAdResponse{Ad: ad}, nil
