@@ -51,12 +51,15 @@ CREATE TABLE IF NOT EXISTS notification_user (
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS platform (
-	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-	platform_name TEXT UNIQUE NOT NULL CHECK (
-		length(platform_name) >= 1 AND length(platform_name) <= 100
-	),
-	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS slot_ad_assignment (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    slot_id UUID NOT NULL REFERENCES slots(id) ON DELETE CASCADE,
+    ad_id UUID NOT NULL REFERENCES ad(id) ON DELETE CASCADE,
+    weight INT NOT NULL DEFAULT 1 CHECK (weight > 0),
+    start_at TIMESTAMP,
+    end_at TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(slot_id, ad_id)
 );
 
 CREATE TABLE IF NOT EXISTS ad (
