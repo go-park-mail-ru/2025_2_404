@@ -15,6 +15,13 @@ message Slot {
     string text_color = 8;
 }
 
+message AdSlot  {
+    string title = 1;
+    string description = 2;
+    string image_src = 3;
+    string link = 4;
+}
+
 message CreateSlotRequest {
     Slot slot = 1;
 }
@@ -29,6 +36,7 @@ message GetSlotRequest {
 
 message GetSlotResponse {
     Slot slot = 1;
+    AdSlot ad_slot = 2;
 }
 
 message ListSlotsRequest {}

@@ -16,6 +16,7 @@ import (
 	"2025_2_404/pkg/utils"
 	adpb "2025_2_404/protos/gen/go/ad"
 	slotpb "2025_2_404/protos/gen/go/slot"
+	"2025_2_404/internal/service/slot/domain/slot"
 )
 
 type SlotHandler struct {
@@ -27,14 +28,6 @@ type SlotHandler struct {
 func NewSlotHandler(client slotpb.SlotServClient, adClient adpb.AdServClient) *SlotHandler {
 	tmpl := template.Must(template.ParseFiles("template/template.html"))
 	return &SlotHandler{client: client, adClient: adClient, tmpl: tmpl}
-}
-
-type slotRenderData struct {
-	Title      string
-	ImageSrc   string
-	Link       string
-	Background string
-	Color      string
 }
 
 func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
@@ -55,12 +48,13 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := slotRenderData{
-		Title:      "Hello, world",
-		ImageSrc:   "",
-		Link:       "https://habr.com/ru/companies/otus/articles/782812/",
-		Background: resp.Slot.BackColor,
-		Color:      resp.Slot.TextColor,
+	data := slot.SlotRenderData{
+		Title:       resp.AdSlot.Title,
+		Description: resp.AdSlot.Description,
+		ImageSrc:    resp.AdSlot.ImageSrc,
+		Link:        resp.AdSlot.Link,
+		Background:  resp.Slot.BackColor,
+		Color:       resp.Slot.TextColor,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

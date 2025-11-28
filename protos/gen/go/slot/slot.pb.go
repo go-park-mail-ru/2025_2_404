@@ -121,6 +121,74 @@ func (x *Slot) GetTextColor() string {
 	return ""
 }
 
+type AdSlot struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Title         string                 `protobuf:"bytes,1,opt,name=title,proto3" json:"title,omitempty"`
+	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
+	ImageSrc      string                 `protobuf:"bytes,3,opt,name=image_src,json=imageSrc,proto3" json:"image_src,omitempty"`
+	Link          string                 `protobuf:"bytes,4,opt,name=link,proto3" json:"link,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AdSlot) Reset() {
+	*x = AdSlot{}
+	mi := &file_slot_slot_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AdSlot) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AdSlot) ProtoMessage() {}
+
+func (x *AdSlot) ProtoReflect() protoreflect.Message {
+	mi := &file_slot_slot_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AdSlot.ProtoReflect.Descriptor instead.
+func (*AdSlot) Descriptor() ([]byte, []int) {
+	return file_slot_slot_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *AdSlot) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *AdSlot) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *AdSlot) GetImageSrc() string {
+	if x != nil {
+		return x.ImageSrc
+	}
+	return ""
+}
+
+func (x *AdSlot) GetLink() string {
+	if x != nil {
+		return x.Link
+	}
+	return ""
+}
+
 type CreateSlotRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Slot          *Slot                  `protobuf:"bytes,1,opt,name=slot,proto3" json:"slot,omitempty"`
@@ -130,7 +198,7 @@ type CreateSlotRequest struct {
 
 func (x *CreateSlotRequest) Reset() {
 	*x = CreateSlotRequest{}
-	mi := &file_slot_slot_proto_msgTypes[1]
+	mi := &file_slot_slot_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -142,7 +210,7 @@ func (x *CreateSlotRequest) String() string {
 func (*CreateSlotRequest) ProtoMessage() {}
 
 func (x *CreateSlotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[1]
+	mi := &file_slot_slot_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -155,7 +223,7 @@ func (x *CreateSlotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSlotRequest.ProtoReflect.Descriptor instead.
 func (*CreateSlotRequest) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{1}
+	return file_slot_slot_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *CreateSlotRequest) GetSlot() *Slot {
@@ -174,7 +242,7 @@ type CreateSlotResponse struct {
 
 func (x *CreateSlotResponse) Reset() {
 	*x = CreateSlotResponse{}
-	mi := &file_slot_slot_proto_msgTypes[2]
+	mi := &file_slot_slot_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -186,7 +254,7 @@ func (x *CreateSlotResponse) String() string {
 func (*CreateSlotResponse) ProtoMessage() {}
 
 func (x *CreateSlotResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[2]
+	mi := &file_slot_slot_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -199,7 +267,7 @@ func (x *CreateSlotResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateSlotResponse.ProtoReflect.Descriptor instead.
 func (*CreateSlotResponse) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{2}
+	return file_slot_slot_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateSlotResponse) GetId() string {
@@ -218,7 +286,7 @@ type GetSlotRequest struct {
 
 func (x *GetSlotRequest) Reset() {
 	*x = GetSlotRequest{}
-	mi := &file_slot_slot_proto_msgTypes[3]
+	mi := &file_slot_slot_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -230,7 +298,7 @@ func (x *GetSlotRequest) String() string {
 func (*GetSlotRequest) ProtoMessage() {}
 
 func (x *GetSlotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[3]
+	mi := &file_slot_slot_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -243,7 +311,7 @@ func (x *GetSlotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSlotRequest.ProtoReflect.Descriptor instead.
 func (*GetSlotRequest) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{3}
+	return file_slot_slot_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetSlotRequest) GetId() string {
@@ -256,13 +324,14 @@ func (x *GetSlotRequest) GetId() string {
 type GetSlotResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Slot          *Slot                  `protobuf:"bytes,1,opt,name=slot,proto3" json:"slot,omitempty"`
+	AdSlot        *AdSlot                `protobuf:"bytes,2,opt,name=ad_slot,json=adSlot,proto3" json:"ad_slot,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *GetSlotResponse) Reset() {
 	*x = GetSlotResponse{}
-	mi := &file_slot_slot_proto_msgTypes[4]
+	mi := &file_slot_slot_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -274,7 +343,7 @@ func (x *GetSlotResponse) String() string {
 func (*GetSlotResponse) ProtoMessage() {}
 
 func (x *GetSlotResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[4]
+	mi := &file_slot_slot_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -287,12 +356,19 @@ func (x *GetSlotResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSlotResponse.ProtoReflect.Descriptor instead.
 func (*GetSlotResponse) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{4}
+	return file_slot_slot_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetSlotResponse) GetSlot() *Slot {
 	if x != nil {
 		return x.Slot
+	}
+	return nil
+}
+
+func (x *GetSlotResponse) GetAdSlot() *AdSlot {
+	if x != nil {
+		return x.AdSlot
 	}
 	return nil
 }
@@ -305,7 +381,7 @@ type ListSlotsRequest struct {
 
 func (x *ListSlotsRequest) Reset() {
 	*x = ListSlotsRequest{}
-	mi := &file_slot_slot_proto_msgTypes[5]
+	mi := &file_slot_slot_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -317,7 +393,7 @@ func (x *ListSlotsRequest) String() string {
 func (*ListSlotsRequest) ProtoMessage() {}
 
 func (x *ListSlotsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[5]
+	mi := &file_slot_slot_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -330,7 +406,7 @@ func (x *ListSlotsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSlotsRequest.ProtoReflect.Descriptor instead.
 func (*ListSlotsRequest) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{5}
+	return file_slot_slot_proto_rawDescGZIP(), []int{6}
 }
 
 type ListSlotsResponse struct {
@@ -342,7 +418,7 @@ type ListSlotsResponse struct {
 
 func (x *ListSlotsResponse) Reset() {
 	*x = ListSlotsResponse{}
-	mi := &file_slot_slot_proto_msgTypes[6]
+	mi := &file_slot_slot_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -354,7 +430,7 @@ func (x *ListSlotsResponse) String() string {
 func (*ListSlotsResponse) ProtoMessage() {}
 
 func (x *ListSlotsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[6]
+	mi := &file_slot_slot_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -367,7 +443,7 @@ func (x *ListSlotsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSlotsResponse.ProtoReflect.Descriptor instead.
 func (*ListSlotsResponse) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{6}
+	return file_slot_slot_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListSlotsResponse) GetSlots() []*Slot {
@@ -386,7 +462,7 @@ type UpdateSlotRequest struct {
 
 func (x *UpdateSlotRequest) Reset() {
 	*x = UpdateSlotRequest{}
-	mi := &file_slot_slot_proto_msgTypes[7]
+	mi := &file_slot_slot_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -398,7 +474,7 @@ func (x *UpdateSlotRequest) String() string {
 func (*UpdateSlotRequest) ProtoMessage() {}
 
 func (x *UpdateSlotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[7]
+	mi := &file_slot_slot_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -411,7 +487,7 @@ func (x *UpdateSlotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSlotRequest.ProtoReflect.Descriptor instead.
 func (*UpdateSlotRequest) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{7}
+	return file_slot_slot_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *UpdateSlotRequest) GetSlot() *Slot {
@@ -429,7 +505,7 @@ type UpdateSlotResponse struct {
 
 func (x *UpdateSlotResponse) Reset() {
 	*x = UpdateSlotResponse{}
-	mi := &file_slot_slot_proto_msgTypes[8]
+	mi := &file_slot_slot_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +517,7 @@ func (x *UpdateSlotResponse) String() string {
 func (*UpdateSlotResponse) ProtoMessage() {}
 
 func (x *UpdateSlotResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[8]
+	mi := &file_slot_slot_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -454,7 +530,7 @@ func (x *UpdateSlotResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateSlotResponse.ProtoReflect.Descriptor instead.
 func (*UpdateSlotResponse) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{8}
+	return file_slot_slot_proto_rawDescGZIP(), []int{9}
 }
 
 type DeleteSlotRequest struct {
@@ -466,7 +542,7 @@ type DeleteSlotRequest struct {
 
 func (x *DeleteSlotRequest) Reset() {
 	*x = DeleteSlotRequest{}
-	mi := &file_slot_slot_proto_msgTypes[9]
+	mi := &file_slot_slot_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -478,7 +554,7 @@ func (x *DeleteSlotRequest) String() string {
 func (*DeleteSlotRequest) ProtoMessage() {}
 
 func (x *DeleteSlotRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[9]
+	mi := &file_slot_slot_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -491,7 +567,7 @@ func (x *DeleteSlotRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSlotRequest.ProtoReflect.Descriptor instead.
 func (*DeleteSlotRequest) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{9}
+	return file_slot_slot_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteSlotRequest) GetId() string {
@@ -509,7 +585,7 @@ type DeleteSlotResponse struct {
 
 func (x *DeleteSlotResponse) Reset() {
 	*x = DeleteSlotResponse{}
-	mi := &file_slot_slot_proto_msgTypes[10]
+	mi := &file_slot_slot_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -521,7 +597,7 @@ func (x *DeleteSlotResponse) String() string {
 func (*DeleteSlotResponse) ProtoMessage() {}
 
 func (x *DeleteSlotResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_slot_slot_proto_msgTypes[10]
+	mi := &file_slot_slot_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -534,7 +610,7 @@ func (x *DeleteSlotResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteSlotResponse.ProtoReflect.Descriptor instead.
 func (*DeleteSlotResponse) Descriptor() ([]byte, []int) {
-	return file_slot_slot_proto_rawDescGZIP(), []int{10}
+	return file_slot_slot_proto_rawDescGZIP(), []int{11}
 }
 
 var File_slot_slot_proto protoreflect.FileDescriptor
@@ -553,17 +629,23 @@ const file_slot_slot_proto_rawDesc = "" +
 	"\n" +
 	"back_color\x18\a \x01(\tR\tbackColor\x12\x1d\n" +
 	"\n" +
-	"text_color\x18\b \x01(\tR\ttextColor\"3\n" +
+	"text_color\x18\b \x01(\tR\ttextColor\"q\n" +
+	"\x06AdSlot\x12\x14\n" +
+	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
+	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1b\n" +
+	"\timage_src\x18\x03 \x01(\tR\bimageSrc\x12\x12\n" +
+	"\x04link\x18\x04 \x01(\tR\x04link\"3\n" +
 	"\x11CreateSlotRequest\x12\x1e\n" +
 	"\x04slot\x18\x01 \x01(\v2\n" +
 	".slot.SlotR\x04slot\"$\n" +
 	"\x12CreateSlotResponse\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\" \n" +
 	"\x0eGetSlotRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\tR\x02id\"1\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\"X\n" +
 	"\x0fGetSlotResponse\x12\x1e\n" +
 	"\x04slot\x18\x01 \x01(\v2\n" +
-	".slot.SlotR\x04slot\"\x12\n" +
+	".slot.SlotR\x04slot\x12%\n" +
+	"\aad_slot\x18\x02 \x01(\v2\f.slot.AdSlotR\x06adSlot\"\x12\n" +
 	"\x10ListSlotsRequest\"5\n" +
 	"\x11ListSlotsResponse\x12 \n" +
 	"\x05slots\x18\x01 \x03(\v2\n" +
@@ -597,40 +679,42 @@ func file_slot_slot_proto_rawDescGZIP() []byte {
 	return file_slot_slot_proto_rawDescData
 }
 
-var file_slot_slot_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
+var file_slot_slot_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_slot_slot_proto_goTypes = []any{
 	(*Slot)(nil),               // 0: slot.Slot
-	(*CreateSlotRequest)(nil),  // 1: slot.CreateSlotRequest
-	(*CreateSlotResponse)(nil), // 2: slot.CreateSlotResponse
-	(*GetSlotRequest)(nil),     // 3: slot.GetSlotRequest
-	(*GetSlotResponse)(nil),    // 4: slot.GetSlotResponse
-	(*ListSlotsRequest)(nil),   // 5: slot.ListSlotsRequest
-	(*ListSlotsResponse)(nil),  // 6: slot.ListSlotsResponse
-	(*UpdateSlotRequest)(nil),  // 7: slot.UpdateSlotRequest
-	(*UpdateSlotResponse)(nil), // 8: slot.UpdateSlotResponse
-	(*DeleteSlotRequest)(nil),  // 9: slot.DeleteSlotRequest
-	(*DeleteSlotResponse)(nil), // 10: slot.DeleteSlotResponse
+	(*AdSlot)(nil),             // 1: slot.AdSlot
+	(*CreateSlotRequest)(nil),  // 2: slot.CreateSlotRequest
+	(*CreateSlotResponse)(nil), // 3: slot.CreateSlotResponse
+	(*GetSlotRequest)(nil),     // 4: slot.GetSlotRequest
+	(*GetSlotResponse)(nil),    // 5: slot.GetSlotResponse
+	(*ListSlotsRequest)(nil),   // 6: slot.ListSlotsRequest
+	(*ListSlotsResponse)(nil),  // 7: slot.ListSlotsResponse
+	(*UpdateSlotRequest)(nil),  // 8: slot.UpdateSlotRequest
+	(*UpdateSlotResponse)(nil), // 9: slot.UpdateSlotResponse
+	(*DeleteSlotRequest)(nil),  // 10: slot.DeleteSlotRequest
+	(*DeleteSlotResponse)(nil), // 11: slot.DeleteSlotResponse
 }
 var file_slot_slot_proto_depIdxs = []int32{
 	0,  // 0: slot.CreateSlotRequest.slot:type_name -> slot.Slot
 	0,  // 1: slot.GetSlotResponse.slot:type_name -> slot.Slot
-	0,  // 2: slot.ListSlotsResponse.slots:type_name -> slot.Slot
-	0,  // 3: slot.UpdateSlotRequest.slot:type_name -> slot.Slot
-	1,  // 4: slot.SlotServ.CreateSlot:input_type -> slot.CreateSlotRequest
-	3,  // 5: slot.SlotServ.GetSlot:input_type -> slot.GetSlotRequest
-	5,  // 6: slot.SlotServ.ListSlots:input_type -> slot.ListSlotsRequest
-	7,  // 7: slot.SlotServ.UpdateSlot:input_type -> slot.UpdateSlotRequest
-	9,  // 8: slot.SlotServ.DeleteSlot:input_type -> slot.DeleteSlotRequest
-	2,  // 9: slot.SlotServ.CreateSlot:output_type -> slot.CreateSlotResponse
-	4,  // 10: slot.SlotServ.GetSlot:output_type -> slot.GetSlotResponse
-	6,  // 11: slot.SlotServ.ListSlots:output_type -> slot.ListSlotsResponse
-	8,  // 12: slot.SlotServ.UpdateSlot:output_type -> slot.UpdateSlotResponse
-	10, // 13: slot.SlotServ.DeleteSlot:output_type -> slot.DeleteSlotResponse
-	9,  // [9:14] is the sub-list for method output_type
-	4,  // [4:9] is the sub-list for method input_type
-	4,  // [4:4] is the sub-list for extension type_name
-	4,  // [4:4] is the sub-list for extension extendee
-	0,  // [0:4] is the sub-list for field type_name
+	1,  // 2: slot.GetSlotResponse.ad_slot:type_name -> slot.AdSlot
+	0,  // 3: slot.ListSlotsResponse.slots:type_name -> slot.Slot
+	0,  // 4: slot.UpdateSlotRequest.slot:type_name -> slot.Slot
+	2,  // 5: slot.SlotServ.CreateSlot:input_type -> slot.CreateSlotRequest
+	4,  // 6: slot.SlotServ.GetSlot:input_type -> slot.GetSlotRequest
+	6,  // 7: slot.SlotServ.ListSlots:input_type -> slot.ListSlotsRequest
+	8,  // 8: slot.SlotServ.UpdateSlot:input_type -> slot.UpdateSlotRequest
+	10, // 9: slot.SlotServ.DeleteSlot:input_type -> slot.DeleteSlotRequest
+	3,  // 10: slot.SlotServ.CreateSlot:output_type -> slot.CreateSlotResponse
+	5,  // 11: slot.SlotServ.GetSlot:output_type -> slot.GetSlotResponse
+	7,  // 12: slot.SlotServ.ListSlots:output_type -> slot.ListSlotsResponse
+	9,  // 13: slot.SlotServ.UpdateSlot:output_type -> slot.UpdateSlotResponse
+	11, // 14: slot.SlotServ.DeleteSlot:output_type -> slot.DeleteSlotResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_slot_slot_proto_init() }
@@ -644,7 +728,7 @@ func file_slot_slot_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_slot_slot_proto_rawDesc), len(file_slot_slot_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   11,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

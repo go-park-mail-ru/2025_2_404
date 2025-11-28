@@ -19,3 +19,12 @@ type Slot struct {
 	BackColor       string 
 	TextColor       string 
 }
+
+type SlotRenderData struct {
+	Title       string
+	Description string
+	ImageSrc    string
+	Link        string
+	Background  string
+	Color       string
+}

@@ -7,7 +7,7 @@ import (
 
 type slotRepository interface {
 	Create(ctx context.Context, s slot.Slot) (slot.ID, error) 
-	GetByID(ctx context.Context, id slot.ID) (slot.Slot, error)
+	GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRenderData, error)
 	ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error)
 	Update(ctx context.Context, s slot.Slot) error
 	Delete(ctx context.Context, id slot.ID, userID slot.UserID) error
@@ -27,7 +27,7 @@ func (u *UseCase) Create(ctx context.Context, s slot.Slot) (slot.ID, error) {
 	return u.repo.Create(ctx, s)
 }
 
-func (u *UseCase) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
+func (u *UseCase) GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRenderData, error) {
 	return u.repo.GetByID(ctx, id)
 }
 

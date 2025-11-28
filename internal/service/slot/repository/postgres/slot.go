@@ -19,6 +19,8 @@ const (
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
 	`
 
+	sqlTextForUpdateSlotID = `UPDATE ad_detail SET slot_id = $1 WHERE budget >= $2;`
+
 	sqlTextForSelectSlotByID = `
 		SELECT id, user_id, slot_name, min_cost_adv, format_of_banner, status, back_color, text_color 
 		FROM slots WHERE id = $1
@@ -38,6 +40,29 @@ const (
 	sqlTextForDeleteSlot = `
 		DELETE FROM slots WHERE id = $1 AND user_id = $2
 	`
+
+	sqlTextForSelectSlotRenderDataByID = `
+		WITH selected_ad_detail AS (
+			SELECT id
+			FROM ad_detail
+			WHERE slot_id = $1 AND budget > 0
+			ORDER BY created_at DESC  -- или любая логика выбора: например, по остатку бюджета, дате и т.д.
+			LIMIT 1
+		),
+		updated_ad_detail AS (
+			UPDATE ad_detail
+			SET budget = budget - 1
+			WHERE id = (SELECT id FROM selected_ad_detail)
+			RETURNING ad_id
+		)
+		SELECT 
+			ad.title, 
+			ad.content, 
+			ad.img_path, 
+			ad.target_url
+		FROM ad
+		JOIN updated_ad_detail ON ad.id = updated_ad_detail.ad_id;
+		`
 )
 
 type DB struct {
@@ -71,18 +96,28 @@ func (r *DB) Create(ctx context.Context, s slot.Slot) (slot.ID, error) {
 		s.BackColor,
 		s.TextColor,
 	)
+	
 	if err != nil {
 		return "", fmt.Errorf("failed to insert slot: %w", err)
+	}
+	_, err = r.sql.ExecContext(
+		ctx,
+		sqlTextForUpdateSlotID,
+		id,
+		s.MinCostAdv,
+	)
+	if err != nil {
+		return s.ID, nil
 	}
 
 	return s.ID, nil
 }
 
-func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
+func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRenderData, error) {
 	var s slot.Slot
 	idUUID, err := uuid.Parse(string(id))
 	if err != nil {
-		return slot.Slot{}, fmt.Errorf("invalid slot id: %w", err)
+		return slot.Slot{}, slot.SlotRenderData{}, fmt.Errorf("invalid slot id: %w", err)
 	}
 	row := r.sql.QueryRowContext(ctx, sqlTextForSelectSlotByID, idUUID)
 	var idUuid, userUuid uuid.UUID 
@@ -100,13 +135,28 @@ func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
 	)
 
 	if err != nil {
-		return slot.Slot{}, fmt.Errorf("failed to get slot by ID: %w", err)
+		return slot.Slot{}, slot.SlotRenderData{}, fmt.Errorf("failed to get slot by ID: %w", err)
 	}
 
 	s.ID = slot.ID(idUuid.String())
 	s.UserID = slot.UserID(userUuid.String())
 
-	return s, nil
+	row = r.sql.QueryRowContext(ctx, sqlTextForSelectSlotRenderDataByID, idUUID)
+
+	var renderData slot.SlotRenderData
+
+	err = row.Scan(
+		&renderData.Title,
+		&renderData.Description,
+		&renderData.ImageSrc,
+		&renderData.Link,
+	)
+
+	if err != nil {
+		return s, slot.SlotRenderData{}, nil
+	}
+
+	return s, renderData, nil
 }
 
 func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error) {

@@ -11,7 +11,7 @@ import (
 
 type slotUsecase interface {
 	Create(ctx context.Context, s slot.Slot) (slot.ID, error) 
-	GetByID(ctx context.Context, id slot.ID) (slot.Slot, error)
+	GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRenderData, error)
 	ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error)
 	Update(ctx context.Context, s slot.Slot) error
 	Delete(ctx context.Context, id slot.ID, userID slot.UserID) error
@@ -54,7 +54,7 @@ func (s *slotService) CreateSlot(ctx context.Context, req *slotpb.CreateSlotRequ
 func (s *slotService) GetSlot(ctx context.Context, req *slotpb.GetSlotRequest) (*slotpb.GetSlotResponse, error) {
 	id := req.GetId()
 
-	slot, err := s.slotUsecase.GetByID(ctx, slot.ID(id))
+	slot, adSlot, err := s.slotUsecase.GetByID(ctx, slot.ID(id))
 	if err != nil {
 		return nil, status.Errorf(codes.NotFound, "slot not found: %v", err)
 	}
@@ -69,6 +69,12 @@ func (s *slotService) GetSlot(ctx context.Context, req *slotpb.GetSlotRequest) (
 			Status:          slot.Status,
 			BackColor:       slot.BackColor,
 			TextColor:       slot.TextColor,
+		},
+		AdSlot: &slotpb.AdSlot{
+			Title:       adSlot.Title,
+			Description: adSlot.Description,
+			ImageSrc:    adSlot.ImageSrc,
+			Link:        adSlot.Link,
 		},
 	}, nil
 }
