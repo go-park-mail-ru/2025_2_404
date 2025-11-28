@@ -16,15 +16,17 @@ import (
 	"2025_2_404/pkg/utils"
 	pbAd "2025_2_404/protos/gen/go/ad"
 	pbStorage "2025_2_404/protos/gen/go/storage"
+	pbProfile "2025_2_404/protos/profile"
 )
 
 type AdHandler struct {
 	client        pbAd.AdServClient
 	storageClient pbStorage.StorageClient
+	profileClient  pbProfile.ProfileClient
 }
 
-func NewAdHandler(client pbAd.AdServClient, storageClient pbStorage.StorageClient) *AdHandler {
-	return &AdHandler{client: client, storageClient: storageClient}
+func NewAdHandler(client pbAd.AdServClient, storageClient pbStorage.StorageClient, profileClient pbProfile.ProfileClient) *AdHandler {
+	return &AdHandler{client: client, storageClient: storageClient, profileClient: profileClient}
 }
 
 func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
@@ -72,12 +74,21 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
+	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
+		SubAmount: uint32(budget),
+	})
+	if err != nil {
+		st, _ := status.FromError(err)
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		return
+	}
 	resp, err := h.client.Create(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
+
 
 	if len(fileBytes) > 0 {
 		go func(imgPath string, data []byte) {
