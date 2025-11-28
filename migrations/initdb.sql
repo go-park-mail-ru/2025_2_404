@@ -51,6 +51,14 @@ CREATE TABLE IF NOT EXISTS notification_user (
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS platform (
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	platform_name TEXT UNIQUE NOT NULL CHECK (
+		length(platform_name) >= 1 AND length(platform_name) <= 100
+	),
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS ad (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	client_id UUID REFERENCES client(id) ON DELETE CASCADE,
