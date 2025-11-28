@@ -59,7 +59,7 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self' http://localhost:8000 http://89.208.230.119:8000;")
+	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self' http://localhost:8000 http://89.208.230.119:8000 http://terabithia.online;")
 
 	if err := h.tmpl.Execute(w, data); err != nil {
 		http.Error(w, "", http.StatusInternalServerError)
