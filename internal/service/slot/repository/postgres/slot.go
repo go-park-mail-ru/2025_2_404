@@ -42,11 +42,18 @@ const (
 	`
 
 	sqlTextForSelectSlotRenderDataByID = `
-		WITH updated_ad_detail AS (
-		UPDATE ad_detail
-		SET budget = budget - 1
-		WHERE slot_id = $1 AND budget > 0
-		RETURNING ad_id
+		WITH selected_ad_detail AS (
+			SELECT id
+			FROM ad_detail
+			WHERE slot_id = $1 AND budget > 0
+			ORDER BY created_at DESC  -- или любая логика выбора: например, по остатку бюджета, дате и т.д.
+			LIMIT 1
+		),
+		updated_ad_detail AS (
+			UPDATE ad_detail
+			SET budget = budget - 1
+			WHERE id = (SELECT id FROM selected_ad_detail)
+			RETURNING ad_id
 		)
 		SELECT 
 			ad.title, 
