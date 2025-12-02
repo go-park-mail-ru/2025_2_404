@@ -12,9 +12,6 @@ import (
 	"fmt"
 	"log"
 	"net"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -36,13 +33,10 @@ func main() {
 	}
 	defer authConn.Close()
 
-	// authClient := authProto.NewAuthClient(authConn)
 
 	repoCfg := repo.New(connCfg.PostgresSQL)
 	useCaseCfg := usecase.New(repoCfg)
-	// authInterceptor := interceptor.AuthInterceptor(authClient)
-	authInterceptor, authConn := interceptor.InitAuthInterceptor()
-    defer authConn.Close()
+	authInterceptor, _ := interceptor.InitAuthInterceptor()
 	adHandler := adhandler.New(useCaseCfg)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortAD))
@@ -59,17 +53,5 @@ func main() {
 		log.Fatalf("Failed to serve: %v", err)
 	}
 
-	gracefulShutdown(grpcServer, lis)
-
 }
 
-func gracefulShutdown(grpcServer *grpc.Server, lis net.Listener) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	sig := <-c
-	log.Printf("Received signal %v. Shutting down gracefully...", sig)
-
-	grpcServer.GracefulStop()
-	log.Println("Server stopped")
-}
