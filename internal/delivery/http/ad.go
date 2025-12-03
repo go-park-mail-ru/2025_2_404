@@ -51,7 +51,7 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileBytes, imageFilename, err := pkgfile.ExtractImage(r, "ad/")
+	fileBytes, imageFilename, err := pkgfile.ExtractImage(r, "ad/", "image")
 	if err != nil {
 		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
 		return
@@ -60,7 +60,7 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	if auth := r.Header.Get("authorization"); auth != "" {
+	if auth := r.Header.Get("Authorization"); auth != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
@@ -82,32 +82,31 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
+
+	if len(fileBytes) > 0 {
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+
+		_, err := h.storageClient.Create(ctx, &pbStorage.CreateRequest{
+			ImagePath: imageFilename,
+			ImageData: fileBytes,
+		})
+		if err != nil {
+			log.Printf("ERROR: async image upload failed for %s: %v", imageFilename, err)
+		} else {
+			log.Printf("INFO: image uploaded successfully: %s", imageFilename)
+		}
+	}
+			
+
 	resp, err := h.client.Create(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
-
-
-	if len(fileBytes) > 0 {
-		go func(imgPath string, data []byte) {
-			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-			defer cancel()
-
-			_, err := h.storageClient.Create(ctx, &pbStorage.CreateRequest{
-				ImagePath: imgPath,
-				ImageData: data,
-			})
-			if err != nil {
-				log.Printf("ERROR: async image upload failed for %s: %v", imgPath, err)
-			} else {
-				log.Printf("INFO: image uploaded successfully: %s", imgPath)
-			}
-    }(imageFilename, fileBytes)
-}
-
-pkg.JSONResponse(w, http.StatusCreated, resp)
+	
+pkg.JSONResponse(w, http.StatusCreated, "Ad created successfully", resp)
 }
 
 func (h *AdHandler) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -124,7 +123,7 @@ func (h *AdHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkg.JSONResponse(w, http.StatusOK, resp.Ads)
+	pkg.JSONResponse(w, http.StatusOK, "Ads retrieved successfully", resp.Ads)
 }
 
 func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
@@ -149,7 +148,21 @@ func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkg.JSONResponse(w, http.StatusOK, resp.Ad)
+	imgPath := resp.Ad.ImgPath
+	var resIMG *pbStorage.GetResponse
+	if imgPath != "" {
+		resIMG, err = h.storageClient.Get(ctx, &pbStorage.GetRequest{
+			ImagePath: imgPath,
+		})
+		if err != nil {
+			log.Printf("ERROR: failed to get presigned URL for %s: %v", imgPath, err)
+		}
+	}
+
+	pkg.JSONResponse(w, http.StatusOK, "Ad retrieved successfully", map[string]interface{}{
+		"ad":        resp.Ad,
+		"imageData": resIMG,
+	})
 }
 
 func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
@@ -178,8 +191,7 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	
-	fileBytes, newImageFilename, err := pkgfile.ExtractImage(r, "ad/")
+	fileBytes, newImageFilename, err := pkgfile.ExtractImage(r, "ad/", "image")
 	if err != nil {
 		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
 		return
@@ -236,7 +248,7 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
     }(newImageFilename, fileBytes)
 }
 
-pkg.JSONResponse(w, http.StatusOK, updateResp)
+pkg.JSONResponse(w, http.StatusOK, "Ad updated successfully", updateResp)
 }
 
 func (h *AdHandler) Delete(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,7 @@
 package readerfile
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,11 +11,11 @@ import (
 )
 
 func IsMissingFileError(err error) bool {
-	return err == http.ErrMissingFile
+	return errors.Is(err, http.ErrMissingFile)
 }
 
-func ExtractImage(r *http.Request, basePath string) ([]byte, string, error) {
-	_, fileHeader, err := r.FormFile("image")
+func ExtractImage(r *http.Request, basePath string, formFieldName string) ([]byte, string, error) {
+	_, fileHeader, err := r.FormFile(formFieldName)
 	if err != nil {
 		if IsMissingFileError(err) {
 			return nil, "", nil

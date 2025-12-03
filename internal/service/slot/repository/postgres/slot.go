@@ -46,7 +46,7 @@ const (
 			SELECT id
 			FROM ad_detail
 			WHERE slot_id = $1 AND budget > 0
-			ORDER BY created_at DESC  -- или любая логика выбора: например, по остатку бюджета, дате и т.д.
+			ORDER BY created_at DESC
 			LIMIT 1
 		),
 		updated_ad_detail AS (

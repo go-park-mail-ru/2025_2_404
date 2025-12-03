@@ -106,7 +106,7 @@ func (h *SlotHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkg.JSONResponse(w, http.StatusCreated, map[string]string{"id": resp.Id})
+	pkg.JSONResponse(w, http.StatusCreated, "Slot created successfully", map[string]string{"id": resp.Id})
 }
 
 func (h *SlotHandler) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +123,7 @@ func (h *SlotHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkg.JSONResponse(w, http.StatusOK, resp.Slots)
+	pkg.JSONResponse(w, http.StatusOK, "Slots retrieved successfully", resp.Slots)
 }
 
 func (h *SlotHandler) GetOne(w http.ResponseWriter, r *http.Request) {
@@ -148,7 +148,7 @@ func (h *SlotHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pkg.JSONResponse(w, http.StatusOK, resp.Slot)
+	pkg.JSONResponse(w, http.StatusOK, "Slot retrieved successfully", resp.Slot)
 }
 
 func (h *SlotHandler) Update(w http.ResponseWriter, r *http.Request) {

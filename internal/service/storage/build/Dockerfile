@@ -100,8 +100,11 @@ RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
+COPY .env /root/.env
 # Копируем бинарник
 COPY --from=builder /build/storage_app .
+
+ENV ENV_FILE=/root/.env
 
 # Создаем папку
 RUN mkdir -p /root/storage

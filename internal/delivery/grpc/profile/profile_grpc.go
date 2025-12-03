@@ -45,6 +45,7 @@ func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) 
 		UserLastName:  req.GetLastName(),
 		Company:       req.GetCompany(),
 		Phone:         req.GetPhone(),
+		ImagePath: req.GetAvatarPath(),
 	}
 	
 	err = h.profileUsecase.Update(ctx, client)
@@ -59,6 +60,7 @@ func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) 
 		LastName: client.UserLastName,
 		Company:    client.Company,
 		Phone:      client.Phone,
+		AvatarPath: client.ImagePath,
 	}, nil
 }
 
@@ -80,6 +82,7 @@ func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*pr
 		LastName:    user.UserLastName,
 		Company:       user.Company,
 		Phone:         user.Phone,
+		AvatarPath:    user.ImagePath,
 	}, nil
 }
 

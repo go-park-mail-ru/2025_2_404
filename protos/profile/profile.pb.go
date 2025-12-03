@@ -33,7 +33,7 @@ type UpdateRequest struct {
 	RegisteredAt  string                 `protobuf:"bytes,8,opt,name=registered_at,json=registeredAt,proto3" json:"registered_at,omitempty"`
 	AdsCount      uint32                 `protobuf:"varint,9,opt,name=ads_count,json=adsCount,proto3" json:"ads_count,omitempty"`
 	ProfileType   string                 `protobuf:"bytes,10,opt,name=profile_type,json=profileType,proto3" json:"profile_type,omitempty"`
-	Avatar        []byte                 `protobuf:"bytes,11,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	AvatarPath    string                 `protobuf:"bytes,11,opt,name=avatar_path,json=avatarPath,proto3" json:"avatar_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -138,11 +138,11 @@ func (x *UpdateRequest) GetProfileType() string {
 	return ""
 }
 
-func (x *UpdateRequest) GetAvatar() []byte {
+func (x *UpdateRequest) GetAvatarPath() string {
 	if x != nil {
-		return x.Avatar
+		return x.AvatarPath
 	}
-	return nil
+	return ""
 }
 
 type UpdateResponse struct {
@@ -158,6 +158,7 @@ type UpdateResponse struct {
 	AdsCount      uint32                 `protobuf:"varint,9,opt,name=ads_count,json=adsCount,proto3" json:"ads_count,omitempty"`
 	ProfileType   string                 `protobuf:"bytes,10,opt,name=profile_type,json=profileType,proto3" json:"profile_type,omitempty"`
 	Company       string                 `protobuf:"bytes,11,opt,name=company,proto3" json:"company,omitempty"`
+	AvatarPath    string                 `protobuf:"bytes,12,opt,name=avatar_path,json=avatarPath,proto3" json:"avatar_path,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -265,6 +266,13 @@ func (x *UpdateResponse) GetProfileType() string {
 func (x *UpdateResponse) GetCompany() string {
 	if x != nil {
 		return x.Company
+	}
+	return ""
+}
+
+func (x *UpdateResponse) GetAvatarPath() string {
+	if x != nil {
+		return x.AvatarPath
 	}
 	return ""
 }
@@ -381,7 +389,7 @@ type ShowResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserName      string                 `protobuf:"bytes,1,opt,name=user_name,json=userName,proto3" json:"user_name,omitempty"`
 	Email         string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	Avatar        []byte                 `protobuf:"bytes,3,opt,name=avatar,proto3" json:"avatar,omitempty"`
+	AvatarPath    string                 `protobuf:"bytes,3,opt,name=avatar_path,json=avatarPath,proto3" json:"avatar_path,omitempty"`
 	FirstName     string                 `protobuf:"bytes,4,opt,name=first_name,json=firstName,proto3" json:"first_name,omitempty"`
 	LastName      string                 `protobuf:"bytes,5,opt,name=last_name,json=lastName,proto3" json:"last_name,omitempty"`
 	Company       string                 `protobuf:"bytes,6,opt,name=company,proto3" json:"company,omitempty"`
@@ -437,11 +445,11 @@ func (x *ShowResponse) GetEmail() string {
 	return ""
 }
 
-func (x *ShowResponse) GetAvatar() []byte {
+func (x *ShowResponse) GetAvatarPath() string {
 	if x != nil {
-		return x.Avatar
+		return x.AvatarPath
 	}
-	return nil
+	return ""
 }
 
 func (x *ShowResponse) GetFirstName() string {
@@ -737,7 +745,7 @@ var File_protos_profile_profile_proto protoreflect.FileDescriptor
 
 const file_protos_profile_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x1cprotos/profile/profile.proto\x12\aprofile\"\xc7\x02\n" +
+	"\x1cprotos/profile/profile.proto\x12\aprofile\"\xd0\x02\n" +
 	"\rUpdateRequest\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -750,8 +758,9 @@ const file_protos_profile_profile_proto_rawDesc = "" +
 	"\rregistered_at\x18\b \x01(\tR\fregisteredAt\x12\x1b\n" +
 	"\tads_count\x18\t \x01(\rR\badsCount\x12!\n" +
 	"\fprofile_type\x18\n" +
-	" \x01(\tR\vprofileType\x12\x16\n" +
-	"\x06avatar\x18\v \x01(\fR\x06avatar\"\xd1\x02\n" +
+	" \x01(\tR\vprofileType\x12\x1f\n" +
+	"\vavatar_path\x18\v \x01(\tR\n" +
+	"avatarPath\"\xf2\x02\n" +
 	"\x0eUpdateResponse\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x16\n" +
@@ -765,14 +774,17 @@ const file_protos_profile_profile_proto_rawDesc = "" +
 	"\tads_count\x18\t \x01(\rR\badsCount\x12!\n" +
 	"\fprofile_type\x18\n" +
 	" \x01(\tR\vprofileType\x12\x18\n" +
-	"\acompany\x18\v \x01(\tR\acompany\"\x0f\n" +
+	"\acompany\x18\v \x01(\tR\acompany\x12\x1f\n" +
+	"\vavatar_path\x18\f \x01(\tR\n" +
+	"avatarPath\"\x0f\n" +
 	"\rDeleteRequest\"\x10\n" +
 	"\x0eDeleteResponse\"\r\n" +
-	"\vShowRequest\"\xaa\x02\n" +
+	"\vShowRequest\"\xb3\x02\n" +
 	"\fShowResponse\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12\x16\n" +
-	"\x06avatar\x18\x03 \x01(\fR\x06avatar\x12\x1d\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1f\n" +
+	"\vavatar_path\x18\x03 \x01(\tR\n" +
+	"avatarPath\x12\x1d\n" +
 	"\n" +
 	"first_name\x18\x04 \x01(\tR\tfirstName\x12\x1b\n" +
 	"\tlast_name\x18\x05 \x01(\tR\blastName\x12\x18\n" +

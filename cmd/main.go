@@ -2,25 +2,40 @@ package main
 
 import (
 	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"time"
 
 	httphandler "2025_2_404/internal/delivery/http"
-    "2025_2_404/internal/delivery/http/middleware"
+	"2025_2_404/internal/delivery/http/middleware"
 
 	"github.com/gorilla/mux"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	slotpb "2025_2_404/protos/gen/go/slot"
 	pbAuth "2025_2_404/protos/auth"
 	pbAd "2025_2_404/protos/gen/go/ad"
-	pbProfile "2025_2_404/protos/profile"
+	slotpb "2025_2_404/protos/gen/go/slot"
 	pbStorage "2025_2_404/protos/gen/go/storage"
+	pbProfile "2025_2_404/protos/profile"
 )
 
 func main() {
+
+	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+		Level:     slog.LevelDebug,
+		AddSource: false,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
+			if a.Key == slog.TimeKey {
+				return slog.String("time", a.Value.Time().Format("15:04:05.000"))
+			}
+			return a
+		},
+	}))
+
+	slog.SetDefault(logger)
+
 	authAddr := os.Getenv("AUTH_ADDR")
 	if authAddr == "" {
 		authAddr = "localhost:8077"
@@ -95,7 +110,7 @@ func main() {
 	// --- HTTP Handlers ---
 
 	authHandler := httphandler.NewAuthHandler(authClient)
-	profileHandler := httphandler.NewProfileHandler(profileClient)
+	profileHandler := httphandler.NewProfileHandler(profileClient, storageClient)
 	adHandler := httphandler.NewAdHandler(adClient, storageClient, profileClient)
 	slotHandler := httphandler.NewSlotHandler(slotClient, adClient)
 
@@ -129,7 +144,8 @@ func main() {
 	slotRouter.HandleFunc("/{id}", slotHandler.Delete).Methods("DELETE")
 
 	handler := middleware.CorsMiddleware(r)
-	log.Printf("API Gateway running on %s", gatewayPort)
+	handler = middleware.AccessLogMiddleware(handler)
+	slog.Info("API Gateway running on " + gatewayPort)
 	srv := &http.Server{
 		Addr:         ":" + gatewayPort,
 		Handler:      handler,

@@ -26,7 +26,7 @@ message UpdateRequest {
     string registered_at = 8;
     uint32 ads_count = 9;
     string profile_type = 10;
-    bytes avatar = 11;
+    string avatar_path = 11;
 }
 
 message UpdateResponse {
@@ -41,6 +41,7 @@ message UpdateResponse {
     uint32 ads_count = 9;
     string profile_type = 10;
     string company = 11;
+    string avatar_path = 12;
 }
 
 message DeleteRequest {}
@@ -52,7 +53,7 @@ message ShowRequest {}
 message ShowResponse{
     string user_name = 1;
     string email = 2;
-    bytes avatar = 3;
+    string avatar_path = 3;
     string first_name = 4;
     string last_name = 5;
     string company = 6;
