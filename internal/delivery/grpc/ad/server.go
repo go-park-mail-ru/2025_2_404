@@ -103,6 +103,7 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 		ClientID: clientID,
 		Title: protoAd.Title,
 		Content: protoAd.Content,
+		ImagePath: protoAd.ImgPath,
 		TargetUrl: protoAd.Targeturl,
 	}
 

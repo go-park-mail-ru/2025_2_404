@@ -1,6 +1,6 @@
 package slot
 
-import ()
+import "html/template"
 
 // ID — идентификатор слота.
 type ID string
@@ -24,6 +24,7 @@ type SlotRenderData struct {
 	Title       string
 	Description string
 	ImageSrc    string
+	ImageData   template.URL
 	Link        string
 	Background  string
 	Color       string

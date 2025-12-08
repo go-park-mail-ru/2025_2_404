@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"html/template"
+	"log"
 	"net/http"
 	"time"
 
@@ -12,34 +13,52 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
+	storagepb "2025_2_404/protos/gen/go/storage"
+	"2025_2_404/internal/service/slot/domain/slot"
 	"2025_2_404/pkg"
+	"2025_2_404/pkg/convertImage"
 	"2025_2_404/pkg/utils"
 	adpb "2025_2_404/protos/gen/go/ad"
 	slotpb "2025_2_404/protos/gen/go/slot"
-	"2025_2_404/internal/service/slot/domain/slot"
 )
 
 type SlotHandler struct {
-	client   slotpb.SlotServClient
-	adClient adpb.AdServClient
-	tmpl     *template.Template
+	client        slotpb.SlotServClient
+	adClient      adpb.AdServClient
+	storageClient storagepb.StorageClient
+	tmpl          *template.Template
 }
 
-func NewSlotHandler(client slotpb.SlotServClient, adClient adpb.AdServClient) *SlotHandler {
+func NewSlotHandler(client slotpb.SlotServClient, adClient adpb.AdServClient, storageClient storagepb.StorageClient) *SlotHandler {
 	tmpl := template.Must(template.ParseFiles("template/template.html"))
-	return &SlotHandler{client: client, adClient: adClient, tmpl: tmpl}
+	return &SlotHandler{
+		client:        client,
+		adClient:      adClient,
+		storageClient: storageClient,
+		tmpl:          tmpl,
+	}
 }
 
 func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Получен запрос на отображение слота: %s", r.URL.Path)
+
 	vars := mux.Vars(r)
 	slotID := vars["id"]
+
+	if slotID == "" {
+		log.Printf("Ошибка: ID слота отсутствует в URL")
+		http.Error(w, "", http.StatusBadRequest)
+		return
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	log.Printf("Запрос данных слота с ID: %s", slotID)
 	resp, err := h.client.GetSlot(ctx, &slotpb.GetSlotRequest{Id: slotID})
 	if err != nil {
 		st, _ := status.FromError(err)
+		log.Printf("Ошибка при получении слота (ID=%s): код=%d, сообщение=%q", slotID, st.Code(), st.Message())
 		if st.Code() == 5 { // NotFound
 			http.Error(w, "", http.StatusNotFound)
 		} else {
@@ -48,10 +67,30 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Printf("Слот найден. Запрос изображения по пути: %s", resp.AdSlot.ImageSrc)
+	imgData, err := h.storageClient.Get(ctx, &storagepb.GetRequest{ImagePath: resp.AdSlot.ImageSrc})
+	if err != nil {
+		log.Printf("Ошибка при получении изображения (путь=%s): %v", resp.AdSlot.ImageSrc, err)
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
+	if len(imgData.ImageData) == 0 {
+		log.Printf("Предупреждение: получены пустые данные изображения для пути %s", resp.AdSlot.ImageSrc)
+	}
+
+	imageSrc := convertimage.ConvertImageToBase64(imgData.ImageData, imgData.ContentType)
+	log.Printf("Изображение успешно конвертировано в Base64: %s", imageSrc[:30]+"...")
+	if imageSrc == "" {
+		log.Printf("Ошибка: ConvertImageToBase64 вернула пустую строку")
+		http.Error(w, "", http.StatusInternalServerError)
+		return
+	}
+
 	data := slot.SlotRenderData{
 		Title:       resp.AdSlot.Title,
 		Description: resp.AdSlot.Description,
-		ImageSrc:    resp.AdSlot.ImageSrc,
+		ImageData:   template.URL(imageSrc),
 		Link:        resp.AdSlot.Link,
 		Background:  resp.Slot.BackColor,
 		Color:       resp.Slot.TextColor,
@@ -61,7 +100,9 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.Header().Set("Content-Security-Policy", "frame-ancestors 'self' http://localhost:8000 http://89.208.230.119:8000 http://terabithia.online;")
 
+	log.Printf("Рендеринг HTML для слота ID=%s", slotID)
 	if err := h.tmpl.Execute(w, data); err != nil {
+		log.Printf("Ошибка при рендеринге шаблона: %v", err)
 		http.Error(w, "", http.StatusInternalServerError)
 	}
 }
@@ -76,8 +117,10 @@ type slotDTO struct {
 }
 
 func (h *SlotHandler) Create(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Получен запрос на создание слота")
 	var dto slotDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+		log.Printf("Ошибка парсинга JSON при создании слота: %v", err)
 		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
 		return
 	}
@@ -102,14 +145,17 @@ func (h *SlotHandler) Create(w http.ResponseWriter, r *http.Request) {
 	resp, err := h.client.CreateSlot(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
+		log.Printf("Ошибка gRPC при создании слота: код=%d, сообщение=%q", st.Code(), st.Message())
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
+	log.Printf("Слот успешно создан с ID=%s", resp.Id)
 	pkg.JSONResponse(w, http.StatusCreated, "Slot created successfully", map[string]string{"id": resp.Id})
 }
 
 func (h *SlotHandler) GetAll(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Получен запрос на получение всех слотов")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if auth := r.Header.Get("Authorization"); auth != "" {
@@ -119,10 +165,12 @@ func (h *SlotHandler) GetAll(w http.ResponseWriter, r *http.Request) {
 	resp, err := h.client.ListSlots(ctx, &slotpb.ListSlotsRequest{})
 	if err != nil {
 		st, _ := status.FromError(err)
+		log.Printf("Ошибка gRPC при получении списка слотов: код=%d, сообщение=%q", st.Code(), st.Message())
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
+	log.Printf("Успешно получено %d слотов", len(resp.Slots))
 	pkg.JSONResponse(w, http.StatusOK, "Slots retrieved successfully", resp.Slots)
 }
 
@@ -131,10 +179,12 @@ func (h *SlotHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 	id := vars["id"]
 
 	if _, err := uuid.Parse(id); err != nil {
+		log.Printf("Неверный UUID в запросе: %s", id)
 		http.Error(w, `{"error":"invalid UUID"}`, http.StatusBadRequest)
 		return
 	}
 
+	log.Printf("Получен запрос на получение слота с ID=%s", id)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if auth := r.Header.Get("Authorization"); auth != "" {
@@ -144,10 +194,12 @@ func (h *SlotHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 	resp, err := h.client.GetSlot(ctx, &slotpb.GetSlotRequest{Id: id})
 	if err != nil {
 		st, _ := status.FromError(err)
+		log.Printf("Ошибка gRPC при получении слота (ID=%s): код=%d, сообщение=%q", id, st.Code(), st.Message())
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
+	log.Printf("Слот с ID=%s успешно получен", id)
 	pkg.JSONResponse(w, http.StatusOK, "Slot retrieved successfully", resp.Slot)
 }
 
@@ -155,8 +207,10 @@ func (h *SlotHandler) Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	log.Printf("Получен запрос на обновление слота с ID=%s", id)
 	var dto slotDTO
 	if err := json.NewDecoder(r.Body).Decode(&dto); err != nil {
+		log.Printf("Ошибка парсинга JSON при обновлении слота (ID=%s): %v", id, err)
 		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
 		return
 	}
@@ -182,10 +236,12 @@ func (h *SlotHandler) Update(w http.ResponseWriter, r *http.Request) {
 	_, err := h.client.UpdateSlot(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
+		log.Printf("Ошибка gRPC при обновлении слота (ID=%s): код=%d, сообщение=%q", id, st.Code(), st.Message())
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
+	log.Printf("Слот с ID=%s успешно обновлён", id)
 	w.WriteHeader(http.StatusOK)
 }
 
@@ -193,6 +249,7 @@ func (h *SlotHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	log.Printf("Получен запрос на удаление слота с ID=%s", id)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if auth := r.Header.Get("Authorization"); auth != "" {
@@ -202,9 +259,11 @@ func (h *SlotHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	_, err := h.client.DeleteSlot(ctx, &slotpb.DeleteSlotRequest{Id: id})
 	if err != nil {
 		st, _ := status.FromError(err)
+		log.Printf("Ошибка gRPC при удалении слота (ID=%s): код=%d, сообщение=%q", id, st.Code(), st.Message())
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
 
+	log.Printf("Слот с ID=%s успешно удалён", id)
 	w.WriteHeader(http.StatusNoContent)
 }

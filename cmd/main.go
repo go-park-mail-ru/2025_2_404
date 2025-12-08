@@ -112,7 +112,7 @@ func main() {
 	authHandler := httphandler.NewAuthHandler(authClient)
 	profileHandler := httphandler.NewProfileHandler(profileClient, storageClient)
 	adHandler := httphandler.NewAdHandler(adClient, storageClient, profileClient)
-	slotHandler := httphandler.NewSlotHandler(slotClient, adClient)
+	slotHandler := httphandler.NewSlotHandler(slotClient, adClient, storageClient)
 
 	// Auth
 	authRouter.HandleFunc("/register", authHandler.Register).Methods("POST")

@@ -197,15 +197,6 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	ctxGet, cancelGet := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelGet()
-
-	if auth := r.Header.Get("Authorization"); auth != "" {
-		ctxGet = metadata.AppendToOutgoingContext(ctxGet, "authorization", auth)
-	}
-
-
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
@@ -213,6 +204,32 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
+	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
+		SubAmount: uint32(budget),
+	})
+	if err != nil {
+		st, _ := status.FromError(err)
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		return
+	}
+
+	// ———— ШАГ 2: Загружаем изображение (если есть) ————
+	if len(fileBytes) > 0 {
+		uploadCtx, uploadCancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer uploadCancel()
+
+		_, err := h.storageClient.Create(uploadCtx, &pbStorage.CreateRequest{
+			ImagePath: newImageFilename,
+			ImageData: fileBytes,
+		})
+		if err != nil {
+			log.Printf("ERROR: async image upload failed for %s: %v", newImageFilename, err)
+		} else {
+			log.Printf("INFO: image uploaded successfully: %s", newImageFilename)
+		}
+	}
+
+	// ———— ШАГ 3: Вызываем gRPC Update ————
 	req := &pbAd.UpdateRequest{
 		Ad: &pbAd.Ad{
 			Id:        id,
@@ -231,24 +248,7 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if len(fileBytes) > 0 {
-    go func(imgPath string, data []byte) {
-        ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-        defer cancel()
-
-        _, err := h.storageClient.Create(ctx, &pbStorage.CreateRequest{
-            ImagePath: imgPath,
-            ImageData: data,
-        })
-        if err != nil {
-            log.Printf("ERROR: async image upload failed for %s: %v", imgPath, err)
-        } else {
-            log.Printf("INFO: image uploaded successfully: %s", imgPath)
-        }
-    }(newImageFilename, fileBytes)
-}
-
-pkg.JSONResponse(w, http.StatusOK, "Ad updated successfully", updateResp)
+	pkg.JSONResponse(w, http.StatusOK, "Ad updated successfully", updateResp)
 }
 
 func (h *AdHandler) Delete(w http.ResponseWriter, r *http.Request) {
