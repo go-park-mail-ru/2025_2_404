@@ -1,0 +1,36 @@
+syntax="proto3";
+
+package storage;
+
+option go_package = "storage.v1;storagev1";
+
+service Storage {
+    rpc Create(CreateRequest) returns (CreateResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc Get(GetRequest) returns (GetResponse);
+}
+
+message CreateRequest{
+    bytes image_data = 1;
+    string image_path = 2;
+}
+
+message CreateResponse{
+}
+
+message DeleteRequest{
+    string image_path = 1;
+}
+
+message DeleteResponse{
+    bool success = 1;
+}
+
+message GetRequest{
+    string image_path = 1;
+}
+
+message GetResponse{
+    bytes image_data = 1;
+    string content_type = 3;
+}

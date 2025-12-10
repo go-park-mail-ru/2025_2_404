@@ -1,0 +1,65 @@
+syntax="proto3";
+
+package ad;
+
+option go_package = "ad.v1;adv1";
+
+service AdServ{
+    rpc Create(CreateRequest) returns (CreateResponse);
+    rpc GetAllAds(GetAllAdsRequest) returns (GetAllAdsResponse);
+    rpc GetAd(GetAdRequest) returns (GetAdResponse);
+    rpc Update(UpdateRequest) returns (UpdateResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+}
+
+message Ad {
+    string id = 1;
+    string clientID = 2;
+    string title = 3;
+    string content = 4;
+    string imgPath = 5;
+    string targeturl = 6;
+    uint32 budget = 7;
+    string createdAt = 8;
+    string updatedAt = 9;
+}
+
+message CreateRequest{
+    Ad ad = 1;
+}
+
+message CreateResponse{
+
+}
+
+message GetAllAdsRequest{
+}
+
+message GetAllAdsResponse{
+    repeated Ad ads = 1;
+}
+
+message GetAdRequest{
+    string id = 1;
+    string clientID = 2;
+}
+
+message GetAdResponse{
+    Ad ad = 1;
+}
+
+message UpdateRequest{
+    Ad ad = 1;
+}
+
+message UpdateResponse{
+    
+}
+
+message DeleteRequest{
+    string id = 1; 
+}
+
+message DeleteResponse{
+
+}

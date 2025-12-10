@@ -15,3 +15,5 @@
 
 ## Ссылка на фронтенд:
 https://github.com/frontend-park-mail-ru/2025_2_404
+
+Коммнада для обнволения protofile: make -B proto

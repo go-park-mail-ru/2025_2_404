@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS client (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL CHECK (
 		length(name) >= 4 AND length(name) <= 50
 	),
@@ -19,16 +19,16 @@ CREATE TABLE IF NOT EXISTS client (
 );
 
 CREATE TABLE IF NOT EXISTS client_wallet (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	client_id INT UNIQUE REFERENCES client(id) ON DELETE CASCADE,
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	client_id UUID UNIQUE REFERENCES client(id) ON DELETE CASCADE,
 	balance INT NOT NULL DEFAULT 0 CHECK (balance >= 0),
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS wallet_top_up (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	client_wallet_id INT REFERENCES client_wallet(id) ON DELETE CASCADE,
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	client_wallet_id UUID REFERENCES client_wallet(id) ON DELETE CASCADE,
 	amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
     payment_method TEXT NOT NULL CHECK (
 		length(payment_method) >= 1 AND length(payment_method) <= 40
@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS wallet_top_up (
 );
 
 CREATE TABLE IF NOT EXISTS notification_user (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	client_id INTEGER REFERENCES client(id) ON DELETE CASCADE,
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	client_id UUID REFERENCES client(id) ON DELETE CASCADE,
 	notification_text TEXT NOT NULL CHECK (
 		length(notification_text) >= 1 AND length(notification_text) <= 200
 	),
@@ -51,17 +51,9 @@ CREATE TABLE IF NOT EXISTS notification_user (
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS platform (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	platform_name TEXT UNIQUE NOT NULL CHECK (
-		length(platform_name) >= 1 AND length(platform_name) <= 100
-	),
-	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
-
 CREATE TABLE IF NOT EXISTS ad (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	client_id INT REFERENCES client(id) ON DELETE CASCADE,
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	client_id UUID REFERENCES client(id) ON DELETE CASCADE,
 	title TEXT NOT NULL CHECK (
 		length(title) >= 1 AND length(title) <= 40
 	),
@@ -78,11 +70,24 @@ CREATE TABLE IF NOT EXISTS ad (
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS slots (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id UUID NOT NULL REFERENCES client(id) ON DELETE CASCADE,
+    slot_name VARCHAR(100) NOT NULL CHECK (length(slot_name) BETWEEN 1 AND 100),
+    min_cost_adv INT NOT NULL CHECK (min_cost_adv >= 0),
+    format_of_banner VARCHAR(20) NOT NULL CHECK (format_of_banner IN ('horizontal', 'vertical', 'square')),
+    status VARCHAR(10) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused')),
+    back_color VARCHAR(7) NOT NULL DEFAULT '#ffffff' CHECK (back_color ~ '^#[0-9A-Fa-f]{6}$'),
+    text_color VARCHAR(7) NOT NULL DEFAULT '#000000' CHECK (text_color ~ '^#[0-9A-Fa-f]{6}$'),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS ad_detail (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	ad_id INT REFERENCES ad(id) ON DELETE CASCADE,
-	platform_id INT REFERENCES platform(id) ON DELETE CASCADE,
-	amount_for_ad NUMERIC(12, 2) NOT NULL CHECK (amount_for_ad > 0),
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	ad_id UUID REFERENCES ad(id) ON DELETE CASCADE,
+	slot_id UUID REFERENCES slots(id) ON DELETE CASCADE,
+	budget INT NOT NULL CHECK (budget > 0),
     status TEXT NOT NULL CHECK (
 		length(status) >= 1 AND length(status) <= 40
 	),
@@ -91,10 +96,11 @@ CREATE TABLE IF NOT EXISTS ad_detail (
 );
 
 CREATE TABLE IF NOT EXISTS statistic (
-	id INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-	ad_detail_id INT REFERENCES ad_detail(id) ON DELETE CASCADE,
+	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+	ad_detail_id UUID REFERENCES ad_detail(id) ON DELETE CASCADE,
 	clicks INT NOT NULL DEFAULT 0 CHECK (clicks >= 0),
 	impressions INT NOT NULL DEFAULT 0 CHECK (impressions >= 0),
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
-);
+);;
+
