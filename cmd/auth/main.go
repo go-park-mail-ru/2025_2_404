@@ -7,7 +7,7 @@ import (
 	"2025_2_404/internal/service/auth/connections"
 	"2025_2_404/internal/service/auth/storage/postgres"
 	"2025_2_404/internal/service/auth/service"
-	"2025_2_404/protos/auth"
+	"2025_2_404/protos/gen/go/auth"
 	"net"
 	"os"
 	"os/signal"

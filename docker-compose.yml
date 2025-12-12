@@ -77,6 +77,8 @@ services:
     build:
       context: .
       dockerfile: internal/service/profile/build/Dockerfile
+    dns:
+      - 8.8.8.8
     container_name: profile_service
     restart: always
     ports:

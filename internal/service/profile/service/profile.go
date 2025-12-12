@@ -13,15 +13,24 @@ type repositoryI interface{
 	ShowBalance(ctx context.Context, clientID modeluser.ID) (uint32, error)
 	AddBalance(ctx context.Context, clientID modeluser.ID, addAmount uint32) error
 	SubtractBalance(ctx context.Context, clientID modeluser.ID, subAmount uint32) error
+	CreatePayment(ctx context.Context, payment modeluser.Payment) error
+	UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modeluser.PaymentStatus) error
+	GetPaymentsByClientID(ctx context.Context, clientID modeluser.ID) ([]modeluser.Payment, error)
+}
+
+type externalHttpI interface{
+	CreatePayment(ctx context.Context, payment modeluser.Payment)(string, error)
 }
 
 type UseCase struct{
 	repo repositoryI
+	ext externalHttpI
 }
 
-func New(repo repositoryI) *UseCase{
+func New(repo repositoryI, ext externalHttpI) *UseCase{
 	return &UseCase{
 		repo: repo,
+		ext: ext,
 	}
 }
 

@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	authProto "2025_2_404/protos/auth"
+	authProto "2025_2_404/protos/gen/go/auth"
 
 	"github.com/google/uuid"
 )

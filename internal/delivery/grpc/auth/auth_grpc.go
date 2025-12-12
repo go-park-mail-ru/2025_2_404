@@ -2,7 +2,7 @@ package handler
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
-	"2025_2_404/protos/auth"
+	"2025_2_404/protos/gen/go/auth"
 	"context"
 
 	"google.golang.org/grpc/codes"

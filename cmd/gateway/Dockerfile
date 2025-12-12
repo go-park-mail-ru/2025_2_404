@@ -16,6 +16,7 @@
     # RUN apk --no-cache add ca-certificates
 
     COPY template ./template
+    COPY .env ./.env
     COPY --from=builder /app/gateway-app .
     
     # Если у вас есть .env файл или папка configs, их нужно скопировать тоже

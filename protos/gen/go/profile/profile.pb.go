@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.10
 // 	protoc        v3.21.12
-// source: protos/profile/profile.proto
+// source: profile/profile.proto
 
 package profile
 
@@ -20,6 +20,74 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+type Payment struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Amount        uint32                 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	YooPaymentId  string                 `protobuf:"bytes,4,opt,name=yoo_payment_id,json=yooPaymentId,proto3" json:"yoo_payment_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Payment) Reset() {
+	*x = Payment{}
+	mi := &file_profile_profile_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Payment) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Payment) ProtoMessage() {}
+
+func (x *Payment) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_profile_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Payment.ProtoReflect.Descriptor instead.
+func (*Payment) Descriptor() ([]byte, []int) {
+	return file_profile_profile_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *Payment) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Payment) GetAmount() uint32 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+func (x *Payment) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *Payment) GetYooPaymentId() string {
+	if x != nil {
+		return x.YooPaymentId
+	}
+	return ""
+}
 
 type UpdateRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -40,7 +108,7 @@ type UpdateRequest struct {
 
 func (x *UpdateRequest) Reset() {
 	*x = UpdateRequest{}
-	mi := &file_protos_profile_profile_proto_msgTypes[0]
+	mi := &file_profile_profile_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -52,7 +120,7 @@ func (x *UpdateRequest) String() string {
 func (*UpdateRequest) ProtoMessage() {}
 
 func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[0]
+	mi := &file_profile_profile_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -65,7 +133,7 @@ func (x *UpdateRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRequest) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{0}
+	return file_profile_profile_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *UpdateRequest) GetUserName() string {
@@ -165,7 +233,7 @@ type UpdateResponse struct {
 
 func (x *UpdateResponse) Reset() {
 	*x = UpdateResponse{}
-	mi := &file_protos_profile_profile_proto_msgTypes[1]
+	mi := &file_profile_profile_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -177,7 +245,7 @@ func (x *UpdateResponse) String() string {
 func (*UpdateResponse) ProtoMessage() {}
 
 func (x *UpdateResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[1]
+	mi := &file_profile_profile_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -190,7 +258,7 @@ func (x *UpdateResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateResponse.ProtoReflect.Descriptor instead.
 func (*UpdateResponse) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{1}
+	return file_profile_profile_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *UpdateResponse) GetUserName() string {
@@ -285,7 +353,7 @@ type DeleteRequest struct {
 
 func (x *DeleteRequest) Reset() {
 	*x = DeleteRequest{}
-	mi := &file_protos_profile_profile_proto_msgTypes[2]
+	mi := &file_profile_profile_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -297,7 +365,7 @@ func (x *DeleteRequest) String() string {
 func (*DeleteRequest) ProtoMessage() {}
 
 func (x *DeleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[2]
+	mi := &file_profile_profile_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -310,7 +378,7 @@ func (x *DeleteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRequest) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{2}
+	return file_profile_profile_proto_rawDescGZIP(), []int{3}
 }
 
 type DeleteResponse struct {
@@ -321,7 +389,7 @@ type DeleteResponse struct {
 
 func (x *DeleteResponse) Reset() {
 	*x = DeleteResponse{}
-	mi := &file_protos_profile_profile_proto_msgTypes[3]
+	mi := &file_profile_profile_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -333,7 +401,7 @@ func (x *DeleteResponse) String() string {
 func (*DeleteResponse) ProtoMessage() {}
 
 func (x *DeleteResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[3]
+	mi := &file_profile_profile_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -346,7 +414,7 @@ func (x *DeleteResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteResponse.ProtoReflect.Descriptor instead.
 func (*DeleteResponse) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{3}
+	return file_profile_profile_proto_rawDescGZIP(), []int{4}
 }
 
 type ShowRequest struct {
@@ -357,7 +425,7 @@ type ShowRequest struct {
 
 func (x *ShowRequest) Reset() {
 	*x = ShowRequest{}
-	mi := &file_protos_profile_profile_proto_msgTypes[4]
+	mi := &file_profile_profile_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -369,7 +437,7 @@ func (x *ShowRequest) String() string {
 func (*ShowRequest) ProtoMessage() {}
 
 func (x *ShowRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[4]
+	mi := &file_profile_profile_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -382,7 +450,7 @@ func (x *ShowRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowRequest.ProtoReflect.Descriptor instead.
 func (*ShowRequest) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{4}
+	return file_profile_profile_proto_rawDescGZIP(), []int{5}
 }
 
 type ShowResponse struct {
@@ -403,7 +471,7 @@ type ShowResponse struct {
 
 func (x *ShowResponse) Reset() {
 	*x = ShowResponse{}
-	mi := &file_protos_profile_profile_proto_msgTypes[5]
+	mi := &file_profile_profile_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -415,7 +483,7 @@ func (x *ShowResponse) String() string {
 func (*ShowResponse) ProtoMessage() {}
 
 func (x *ShowResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[5]
+	mi := &file_profile_profile_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -428,7 +496,7 @@ func (x *ShowResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowResponse.ProtoReflect.Descriptor instead.
 func (*ShowResponse) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{5}
+	return file_profile_profile_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ShowResponse) GetUserName() string {
@@ -509,7 +577,7 @@ type ShowBalanceRequest struct {
 
 func (x *ShowBalanceRequest) Reset() {
 	*x = ShowBalanceRequest{}
-	mi := &file_protos_profile_profile_proto_msgTypes[6]
+	mi := &file_profile_profile_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -521,7 +589,7 @@ func (x *ShowBalanceRequest) String() string {
 func (*ShowBalanceRequest) ProtoMessage() {}
 
 func (x *ShowBalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[6]
+	mi := &file_profile_profile_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -534,7 +602,7 @@ func (x *ShowBalanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowBalanceRequest.ProtoReflect.Descriptor instead.
 func (*ShowBalanceRequest) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{6}
+	return file_profile_profile_proto_rawDescGZIP(), []int{7}
 }
 
 type ShowBalanceResponse struct {
@@ -546,7 +614,7 @@ type ShowBalanceResponse struct {
 
 func (x *ShowBalanceResponse) Reset() {
 	*x = ShowBalanceResponse{}
-	mi := &file_protos_profile_profile_proto_msgTypes[7]
+	mi := &file_profile_profile_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -558,7 +626,7 @@ func (x *ShowBalanceResponse) String() string {
 func (*ShowBalanceResponse) ProtoMessage() {}
 
 func (x *ShowBalanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[7]
+	mi := &file_profile_profile_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -571,7 +639,7 @@ func (x *ShowBalanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ShowBalanceResponse.ProtoReflect.Descriptor instead.
 func (*ShowBalanceResponse) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{7}
+	return file_profile_profile_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ShowBalanceResponse) GetBalance() uint32 {
@@ -590,7 +658,7 @@ type AddBalanceRequest struct {
 
 func (x *AddBalanceRequest) Reset() {
 	*x = AddBalanceRequest{}
-	mi := &file_protos_profile_profile_proto_msgTypes[8]
+	mi := &file_profile_profile_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -602,7 +670,7 @@ func (x *AddBalanceRequest) String() string {
 func (*AddBalanceRequest) ProtoMessage() {}
 
 func (x *AddBalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[8]
+	mi := &file_profile_profile_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -615,7 +683,7 @@ func (x *AddBalanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddBalanceRequest.ProtoReflect.Descriptor instead.
 func (*AddBalanceRequest) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{8}
+	return file_profile_profile_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *AddBalanceRequest) GetAddAmount() uint32 {
@@ -633,7 +701,7 @@ type AddBalanceResponse struct {
 
 func (x *AddBalanceResponse) Reset() {
 	*x = AddBalanceResponse{}
-	mi := &file_protos_profile_profile_proto_msgTypes[9]
+	mi := &file_profile_profile_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -645,7 +713,7 @@ func (x *AddBalanceResponse) String() string {
 func (*AddBalanceResponse) ProtoMessage() {}
 
 func (x *AddBalanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[9]
+	mi := &file_profile_profile_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -658,7 +726,7 @@ func (x *AddBalanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AddBalanceResponse.ProtoReflect.Descriptor instead.
 func (*AddBalanceResponse) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{9}
+	return file_profile_profile_proto_rawDescGZIP(), []int{10}
 }
 
 type SubtractBalanceRequest struct {
@@ -670,7 +738,7 @@ type SubtractBalanceRequest struct {
 
 func (x *SubtractBalanceRequest) Reset() {
 	*x = SubtractBalanceRequest{}
-	mi := &file_protos_profile_profile_proto_msgTypes[10]
+	mi := &file_profile_profile_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -682,7 +750,7 @@ func (x *SubtractBalanceRequest) String() string {
 func (*SubtractBalanceRequest) ProtoMessage() {}
 
 func (x *SubtractBalanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[10]
+	mi := &file_profile_profile_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -695,7 +763,7 @@ func (x *SubtractBalanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubtractBalanceRequest.ProtoReflect.Descriptor instead.
 func (*SubtractBalanceRequest) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{10}
+	return file_profile_profile_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *SubtractBalanceRequest) GetSubAmount() uint32 {
@@ -713,7 +781,7 @@ type SubtractBalanceResponse struct {
 
 func (x *SubtractBalanceResponse) Reset() {
 	*x = SubtractBalanceResponse{}
-	mi := &file_protos_profile_profile_proto_msgTypes[11]
+	mi := &file_profile_profile_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -725,7 +793,7 @@ func (x *SubtractBalanceResponse) String() string {
 func (*SubtractBalanceResponse) ProtoMessage() {}
 
 func (x *SubtractBalanceResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_protos_profile_profile_proto_msgTypes[11]
+	mi := &file_profile_profile_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -738,14 +806,291 @@ func (x *SubtractBalanceResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubtractBalanceResponse.ProtoReflect.Descriptor instead.
 func (*SubtractBalanceResponse) Descriptor() ([]byte, []int) {
-	return file_protos_profile_profile_proto_rawDescGZIP(), []int{11}
+	return file_profile_profile_proto_rawDescGZIP(), []int{12}
 }
 
-var File_protos_profile_profile_proto protoreflect.FileDescriptor
+type PaymentCreateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Amount        uint32                 `protobuf:"varint,1,opt,name=amount,proto3" json:"amount,omitempty"`
+	PaymentMethod string                 `protobuf:"bytes,2,opt,name=payment_method,json=paymentMethod,proto3" json:"payment_method,omitempty"`
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
 
-const file_protos_profile_profile_proto_rawDesc = "" +
+func (x *PaymentCreateRequest) Reset() {
+	*x = PaymentCreateRequest{}
+	mi := &file_profile_profile_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentCreateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentCreateRequest) ProtoMessage() {}
+
+func (x *PaymentCreateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_profile_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentCreateRequest.ProtoReflect.Descriptor instead.
+func (*PaymentCreateRequest) Descriptor() ([]byte, []int) {
+	return file_profile_profile_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *PaymentCreateRequest) GetAmount() uint32 {
+	if x != nil {
+		return x.Amount
+	}
+	return 0
+}
+
+func (x *PaymentCreateRequest) GetPaymentMethod() string {
+	if x != nil {
+		return x.PaymentMethod
+	}
+	return ""
+}
+
+func (x *PaymentCreateRequest) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+type PaymentCreateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PaymentUrl    string                 `protobuf:"bytes,1,opt,name=payment_url,json=paymentUrl,proto3" json:"payment_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PaymentCreateResponse) Reset() {
+	*x = PaymentCreateResponse{}
+	mi := &file_profile_profile_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentCreateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentCreateResponse) ProtoMessage() {}
+
+func (x *PaymentCreateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_profile_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentCreateResponse.ProtoReflect.Descriptor instead.
+func (*PaymentCreateResponse) Descriptor() ([]byte, []int) {
+	return file_profile_profile_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *PaymentCreateResponse) GetPaymentUrl() string {
+	if x != nil {
+		return x.PaymentUrl
+	}
+	return ""
+}
+
+type PaymentStatusRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	YooPaymentId  string                 `protobuf:"bytes,1,opt,name=yoo_payment_id,json=yooPaymentId,proto3" json:"yoo_payment_id,omitempty"`
+	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PaymentStatusRequest) Reset() {
+	*x = PaymentStatusRequest{}
+	mi := &file_profile_profile_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentStatusRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentStatusRequest) ProtoMessage() {}
+
+func (x *PaymentStatusRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_profile_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentStatusRequest.ProtoReflect.Descriptor instead.
+func (*PaymentStatusRequest) Descriptor() ([]byte, []int) {
+	return file_profile_profile_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *PaymentStatusRequest) GetYooPaymentId() string {
+	if x != nil {
+		return x.YooPaymentId
+	}
+	return ""
+}
+
+func (x *PaymentStatusRequest) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+type PaymentStatusResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PaymentStatusResponse) Reset() {
+	*x = PaymentStatusResponse{}
+	mi := &file_profile_profile_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentStatusResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentStatusResponse) ProtoMessage() {}
+
+func (x *PaymentStatusResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_profile_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentStatusResponse.ProtoReflect.Descriptor instead.
+func (*PaymentStatusResponse) Descriptor() ([]byte, []int) {
+	return file_profile_profile_proto_rawDescGZIP(), []int{16}
+}
+
+type PaymentsByClientIDRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PaymentsByClientIDRequest) Reset() {
+	*x = PaymentsByClientIDRequest{}
+	mi := &file_profile_profile_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentsByClientIDRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentsByClientIDRequest) ProtoMessage() {}
+
+func (x *PaymentsByClientIDRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_profile_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentsByClientIDRequest.ProtoReflect.Descriptor instead.
+func (*PaymentsByClientIDRequest) Descriptor() ([]byte, []int) {
+	return file_profile_profile_proto_rawDescGZIP(), []int{17}
+}
+
+type PaymentsByClientIDResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Payments      []*Payment             `protobuf:"bytes,1,rep,name=payments,proto3" json:"payments,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PaymentsByClientIDResponse) Reset() {
+	*x = PaymentsByClientIDResponse{}
+	mi := &file_profile_profile_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PaymentsByClientIDResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PaymentsByClientIDResponse) ProtoMessage() {}
+
+func (x *PaymentsByClientIDResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_profile_profile_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PaymentsByClientIDResponse.ProtoReflect.Descriptor instead.
+func (*PaymentsByClientIDResponse) Descriptor() ([]byte, []int) {
+	return file_profile_profile_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *PaymentsByClientIDResponse) GetPayments() []*Payment {
+	if x != nil {
+		return x.Payments
+	}
+	return nil
+}
+
+var File_profile_profile_proto protoreflect.FileDescriptor
+
+const file_profile_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x1cprotos/profile/profile.proto\x12\aprofile\"\xd0\x02\n" +
+	"\x15profile/profile.proto\x12\aprofile\"o\n" +
+	"\aPayment\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
+	"\x06amount\x18\x02 \x01(\rR\x06amount\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\x12$\n" +
+	"\x0eyoo_payment_id\x18\x04 \x01(\tR\fyooPaymentId\"\xd0\x02\n" +
 	"\rUpdateRequest\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -804,7 +1149,21 @@ const file_protos_profile_profile_proto_rawDesc = "" +
 	"\x16SubtractBalanceRequest\x12\x1d\n" +
 	"\n" +
 	"sub_amount\x18\x01 \x01(\rR\tsubAmount\"\x19\n" +
-	"\x17SubtractBalanceResponse2\x9b\x03\n" +
+	"\x17SubtractBalanceResponse\"m\n" +
+	"\x14PaymentCreateRequest\x12\x16\n" +
+	"\x06amount\x18\x01 \x01(\rR\x06amount\x12%\n" +
+	"\x0epayment_method\x18\x02 \x01(\tR\rpaymentMethod\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\"8\n" +
+	"\x15PaymentCreateResponse\x12\x1f\n" +
+	"\vpayment_url\x18\x01 \x01(\tR\n" +
+	"paymentUrl\"T\n" +
+	"\x14PaymentStatusRequest\x12$\n" +
+	"\x0eyoo_payment_id\x18\x01 \x01(\tR\fyooPaymentId\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\"\x17\n" +
+	"\x15PaymentStatusResponse\"\x1b\n" +
+	"\x19PaymentsByClientIDRequest\"J\n" +
+	"\x1aPaymentsByClientIDResponse\x12,\n" +
+	"\bpayments\x18\x01 \x03(\v2\x10.profile.PaymentR\bpayments2\xa3\x05\n" +
 	"\aProfile\x129\n" +
 	"\x06Update\x12\x16.profile.UpdateRequest\x1a\x17.profile.UpdateResponse\x129\n" +
 	"\x06Delete\x12\x16.profile.DeleteRequest\x1a\x17.profile.DeleteResponse\x123\n" +
@@ -812,75 +1171,92 @@ const file_protos_profile_profile_proto_rawDesc = "" +
 	"\vShowBalance\x12\x1b.profile.ShowBalanceRequest\x1a\x1c.profile.ShowBalanceResponse\x12E\n" +
 	"\n" +
 	"AddBalance\x12\x1a.profile.AddBalanceRequest\x1a\x1b.profile.AddBalanceResponse\x12T\n" +
-	"\x0fSubtractBalance\x12\x1f.profile.SubtractBalanceRequest\x1a .profile.SubtractBalanceResponseB\x13Z\x11./protos/profile;b\x06proto3"
+	"\x0fSubtractBalance\x12\x1f.profile.SubtractBalanceRequest\x1a .profile.SubtractBalanceResponse\x12N\n" +
+	"\rCreatePayment\x12\x1d.profile.PaymentCreateRequest\x1a\x1e.profile.PaymentCreateResponse\x12T\n" +
+	"\x13UpdatePaymentStatus\x12\x1d.profile.PaymentStatusRequest\x1a\x1e.profile.PaymentStatusResponse\x12`\n" +
+	"\x15GetPaymentsByClientID\x12\".profile.PaymentsByClientIDRequest\x1a#.profile.PaymentsByClientIDResponseB\x13Z\x11./protos/profile;b\x06proto3"
 
 var (
-	file_protos_profile_profile_proto_rawDescOnce sync.Once
-	file_protos_profile_profile_proto_rawDescData []byte
+	file_profile_profile_proto_rawDescOnce sync.Once
+	file_profile_profile_proto_rawDescData []byte
 )
 
-func file_protos_profile_profile_proto_rawDescGZIP() []byte {
-	file_protos_profile_profile_proto_rawDescOnce.Do(func() {
-		file_protos_profile_profile_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_protos_profile_profile_proto_rawDesc), len(file_protos_profile_profile_proto_rawDesc)))
+func file_profile_profile_proto_rawDescGZIP() []byte {
+	file_profile_profile_proto_rawDescOnce.Do(func() {
+		file_profile_profile_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_profile_profile_proto_rawDesc), len(file_profile_profile_proto_rawDesc)))
 	})
-	return file_protos_profile_profile_proto_rawDescData
+	return file_profile_profile_proto_rawDescData
 }
 
-var file_protos_profile_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
-var file_protos_profile_profile_proto_goTypes = []any{
-	(*UpdateRequest)(nil),           // 0: profile.UpdateRequest
-	(*UpdateResponse)(nil),          // 1: profile.UpdateResponse
-	(*DeleteRequest)(nil),           // 2: profile.DeleteRequest
-	(*DeleteResponse)(nil),          // 3: profile.DeleteResponse
-	(*ShowRequest)(nil),             // 4: profile.ShowRequest
-	(*ShowResponse)(nil),            // 5: profile.ShowResponse
-	(*ShowBalanceRequest)(nil),      // 6: profile.ShowBalanceRequest
-	(*ShowBalanceResponse)(nil),     // 7: profile.ShowBalanceResponse
-	(*AddBalanceRequest)(nil),       // 8: profile.AddBalanceRequest
-	(*AddBalanceResponse)(nil),      // 9: profile.AddBalanceResponse
-	(*SubtractBalanceRequest)(nil),  // 10: profile.SubtractBalanceRequest
-	(*SubtractBalanceResponse)(nil), // 11: profile.SubtractBalanceResponse
+var file_profile_profile_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_profile_profile_proto_goTypes = []any{
+	(*Payment)(nil),                    // 0: profile.Payment
+	(*UpdateRequest)(nil),              // 1: profile.UpdateRequest
+	(*UpdateResponse)(nil),             // 2: profile.UpdateResponse
+	(*DeleteRequest)(nil),              // 3: profile.DeleteRequest
+	(*DeleteResponse)(nil),             // 4: profile.DeleteResponse
+	(*ShowRequest)(nil),                // 5: profile.ShowRequest
+	(*ShowResponse)(nil),               // 6: profile.ShowResponse
+	(*ShowBalanceRequest)(nil),         // 7: profile.ShowBalanceRequest
+	(*ShowBalanceResponse)(nil),        // 8: profile.ShowBalanceResponse
+	(*AddBalanceRequest)(nil),          // 9: profile.AddBalanceRequest
+	(*AddBalanceResponse)(nil),         // 10: profile.AddBalanceResponse
+	(*SubtractBalanceRequest)(nil),     // 11: profile.SubtractBalanceRequest
+	(*SubtractBalanceResponse)(nil),    // 12: profile.SubtractBalanceResponse
+	(*PaymentCreateRequest)(nil),       // 13: profile.PaymentCreateRequest
+	(*PaymentCreateResponse)(nil),      // 14: profile.PaymentCreateResponse
+	(*PaymentStatusRequest)(nil),       // 15: profile.PaymentStatusRequest
+	(*PaymentStatusResponse)(nil),      // 16: profile.PaymentStatusResponse
+	(*PaymentsByClientIDRequest)(nil),  // 17: profile.PaymentsByClientIDRequest
+	(*PaymentsByClientIDResponse)(nil), // 18: profile.PaymentsByClientIDResponse
 }
-var file_protos_profile_profile_proto_depIdxs = []int32{
-	0,  // 0: profile.Profile.Update:input_type -> profile.UpdateRequest
-	2,  // 1: profile.Profile.Delete:input_type -> profile.DeleteRequest
-	4,  // 2: profile.Profile.Show:input_type -> profile.ShowRequest
-	6,  // 3: profile.Profile.ShowBalance:input_type -> profile.ShowBalanceRequest
-	8,  // 4: profile.Profile.AddBalance:input_type -> profile.AddBalanceRequest
-	10, // 5: profile.Profile.SubtractBalance:input_type -> profile.SubtractBalanceRequest
-	1,  // 6: profile.Profile.Update:output_type -> profile.UpdateResponse
-	3,  // 7: profile.Profile.Delete:output_type -> profile.DeleteResponse
-	5,  // 8: profile.Profile.Show:output_type -> profile.ShowResponse
-	7,  // 9: profile.Profile.ShowBalance:output_type -> profile.ShowBalanceResponse
-	9,  // 10: profile.Profile.AddBalance:output_type -> profile.AddBalanceResponse
-	11, // 11: profile.Profile.SubtractBalance:output_type -> profile.SubtractBalanceResponse
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
-	0,  // [0:0] is the sub-list for extension type_name
-	0,  // [0:0] is the sub-list for extension extendee
-	0,  // [0:0] is the sub-list for field type_name
+var file_profile_profile_proto_depIdxs = []int32{
+	0,  // 0: profile.PaymentsByClientIDResponse.payments:type_name -> profile.Payment
+	1,  // 1: profile.Profile.Update:input_type -> profile.UpdateRequest
+	3,  // 2: profile.Profile.Delete:input_type -> profile.DeleteRequest
+	5,  // 3: profile.Profile.Show:input_type -> profile.ShowRequest
+	7,  // 4: profile.Profile.ShowBalance:input_type -> profile.ShowBalanceRequest
+	9,  // 5: profile.Profile.AddBalance:input_type -> profile.AddBalanceRequest
+	11, // 6: profile.Profile.SubtractBalance:input_type -> profile.SubtractBalanceRequest
+	13, // 7: profile.Profile.CreatePayment:input_type -> profile.PaymentCreateRequest
+	15, // 8: profile.Profile.UpdatePaymentStatus:input_type -> profile.PaymentStatusRequest
+	17, // 9: profile.Profile.GetPaymentsByClientID:input_type -> profile.PaymentsByClientIDRequest
+	2,  // 10: profile.Profile.Update:output_type -> profile.UpdateResponse
+	4,  // 11: profile.Profile.Delete:output_type -> profile.DeleteResponse
+	6,  // 12: profile.Profile.Show:output_type -> profile.ShowResponse
+	8,  // 13: profile.Profile.ShowBalance:output_type -> profile.ShowBalanceResponse
+	10, // 14: profile.Profile.AddBalance:output_type -> profile.AddBalanceResponse
+	12, // 15: profile.Profile.SubtractBalance:output_type -> profile.SubtractBalanceResponse
+	14, // 16: profile.Profile.CreatePayment:output_type -> profile.PaymentCreateResponse
+	16, // 17: profile.Profile.UpdatePaymentStatus:output_type -> profile.PaymentStatusResponse
+	18, // 18: profile.Profile.GetPaymentsByClientID:output_type -> profile.PaymentsByClientIDResponse
+	10, // [10:19] is the sub-list for method output_type
+	1,  // [1:10] is the sub-list for method input_type
+	1,  // [1:1] is the sub-list for extension type_name
+	1,  // [1:1] is the sub-list for extension extendee
+	0,  // [0:1] is the sub-list for field type_name
 }
 
-func init() { file_protos_profile_profile_proto_init() }
-func file_protos_profile_profile_proto_init() {
-	if File_protos_profile_profile_proto != nil {
+func init() { file_profile_profile_proto_init() }
+func file_profile_profile_proto_init() {
+	if File_profile_profile_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_protos_profile_profile_proto_rawDesc), len(file_protos_profile_profile_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_profile_profile_proto_rawDesc), len(file_profile_profile_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_protos_profile_profile_proto_goTypes,
-		DependencyIndexes: file_protos_profile_profile_proto_depIdxs,
-		MessageInfos:      file_protos_profile_profile_proto_msgTypes,
+		GoTypes:           file_profile_profile_proto_goTypes,
+		DependencyIndexes: file_profile_profile_proto_depIdxs,
+		MessageInfos:      file_profile_profile_proto_msgTypes,
 	}.Build()
-	File_protos_profile_profile_proto = out.File
-	file_protos_profile_profile_proto_goTypes = nil
-	file_protos_profile_profile_proto_depIdxs = nil
+	File_profile_profile_proto = out.File
+	file_profile_profile_proto_goTypes = nil
+	file_profile_profile_proto_depIdxs = nil
 }

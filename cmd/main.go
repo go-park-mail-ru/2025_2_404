@@ -14,11 +14,12 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	pbAuth "2025_2_404/protos/auth"
+	
+	pbAuth "2025_2_404/protos/gen/go/auth"
 	pbAd "2025_2_404/protos/gen/go/ad"
 	slotpb "2025_2_404/protos/gen/go/slot"
 	pbStorage "2025_2_404/protos/gen/go/storage"
-	pbProfile "2025_2_404/protos/profile"
+	pbProfile "2025_2_404/protos/gen/go/profile"
 )
 
 func main() {
@@ -101,11 +102,11 @@ func main() {
 
 	r := mux.NewRouter()
 
-	authRouter := r.PathPrefix("/auth").Subrouter()
-	profileRouter := r.PathPrefix("/profile").Subrouter()
-	adRouter := r.PathPrefix("/ads").Subrouter()
-	slotRouter := r.PathPrefix("/slots").Subrouter()
-	balanceRouter := r.PathPrefix("/balance").Subrouter()
+	authRouter := r.PathPrefix("/api/auth").Subrouter()
+	profileRouter := r.PathPrefix("/api/profile").Subrouter()
+	adRouter := r.PathPrefix("/api/ads").Subrouter()
+	slotRouter := r.PathPrefix("/api/slots").Subrouter()
+	balanceRouter := r.PathPrefix("/api/balance").Subrouter()
 
 	// --- HTTP Handlers ---
 
@@ -127,6 +128,7 @@ func main() {
 	balanceRouter.HandleFunc("", profileHandler.ShowBalance).Methods("GET")
 	balanceRouter.HandleFunc("/add", profileHandler.AddBalance).Methods("POST")
 	balanceRouter.HandleFunc("/subtract", profileHandler.SubtractBalance).Methods("POST")
+	balanceRouter.HandleFunc("/payment", profileHandler.CreatePayment).Methods("POST")
 
 	// Ads
 	adRouter.HandleFunc("", adHandler.Create).Methods("POST")
