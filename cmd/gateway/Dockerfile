@@ -12,16 +12,10 @@
     
     WORKDIR /root/
     
-    # (Опционально) Если нужны SSL сертификаты для внешних запросов
-    # RUN apk --no-cache add ca-certificates
 
     COPY template ./template
     COPY .env ./.env
     COPY --from=builder /app/gateway-app .
-    
-    # Если у вас есть .env файл или папка configs, их нужно скопировать тоже
-    # COPY --from=builder /app/.env . 
-    # COPY --from=builder /app/configs ./configs
     
     EXPOSE 8080
 

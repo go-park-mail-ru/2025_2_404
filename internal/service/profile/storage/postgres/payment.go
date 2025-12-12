@@ -10,7 +10,7 @@ const (
 	sqlTextForCreatePayment = `INSERT INTO wallet_top_up (client_wallet_id, amount, status, yoo_payment_id, payment_method)
 	SELECT w.id, $2, $3, $4, $5
 	FROM client_wallet w
-	WHERE w.id = $1`
+	WHERE w.client_id = $1 `
 
 	sqlTextForUpdatePaymentStatus = `
 		UPDATE wallet_top_up

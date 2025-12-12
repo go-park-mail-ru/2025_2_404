@@ -5,7 +5,13 @@ import "net/http"
 func CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
-		if origin == "http://89.208.230.119:8000" || origin == "http://localhost:8000" {
+		allowedOrigins := map[string]bool{
+			"https://localhost:8000":     true,
+			"https://adnet.website":      true,
+			"http://adnet.website":       true,
+			"http://localhost:8000":      true,
+		}
+		if allowedOrigins[origin] {
 			w.Header().Set("Access-Control-Allow-Origin", origin)
 		}
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")

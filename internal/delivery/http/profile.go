@@ -276,15 +276,27 @@ func (h *ProfileHandler) CreatePayment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    req := &pbProfile.PaymentCreateRequest{
+    reqPayment := &pbProfile.PaymentCreateRequest{
         Amount: jsonReq.AmountRub,
         PaymentMethod: jsonReq.PaymentMethod,
     }
 
-    resp, err := h.client.CreatePayment(ctx, req)
+    resp, err := h.client.CreatePayment(ctx, reqPayment)
     if err != nil{
         st, _ := status.FromError(err)
         slog.Error("❌ Failed to create payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+        return
+    }
+
+    reqAddBalance := &pbProfile.AddBalanceRequest{
+        AddAmount: jsonReq.AmountRub,
+    }
+
+    _, err = h.client.AddBalance(ctx, reqAddBalance)
+    if err != nil {
+        st, _ := status.FromError(err)
+        slog.Error("❌ Failed to add balance after payment", "req_id", reqID, "amount", jsonReq.AmountRub, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }

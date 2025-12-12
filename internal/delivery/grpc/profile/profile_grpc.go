@@ -191,6 +191,8 @@ func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentC
 		return nil, status.Errorf(codes.Internal, "failed to create payment: %v", err)
 	}
 
+	
+
 	return &profile.PaymentCreateResponse{
 		PaymentUrl: yooKassaLink,
 	}, nil

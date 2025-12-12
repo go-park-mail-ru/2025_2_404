@@ -3,24 +3,59 @@ package profile
 import (
 	modelpayment "2025_2_404/internal/service/profile/domain"
 	"context"
+	"fmt"
+	"log/slog"
 
 	"github.com/google/uuid"
 )
 
 func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Payment) (string, error) {
+	// Генерация ID платежа
 	yooKassaID := uuid.New().String()
 	payment.YooPaymentID = yooKassaID
+
+	slog.Debug("Создание платежа: начало",
+		"user_id", payment.ClientID,
+		"amount", payment.AmountRub,
+		"yoo_payment_id", yooKassaID,
+	)
+
+	// Вызов внешнего платежного сервиса (YooKassa)
 	yooKassaLink, err := u.ext.CreatePayment(ctx, payment)
-	if err != nil{
-		return "", err
+	if err != nil {
+		slog.Error("Ошибка при создании платежа во внешнем сервисе",
+			"yoo_payment_id", yooKassaID,
+			"user_id", payment.ClientID,
+			"amount", payment.AmountRub,
+			"error", err,
+		)
+		return "", fmt.Errorf("failed to create payment in external service: %w", err)
 	}
 
+	slog.Debug("Платеж успешно создан во внешнем сервисе",
+		"yoo_payment_id", yooKassaID,
+		"payment_link", yooKassaLink,
+	)
+
+	// Устанавливаем статус ожидания
 	payment.Status = modelpayment.PaymentPending
 
-	err = u.repo.CreatePayment(ctx, payment)
-	if err != nil{
-		return "", err
+	// Сохраняем в репозиторий
+	if err := u.repo.CreatePayment(ctx, payment); err != nil {
+		slog.Error("Ошибка при сохранении платежа в БД",
+			"yoo_payment_id", yooKassaID,
+			"user_id", payment.ClientID,
+			"error", err,
+		)
+		return "", fmt.Errorf("failed to store payment in repository: %w", err)
 	}
+
+	slog.Info("Платёж успешно создан и сохранён",
+		"yoo_payment_id", yooKassaID,
+		"user_id", payment.ClientID,
+		"amount", payment.AmountRub,
+		"status", payment.Status,
+	)
 
 	return yooKassaLink, nil
 }
