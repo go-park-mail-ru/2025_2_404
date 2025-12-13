@@ -187,8 +187,31 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    payments, err := h.client.GetPaymentsByClientID(ctx, &pbProfile.PaymentsByClientIDRequest{})
+    if err != nil {
+        st, _ := status.FromError(err)
+        slog.Error("❌ Failed to show history payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+        return
+    }
+
+    var paymentsResp []user.Payment
+
+    for _, payment := range payments.GetPayments(){
+        historyPayment := user.Payment{
+            AmountRub: payment.GetAmount(),
+            PaymentMethod: payment.GetMethodPayment(),
+            Status: user.PaymentStatus(payment.Status),
+            YooPaymentID: payment.GetYooPaymentId(),
+        }
+        paymentsResp = append(paymentsResp, historyPayment)
+    }
+
     slog.Info("✅ Balance shown successfully", "req_id", reqID, "balance", resp.Balance)
-    pkg.JSONResponse(w, http.StatusOK, "Balance retrieved successfully", resp)
+    pkg.JSONResponse(w, http.StatusOK, "Balance retrieved successfully", &user.BalanceResponse{
+        Balance: int64(resp.GetBalance()),
+        Payments: paymentsResp,
+    })
 }
 
 func (h *ProfileHandler) AddBalance(w http.ResponseWriter, r *http.Request) {

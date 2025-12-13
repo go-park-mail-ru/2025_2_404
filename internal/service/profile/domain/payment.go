@@ -41,3 +41,8 @@ type PaymentResponse struct {
 		URL    string `json:"confirmation_url,omitempty"`
 	} `json:"confirmation"`
 }
+
+type BalanceResponse struct {
+    Balance       int64            `json:"balance"`
+    Payments      []Payment `json:"payments"`
+}
