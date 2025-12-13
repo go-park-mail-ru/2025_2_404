@@ -192,11 +192,6 @@ func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentC
 		return nil, status.Errorf(codes.Internal, "failed to create payment: %v", err)
 	}
 
-	err = h.profileUsecase.AddBalance(ctx, clientID, req.GetAmount())
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to add balance: %v", err)
-	}
-
 	return &profile.PaymentCreateResponse{
 		PaymentUrl: yooKassaLink,
 	}, nil
