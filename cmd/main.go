@@ -101,12 +101,12 @@ func main() {
 
 	r := mux.NewRouter()
 
-	authRouter := r.PathPrefix("/api/auth").Subrouter()
-	profileRouter := r.PathPrefix("/api/profile").Subrouter()
-	adRouter := r.PathPrefix("/api/ads").Subrouter()
-	slotRouter := r.PathPrefix("/api/slots").Subrouter()
-	balanceRouter := r.PathPrefix("/api/balance").Subrouter()
-	metricRouter := r.PathPrefix("/api/metric").Subrouter()
+	authRouter := r.PathPrefix("/auth").Subrouter()
+	profileRouter := r.PathPrefix("/profile").Subrouter()
+	adRouter := r.PathPrefix("/ads").Subrouter()
+	slotRouter := r.PathPrefix("/slots").Subrouter()
+	balanceRouter := r.PathPrefix("/balance").Subrouter()
+	metricRouter := r.PathPrefix("/metric").Subrouter()
 
 	// --- HTTP Handlers ---
 
