@@ -9,10 +9,12 @@ import (
 	pbStorage "2025_2_404/protos/gen/go/storage"
 	"context"
 	"encoding/json"
+	"log"
 	"log/slog"
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
@@ -198,7 +200,14 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
     var paymentsResp []user.Payment
 
     for _, payment := range payments.GetPayments(){
+        payId, err := uuid.Parse(payment.GetId())
+        if err != nil {
+            log.Printf("Ошибка: Взят неправильный uuid в истории платежей")
+            http.Error(w, "", http.StatusBadRequest)
+            return
+        }
         historyPayment := user.Payment{
+            ID: payId,
             AmountRub: payment.GetAmount(),
             PaymentMethod: payment.GetMethodPayment(),
             Status: user.PaymentStatus(payment.Status),

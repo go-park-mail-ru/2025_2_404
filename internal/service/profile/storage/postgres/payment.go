@@ -20,7 +20,11 @@ const (
 	sqlTextForGetPaymentByClientID = `
 		SELECT id, amount, status, payment_method
 		FROM wallet_top_up
-		WHERE client_wallet_id = $1`
+		WHERE client_wallet_id = (
+			SELECT id
+			FROM client_wallet
+			WHERE client_id = $1
+		)`
 )
 
 func (r *DB) CreatePayment(ctx context.Context, payment modelpayment.Payment) error {
@@ -57,7 +61,7 @@ func (r *DB) GetPaymentsByClientID(ctx context.Context, clientID modelpayment.ID
 	for rows.Next() {
 		var p modelpayment.Payment
 		err := rows.Scan(
-			&p.ClientID,
+			&p.ID,
 			&p.AmountRub,
 			&p.Status,
 			&p.PaymentMethod,
