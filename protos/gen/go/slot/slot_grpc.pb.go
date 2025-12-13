@@ -19,11 +19,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	SlotServ_CreateSlot_FullMethodName = "/slot.SlotServ/CreateSlot"
-	SlotServ_GetSlot_FullMethodName    = "/slot.SlotServ/GetSlot"
-	SlotServ_ListSlots_FullMethodName  = "/slot.SlotServ/ListSlots"
-	SlotServ_UpdateSlot_FullMethodName = "/slot.SlotServ/UpdateSlot"
-	SlotServ_DeleteSlot_FullMethodName = "/slot.SlotServ/DeleteSlot"
+	SlotServ_CreateSlot_FullMethodName   = "/slot.SlotServ/CreateSlot"
+	SlotServ_GetSlot_FullMethodName      = "/slot.SlotServ/GetSlot"
+	SlotServ_ListSlots_FullMethodName    = "/slot.SlotServ/ListSlots"
+	SlotServ_UpdateSlot_FullMethodName   = "/slot.SlotServ/UpdateSlot"
+	SlotServ_DeleteSlot_FullMethodName   = "/slot.SlotServ/DeleteSlot"
+	SlotServ_CreateMetric_FullMethodName = "/slot.SlotServ/CreateMetric"
 )
 
 // SlotServClient is the client API for SlotServ service.
@@ -35,6 +36,7 @@ type SlotServClient interface {
 	ListSlots(ctx context.Context, in *ListSlotsRequest, opts ...grpc.CallOption) (*ListSlotsResponse, error)
 	UpdateSlot(ctx context.Context, in *UpdateSlotRequest, opts ...grpc.CallOption) (*UpdateSlotResponse, error)
 	DeleteSlot(ctx context.Context, in *DeleteSlotRequest, opts ...grpc.CallOption) (*DeleteSlotResponse, error)
+	CreateMetric(ctx context.Context, in *CreateMetricRequest, opts ...grpc.CallOption) (*CreateMetricResponse, error)
 }
 
 type slotServClient struct {
@@ -95,6 +97,16 @@ func (c *slotServClient) DeleteSlot(ctx context.Context, in *DeleteSlotRequest, 
 	return out, nil
 }
 
+func (c *slotServClient) CreateMetric(ctx context.Context, in *CreateMetricRequest, opts ...grpc.CallOption) (*CreateMetricResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateMetricResponse)
+	err := c.cc.Invoke(ctx, SlotServ_CreateMetric_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SlotServServer is the server API for SlotServ service.
 // All implementations must embed UnimplementedSlotServServer
 // for forward compatibility.
@@ -104,6 +116,7 @@ type SlotServServer interface {
 	ListSlots(context.Context, *ListSlotsRequest) (*ListSlotsResponse, error)
 	UpdateSlot(context.Context, *UpdateSlotRequest) (*UpdateSlotResponse, error)
 	DeleteSlot(context.Context, *DeleteSlotRequest) (*DeleteSlotResponse, error)
+	CreateMetric(context.Context, *CreateMetricRequest) (*CreateMetricResponse, error)
 	mustEmbedUnimplementedSlotServServer()
 }
 
@@ -128,6 +141,9 @@ func (UnimplementedSlotServServer) UpdateSlot(context.Context, *UpdateSlotReques
 }
 func (UnimplementedSlotServServer) DeleteSlot(context.Context, *DeleteSlotRequest) (*DeleteSlotResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteSlot not implemented")
+}
+func (UnimplementedSlotServServer) CreateMetric(context.Context, *CreateMetricRequest) (*CreateMetricResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMetric not implemented")
 }
 func (UnimplementedSlotServServer) mustEmbedUnimplementedSlotServServer() {}
 func (UnimplementedSlotServServer) testEmbeddedByValue()                  {}
@@ -240,6 +256,24 @@ func _SlotServ_DeleteSlot_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SlotServ_CreateMetric_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMetricRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SlotServServer).CreateMetric(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SlotServ_CreateMetric_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SlotServServer).CreateMetric(ctx, req.(*CreateMetricRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SlotServ_ServiceDesc is the grpc.ServiceDesc for SlotServ service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +300,10 @@ var SlotServ_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteSlot",
 			Handler:    _SlotServ_DeleteSlot_Handler,
+		},
+		{
+			MethodName: "CreateMetric",
+			Handler:    _SlotServ_CreateMetric_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

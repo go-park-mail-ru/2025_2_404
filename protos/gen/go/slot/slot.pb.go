@@ -127,6 +127,7 @@ type AdSlot struct {
 	Description   string                 `protobuf:"bytes,2,opt,name=description,proto3" json:"description,omitempty"`
 	ImageSrc      string                 `protobuf:"bytes,3,opt,name=image_src,json=imageSrc,proto3" json:"image_src,omitempty"`
 	Link          string                 `protobuf:"bytes,4,opt,name=link,proto3" json:"link,omitempty"`
+	Id            string                 `protobuf:"bytes,5,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -185,6 +186,13 @@ func (x *AdSlot) GetImageSrc() string {
 func (x *AdSlot) GetLink() string {
 	if x != nil {
 		return x.Link
+	}
+	return ""
+}
+
+func (x *AdSlot) GetId() string {
+	if x != nil {
+		return x.Id
 	}
 	return ""
 }
@@ -613,6 +621,102 @@ func (*DeleteSlotResponse) Descriptor() ([]byte, []int) {
 	return file_slot_slot_proto_rawDescGZIP(), []int{11}
 }
 
+type CreateMetricRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SlotId        string                 `protobuf:"bytes,1,opt,name=slot_id,json=slotId,proto3" json:"slot_id,omitempty"`
+	AdId          string                 `protobuf:"bytes,2,opt,name=ad_id,json=adId,proto3" json:"ad_id,omitempty"`
+	EventType     string                 `protobuf:"bytes,3,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateMetricRequest) Reset() {
+	*x = CreateMetricRequest{}
+	mi := &file_slot_slot_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateMetricRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMetricRequest) ProtoMessage() {}
+
+func (x *CreateMetricRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_slot_slot_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMetricRequest.ProtoReflect.Descriptor instead.
+func (*CreateMetricRequest) Descriptor() ([]byte, []int) {
+	return file_slot_slot_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *CreateMetricRequest) GetSlotId() string {
+	if x != nil {
+		return x.SlotId
+	}
+	return ""
+}
+
+func (x *CreateMetricRequest) GetAdId() string {
+	if x != nil {
+		return x.AdId
+	}
+	return ""
+}
+
+func (x *CreateMetricRequest) GetEventType() string {
+	if x != nil {
+		return x.EventType
+	}
+	return ""
+}
+
+type CreateMetricResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateMetricResponse) Reset() {
+	*x = CreateMetricResponse{}
+	mi := &file_slot_slot_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateMetricResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateMetricResponse) ProtoMessage() {}
+
+func (x *CreateMetricResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_slot_slot_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateMetricResponse.ProtoReflect.Descriptor instead.
+func (*CreateMetricResponse) Descriptor() ([]byte, []int) {
+	return file_slot_slot_proto_rawDescGZIP(), []int{13}
+}
+
 var File_slot_slot_proto protoreflect.FileDescriptor
 
 const file_slot_slot_proto_rawDesc = "" +
@@ -629,12 +733,13 @@ const file_slot_slot_proto_rawDesc = "" +
 	"\n" +
 	"back_color\x18\a \x01(\tR\tbackColor\x12\x1d\n" +
 	"\n" +
-	"text_color\x18\b \x01(\tR\ttextColor\"q\n" +
+	"text_color\x18\b \x01(\tR\ttextColor\"\x81\x01\n" +
 	"\x06AdSlot\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1b\n" +
 	"\timage_src\x18\x03 \x01(\tR\bimageSrc\x12\x12\n" +
-	"\x04link\x18\x04 \x01(\tR\x04link\"3\n" +
+	"\x04link\x18\x04 \x01(\tR\x04link\x12\x0e\n" +
+	"\x02id\x18\x05 \x01(\tR\x02id\"3\n" +
 	"\x11CreateSlotRequest\x12\x1e\n" +
 	"\x04slot\x18\x01 \x01(\v2\n" +
 	".slot.SlotR\x04slot\"$\n" +
@@ -656,7 +761,13 @@ const file_slot_slot_proto_rawDesc = "" +
 	"\x12UpdateSlotResponse\"#\n" +
 	"\x11DeleteSlotRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x14\n" +
-	"\x12DeleteSlotResponse2\xc3\x02\n" +
+	"\x12DeleteSlotResponse\"b\n" +
+	"\x13CreateMetricRequest\x12\x17\n" +
+	"\aslot_id\x18\x01 \x01(\tR\x06slotId\x12\x13\n" +
+	"\x05ad_id\x18\x02 \x01(\tR\x04adId\x12\x1d\n" +
+	"\n" +
+	"event_type\x18\x03 \x01(\tR\teventType\"\x16\n" +
+	"\x14CreateMetricResponse2\x8a\x03\n" +
 	"\bSlotServ\x12?\n" +
 	"\n" +
 	"CreateSlot\x12\x17.slot.CreateSlotRequest\x1a\x18.slot.CreateSlotResponse\x126\n" +
@@ -665,7 +776,8 @@ const file_slot_slot_proto_rawDesc = "" +
 	"\n" +
 	"UpdateSlot\x12\x17.slot.UpdateSlotRequest\x1a\x18.slot.UpdateSlotResponse\x12?\n" +
 	"\n" +
-	"DeleteSlot\x12\x17.slot.DeleteSlotRequest\x1a\x18.slot.DeleteSlotResponseB\x1fZ\x1d2025_2_404/protos/gen/go/slotb\x06proto3"
+	"DeleteSlot\x12\x17.slot.DeleteSlotRequest\x1a\x18.slot.DeleteSlotResponse\x12E\n" +
+	"\fCreateMetric\x12\x19.slot.CreateMetricRequest\x1a\x1a.slot.CreateMetricResponseB\x1fZ\x1d2025_2_404/protos/gen/go/slotb\x06proto3"
 
 var (
 	file_slot_slot_proto_rawDescOnce sync.Once
@@ -679,20 +791,22 @@ func file_slot_slot_proto_rawDescGZIP() []byte {
 	return file_slot_slot_proto_rawDescData
 }
 
-var file_slot_slot_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_slot_slot_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_slot_slot_proto_goTypes = []any{
-	(*Slot)(nil),               // 0: slot.Slot
-	(*AdSlot)(nil),             // 1: slot.AdSlot
-	(*CreateSlotRequest)(nil),  // 2: slot.CreateSlotRequest
-	(*CreateSlotResponse)(nil), // 3: slot.CreateSlotResponse
-	(*GetSlotRequest)(nil),     // 4: slot.GetSlotRequest
-	(*GetSlotResponse)(nil),    // 5: slot.GetSlotResponse
-	(*ListSlotsRequest)(nil),   // 6: slot.ListSlotsRequest
-	(*ListSlotsResponse)(nil),  // 7: slot.ListSlotsResponse
-	(*UpdateSlotRequest)(nil),  // 8: slot.UpdateSlotRequest
-	(*UpdateSlotResponse)(nil), // 9: slot.UpdateSlotResponse
-	(*DeleteSlotRequest)(nil),  // 10: slot.DeleteSlotRequest
-	(*DeleteSlotResponse)(nil), // 11: slot.DeleteSlotResponse
+	(*Slot)(nil),                 // 0: slot.Slot
+	(*AdSlot)(nil),               // 1: slot.AdSlot
+	(*CreateSlotRequest)(nil),    // 2: slot.CreateSlotRequest
+	(*CreateSlotResponse)(nil),   // 3: slot.CreateSlotResponse
+	(*GetSlotRequest)(nil),       // 4: slot.GetSlotRequest
+	(*GetSlotResponse)(nil),      // 5: slot.GetSlotResponse
+	(*ListSlotsRequest)(nil),     // 6: slot.ListSlotsRequest
+	(*ListSlotsResponse)(nil),    // 7: slot.ListSlotsResponse
+	(*UpdateSlotRequest)(nil),    // 8: slot.UpdateSlotRequest
+	(*UpdateSlotResponse)(nil),   // 9: slot.UpdateSlotResponse
+	(*DeleteSlotRequest)(nil),    // 10: slot.DeleteSlotRequest
+	(*DeleteSlotResponse)(nil),   // 11: slot.DeleteSlotResponse
+	(*CreateMetricRequest)(nil),  // 12: slot.CreateMetricRequest
+	(*CreateMetricResponse)(nil), // 13: slot.CreateMetricResponse
 }
 var file_slot_slot_proto_depIdxs = []int32{
 	0,  // 0: slot.CreateSlotRequest.slot:type_name -> slot.Slot
@@ -705,13 +819,15 @@ var file_slot_slot_proto_depIdxs = []int32{
 	6,  // 7: slot.SlotServ.ListSlots:input_type -> slot.ListSlotsRequest
 	8,  // 8: slot.SlotServ.UpdateSlot:input_type -> slot.UpdateSlotRequest
 	10, // 9: slot.SlotServ.DeleteSlot:input_type -> slot.DeleteSlotRequest
-	3,  // 10: slot.SlotServ.CreateSlot:output_type -> slot.CreateSlotResponse
-	5,  // 11: slot.SlotServ.GetSlot:output_type -> slot.GetSlotResponse
-	7,  // 12: slot.SlotServ.ListSlots:output_type -> slot.ListSlotsResponse
-	9,  // 13: slot.SlotServ.UpdateSlot:output_type -> slot.UpdateSlotResponse
-	11, // 14: slot.SlotServ.DeleteSlot:output_type -> slot.DeleteSlotResponse
-	10, // [10:15] is the sub-list for method output_type
-	5,  // [5:10] is the sub-list for method input_type
+	12, // 10: slot.SlotServ.CreateMetric:input_type -> slot.CreateMetricRequest
+	3,  // 11: slot.SlotServ.CreateSlot:output_type -> slot.CreateSlotResponse
+	5,  // 12: slot.SlotServ.GetSlot:output_type -> slot.GetSlotResponse
+	7,  // 13: slot.SlotServ.ListSlots:output_type -> slot.ListSlotsResponse
+	9,  // 14: slot.SlotServ.UpdateSlot:output_type -> slot.UpdateSlotResponse
+	11, // 15: slot.SlotServ.DeleteSlot:output_type -> slot.DeleteSlotResponse
+	13, // 16: slot.SlotServ.CreateMetric:output_type -> slot.CreateMetricResponse
+	11, // [11:17] is the sub-list for method output_type
+	5,  // [5:11] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name
@@ -728,7 +844,7 @@ func file_slot_slot_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_slot_slot_proto_rawDesc), len(file_slot_slot_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

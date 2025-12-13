@@ -79,12 +79,16 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Предупреждение: получены пустые данные изображения для пути %s", resp.AdSlot.ImageSrc)
 	}
 
-	imageSrc := convertimage.ConvertImageToBase64(imgData.ImageData, imgData.ContentType)
-	log.Printf("Изображение успешно конвертировано в Base64: %s", imageSrc[:30]+"...")
-	if imageSrc == "" {
-		log.Printf("Ошибка: ConvertImageToBase64 вернула пустую строку")
-		http.Error(w, "", http.StatusInternalServerError)
-		return
+	var imageSrc string
+	if len(imgData.ImageData) != 0{
+
+		imageSrc = convertimage.ConvertImageToBase64(imgData.ImageData, imgData.ContentType)
+		log.Printf("Изображение успешно конвертировано в Base64: %s", imageSrc[:30]+"...")
+		if imageSrc == "" {
+			log.Printf("Ошибка: ConvertImageToBase64 вернула пустую строку")
+			http.Error(w, "", http.StatusInternalServerError)
+			return
+		}
 	}
 
 	data := slot.SlotRenderData{
@@ -94,6 +98,8 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		Link:        resp.AdSlot.Link,
 		Background:  resp.Slot.BackColor,
 		Color:       resp.Slot.TextColor,
+		Banner: 	 resp.AdSlot.Id,
+		Slot: 		 slotID,		 
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -265,5 +271,37 @@ func (h *SlotHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	log.Printf("Слот с ID=%s успешно удалён", id)
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *SlotHandler) CreateMetric(w http.ResponseWriter, r *http.Request){
+	bannerID := r.URL.Query().Get("banner")
+    slotID := r.URL.Query().Get("slot")
+    action := r.URL.Query().Get("action")
+
+	log.Printf("Получен запрос на запись метрики: banner=%q, slot=%q, action=%q", bannerID, slotID, action)
+
+	if bannerID == "" || slotID == "" || action == "" {
+        http.Error(w, "missing required params: banner, slot, action", http.StatusBadRequest)
+        return
+    }
+
+	if action == "shown"{
+		action = "impression"
+	}
+    ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+    defer cancel()
+
+    _, err := h.client.CreateMetric(ctx, &slotpb.CreateMetricRequest{
+        AdId:      bannerID,
+        SlotId:    slotID,
+        EventType: action,
+    })
+    if err != nil {
+        log.Printf("Failed to record metric: %v", err)
+        http.Error(w, "internal error", http.StatusInternalServerError)
+        return
+    }
+
 	w.WriteHeader(http.StatusNoContent)
 }

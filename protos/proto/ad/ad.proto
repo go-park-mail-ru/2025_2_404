@@ -10,6 +10,7 @@ service AdServ{
     rpc GetAd(GetAdRequest) returns (GetAdResponse);
     rpc Update(UpdateRequest) returns (UpdateResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc GetAdDetailForSlot(GetAdDetailIDRequest) returns (GetAdDetailIDResponse);
 }
 
 message Ad {
@@ -62,4 +63,12 @@ message DeleteRequest{
 
 message DeleteResponse{
 
+}
+
+message GetAdDetailIDRequest{
+    string ad_id = 1;
+}
+
+message GetAdDetailIDResponse{
+    string ad_detail_id = 1;
 }
