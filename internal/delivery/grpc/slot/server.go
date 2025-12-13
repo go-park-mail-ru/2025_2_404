@@ -24,6 +24,7 @@ type slotUsecaseI interface {
 
 type metricUsecaseI interface{
 	CreateMetric(ctx context.Context, metric metric.Metric) error
+	GetMetricForSlot(ctx context.Context, slotID metric.SlotID) (int, int, []metric.GetMetric, error)
 }
 
 type slotService struct {
@@ -229,3 +230,38 @@ func (s *slotService) CreateMetric(ctx context.Context, req *slotpb.CreateMetric
 	s.logger.Info("Metric recorded successfully", "slot_id", slotID, "ad_detail_id", adDetailId, "event", req.GetEventType())
 	return &slotpb.CreateMetricResponse{}, nil
 }
+
+func (s *slotService) GetMetrics(ctx context.Context, req *slotpb.GetMetricsRequest) (*slotpb.GetMetricsResponse, error) {
+	s.logger.Debug("GetMetrics called", "req", req)
+
+	slotID, err := uuid.Parse(req.GetSlotId())
+	if err != nil {
+		s.logger.Warn("Invalid slot_id in GetMetrics", "slot_id", req.SlotId, "error", err)
+		return nil, status.Error(codes.InvalidArgument, "bad slot id")
+	}
+
+	total_clicks, total_impressions, metrics, err := s.metricUsecase.GetMetricForSlot(ctx, metric.SlotID(slotID))
+	if err != nil {
+		s.logger.Error("Failed to get metric", "error", err)
+		return nil, status.Error(codes.Internal, "in repository problem")
+	}
+
+	var grpcMetrics []*slotpb.MetricsForDay
+
+	for _, metric := range metrics {
+		grpcMetrics = append(grpcMetrics, &slotpb.MetricsForDay{
+			SlotId: slotID.String(),
+			Impressions: int32(metric.Impressions),
+			Clicks: int32(metric.Clicks),
+			EventData: metric.EventDate.GoString(),
+		})
+	}
+
+	return &slotpb.GetMetricsResponse{
+		SlotId: slotID.String(),
+		TotalClicks: int32(total_clicks),
+		TotalImpressions: int32(total_impressions),
+		Metrics: grpcMetrics,
+	}, nil
+}
+

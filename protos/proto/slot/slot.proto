@@ -23,6 +23,13 @@ message AdSlot  {
     string id = 5;
 }
 
+message MetricsForDay{
+    string slot_id = 1;
+    int32 clicks = 2;
+    int32 impressions = 3;
+    string event_data = 4;
+}
+
 message CreateSlotRequest {
     Slot slot = 1;
 }
@@ -63,6 +70,17 @@ message CreateMetricRequest{
 
 message CreateMetricResponse{}
 
+message GetMetricsRequest{
+    string slot_id = 1;
+}
+
+message GetMetricsResponse{
+    string slot_id = 1;
+    int32 total_clicks = 2;
+    int32 total_impressions = 3;
+    repeated MetricsForDay metrics = 4;
+}
+
 service SlotServ {
     rpc CreateSlot(CreateSlotRequest) returns (CreateSlotResponse);
     rpc GetSlot(GetSlotRequest) returns (GetSlotResponse);
@@ -70,4 +88,5 @@ service SlotServ {
     rpc UpdateSlot(UpdateSlotRequest) returns (UpdateSlotResponse);
     rpc DeleteSlot(DeleteSlotRequest) returns (DeleteSlotResponse);
     rpc CreateMetric(CreateMetricRequest) returns (CreateMetricResponse);
+    rpc GetMetrics(GetMetricsRequest) returns (GetMetricsResponse);
 }

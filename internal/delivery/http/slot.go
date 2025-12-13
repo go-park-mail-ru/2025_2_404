@@ -13,13 +13,14 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
-	storagepb "2025_2_404/protos/gen/go/storage"
+	"2025_2_404/internal/service/slot/domain/metric"
 	"2025_2_404/internal/service/slot/domain/slot"
 	"2025_2_404/pkg"
 	"2025_2_404/pkg/convertImage"
 	"2025_2_404/pkg/utils"
 	adpb "2025_2_404/protos/gen/go/ad"
 	slotpb "2025_2_404/protos/gen/go/slot"
+	storagepb "2025_2_404/protos/gen/go/storage"
 )
 
 type SlotHandler struct {
@@ -304,4 +305,43 @@ func (h *SlotHandler) CreateMetric(w http.ResponseWriter, r *http.Request){
     }
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *SlotHandler) GetMetrics(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	log.Printf("Получен запрос на получение статистики слота с ID=%s", id)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
+	}
+
+	res, err := h.client.GetMetrics(ctx, &slotpb.GetMetricsRequest{SlotId: id})
+	if err != nil {
+		log.Printf("Failed to get metric: %v", err)
+        http.Error(w, "internal error", http.StatusInternalServerError)
+        return
+	}
+
+	var metricsForDay []metric.MetricsForDay
+
+	for _, m := range res.GetMetrics() {
+		metricForDay := metric.MetricsForDay{
+			Clicks: m.Clicks,
+			Impressions: m.Impressions,
+			EventDate: m.EventData,
+		}
+		metricsForDay = append(metricsForDay, metricForDay)
+	}
+
+	metricRes := metric.GetMetricsResponse{
+		SlotID: res.GetSlotId(),
+		TotalImpressions: res.GetTotalImpressions(),
+		TotalClicks: res.GetTotalClicks(),
+		Metrics: metricsForDay,
+	}
+
+	log.Printf("Статистика слота с ID=%s успешно получен", id)
+	pkg.JSONResponse(w, http.StatusOK, "Slot retrieved successfully", metricRes)
 }

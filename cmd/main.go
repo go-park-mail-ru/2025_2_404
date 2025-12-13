@@ -143,6 +143,7 @@ func main() {
 	slotRouter.HandleFunc("/{id}", slotHandler.GetOne).Methods("GET")
 	slotRouter.HandleFunc("/{id}", slotHandler.Update).Methods("PUT")
 	slotRouter.HandleFunc("/{id}", slotHandler.Delete).Methods("DELETE")
+	slotRouter.HandleFunc("/{id}/statistics", slotHandler.GetMetrics).Methods("GET")
 
 	//Metric
 	metricRouter.HandleFunc("", slotHandler.CreateMetric).Methods("GET")
