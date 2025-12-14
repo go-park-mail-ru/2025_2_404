@@ -9,7 +9,7 @@ import (
 )
 
 type adRepositoryI interface {
-	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
+	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error)
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error)
 	Update(ctx context.Context, ad modelad.Ads) error
@@ -27,11 +27,25 @@ func New(adRepo adRepositoryI) *UseCase {
 	}
 }
 
-func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error) {
-	return u.adRepo.FindByUserID(ctx, userID)
+func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error) {
+	ads, err := u.adRepo.FindByUserID(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range ads {
+		if ads[i].Budget < 100 {
+			ads[i].Status = "non-active"
+		}
+	}
+
+	return ads, nil
 }
 
 func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) (error) {
+	if ad.Budget < 100{
+		ad.Status = "non-active"
+	}
 	return u.adRepo.Create(ctx, ad)
 }
 
@@ -51,6 +65,9 @@ func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modelu
 	}
 	if adInfo.Impressions != 0{
 		conversion = adInfo.Clicks / adInfo.Impressions
+	}
+	if adInfo.Budget < 100{
+		adInfo.Status = "non-active"
 	}
 
 	return adInfo, conversion, nil

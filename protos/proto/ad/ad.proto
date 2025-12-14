@@ -23,6 +23,9 @@ message Ad {
     uint32 budget = 7;
     string createdAt = 8;
     string updatedAt = 9;
+    string status = 10;
+    string start_at = 11;
+    string end_at = 12;
 }
 
 message CreateRequest{
