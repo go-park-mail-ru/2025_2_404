@@ -111,7 +111,7 @@ func main() {
 	// --- HTTP Handlers ---
 
 	authHandler := httphandler.NewAuthHandler(authClient)
-	profileHandler := httphandler.NewProfileHandler(profileClient, storageClient)
+	profileHandler := httphandler.NewProfileHandler(profileClient, storageClient, adClient)
 	adHandler := httphandler.NewAdHandler(adClient, storageClient, profileClient)
 	slotHandler := httphandler.NewSlotHandler(slotClient, adClient, storageClient)
 
@@ -135,6 +135,7 @@ func main() {
 	adRouter.HandleFunc("/{id}", adHandler.GetOne).Methods("GET")
 	adRouter.HandleFunc("/{id}", adHandler.Update).Methods("PUT")
 	adRouter.HandleFunc("/{id}", adHandler.Delete).Methods("DELETE")
+	adRouter.HandleFunc("/{id}/addBudget", adHandler.UpdateBudget).Methods("PUT")
 
 	// Slots
 	slotRouter.HandleFunc("/serving/{id}", slotHandler.ServeSlot).Methods("GET")

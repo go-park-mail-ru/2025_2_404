@@ -5,10 +5,12 @@ import (
 	"2025_2_404/pkg"
 	pkgfile "2025_2_404/pkg/readerFile"
 	"2025_2_404/pkg/utils"
+	pbAd "2025_2_404/protos/gen/go/ad"
 	pbProfile "2025_2_404/protos/gen/go/profile"
 	pbStorage "2025_2_404/protos/gen/go/storage"
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -22,10 +24,11 @@ import (
 type ProfileHandler struct {
 	client pbProfile.ProfileClient
 	storageClient pbStorage.StorageClient
+    adClient pbAd.AdServClient
 }
 
-func NewProfileHandler(client pbProfile.ProfileClient, storageClient pbStorage.StorageClient) *ProfileHandler {
-	return &ProfileHandler{client: client, storageClient: storageClient}
+func NewProfileHandler(client pbProfile.ProfileClient, storageClient pbStorage.StorageClient, adClient pbAd.AdServClient) *ProfileHandler {
+	return &ProfileHandler{client: client, storageClient: storageClient, adClient: adClient}
 }
 
 func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
@@ -56,6 +59,15 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
         }
     }
 
+    var adsCount int64 = 0
+    adResp, err := h.adClient.GetAdCount(ctx, &pbAd.GetAdCountRequest{})
+
+    if err != nil {
+		fmt.Errorf("Failed to get ad count req_id: %v", reqID, "error: %w", err)
+	} else {
+		adsCount = adResp.Count
+	}
+
     slog.Info("✅ Profile shown successfully", "req_id", reqID, "user_name", resp.UserName)
     pkg.JSONResponse(w, http.StatusOK, "Profile retrieved successfully", map[string]interface{}{
         "user_name":    resp.UserName,
@@ -66,6 +78,7 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
         "phone":        resp.Phone,
         "profile_type": resp.ProfileType,
         "imageData":  resIMG,
+        "ads_count": adsCount,
     })
 }
 

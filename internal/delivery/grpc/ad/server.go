@@ -23,19 +23,23 @@ type adUsecaseI interface{
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
 	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
 	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
+	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
 }
 
-//TODO отдельныый интерфейс юкейз budgetI
+type budgetI interface{
+	UpdateBudget(ctx context.Context, adID modelad.ID, clientID modeluser.ID, budget uint32) error
+}
 
 type adService struct{
 	adUsecase	adUsecaseI
+	budgetUsecase budgetI
 	adv1.UnimplementedAdServServer
 }
 
-func New(adUsecase adUsecaseI) *adService{
+func New(adUsecase adUsecaseI, budgetUsecase budgetI) *adService{
 	return &adService{
 		adUsecase: adUsecase,
-		//TODO budgetI
+		budgetUsecase: budgetUsecase,
 	}
 }
 
@@ -202,4 +206,50 @@ func (s *adService) GetAdSlot(ctx context.Context, req *adv1.GetAdSlotRequest) (
 	return &adv1.GetAdSlotResponse{Ad: adRes}, nil
 }
 
-//TODO создать ручку пополнения бюджета в рекламе 
+//TODO создать ручку пополнения бюджета в рекламе
+func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRequest) (* adv1.UpdateBudgetResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
+	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
+	
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+	adIDStr := req.GetId()
+	if adIDStr == "" {
+		return nil, status.Error(codes.InvalidArgument, "ad id is required")
+	}
+
+	id, err := uuid.Parse(adIDStr)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid ad ID format")
+	}
+
+	newBudget := req.GetBudget()
+
+	err = s.budgetUsecase.UpdateBudget(ctx, modelad.ID(id), clientID, newBudget)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &adv1.UpdateBudgetResponse{
+		Budget: newBudget,
+	}, nil
+}
+
+func (s *adService) GetAdCount(ctx context.Context, req *adv1.GetAdCountRequest) (*adv1.GetAdCountResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	count, err := s.adUsecase.GetAdCount(ctx, clientID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to get ad count")
+	}
+
+	return &adv1.GetAdCountResponse{
+		Count: count,
+	}, nil
+}
+
+

@@ -30,6 +30,7 @@ const(
 	LIMIT 1
 	)`
 	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1 WHERE ad_id = $2`
+	sqlTextForCountAds = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 )
 
 type DB struct {
@@ -106,6 +107,24 @@ func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.I
 	return adInfo, nil
 }
 
+func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
+	
+	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)
+	if err != nil {
+		return fmt.Errorf("failed to delete ad: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("Failed to get a rows: %w", err)
+	}
+	if rowsAffected == 0 {
+		return fmt.Errorf("Ad with ID %d not found", adID)
+	}
+	fmt.Printf("Пользователь с ID %d успешно удален. Затронуто строк: %d", adID, rowsAffected)
+	return nil
+}
+
 func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 	var newAdID modelad.ID
 	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl).Scan(&newAdID)
@@ -123,6 +142,7 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 
 	_, err = r.sql.ExecContext(ctx, sqlTextForSaveBudget, newAdID, ad.Budget, ad.Status, ad.StartAt, ad.EndAt)
 	if err != nil {
+		r.Delete(ctx, ad.ID, ad.ClientID)
 		return fmt.Errorf("failed to save ad budget: %w", err)
 	}
 
@@ -164,24 +184,6 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	return nil
 }
 
-func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
-	
-	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)
-	if err != nil {
-		return fmt.Errorf("failed to delete ad: %w", err)
-	}
-
-	rowsAffected, err := result.RowsAffected()
-	if err != nil {
-		return fmt.Errorf("Failed to get a rows: %w", err)
-	}
-	if rowsAffected == 0 {
-		return fmt.Errorf("Ad with ID %d not found", adID)
-	}
-	fmt.Printf("Пользователь с ID %d успешно удален. Затронуто строк: %d", adID, rowsAffected)
-	return nil
-}
-
 func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error){
 	var detail_id modelfullad.DetailID
 	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detail_id)
@@ -207,4 +209,14 @@ func (r *DB) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error
 	}
 
 	return adSlot, nil
+}
+
+func (r *DB) GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error) {
+	var count int64
+	err := r.sql.QueryRowContext(ctx, sqlTextForCountAds, clientID).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to count ads: %w", err)
+	}
+
+	return count, nil
 }

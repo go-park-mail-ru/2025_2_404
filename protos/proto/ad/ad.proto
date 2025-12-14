@@ -12,6 +12,8 @@ service AdServ{
     rpc Delete(DeleteRequest) returns (DeleteResponse);
     rpc GetAdDetailForSlot(GetAdDetailIDRequest) returns (GetAdDetailIDResponse);
     rpc GetAdSlot(GetAdSlotRequest) returns (GetAdSlotResponse);
+    rpc UpdateAdBudget(UpdateBudgetRequest) returns (UpdateBudgetResponse);
+    rpc GetAdCount(GetAdCountRequest) returns (GetAdCountResponse);
 }
 
 message Ad {
@@ -92,4 +94,19 @@ message GetAdSlotRequest{
 
 message GetAdSlotResponse{
     AdSlot ad = 1;
+}
+
+message UpdateBudgetRequest{
+    string id = 1;
+    uint32 budget = 2;
+}
+
+message UpdateBudgetResponse{
+    uint32 budget = 1;
+}
+
+message GetAdCountRequest{}
+
+message GetAdCountResponse{
+    int64 count = 1;
 }
