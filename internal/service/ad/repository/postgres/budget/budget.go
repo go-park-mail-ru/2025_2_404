@@ -10,7 +10,7 @@ import (
 
 const(
 	// 	sqlTextForSelectBudget = "SELECT COALESCE(ad_detail.budget, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id WHERE ad.id = $1 AND ad.client_id = $2"
-	sqlTextForUpdateBudget = "UPDATE ad_detail SET budget =$1 FROM ad WHERE ad_detail.ad_id = ad.id AND ad.id = $2 AND ad.client_id = $3"
+	sqlTextForUpdateBudget = "UPDATE ad_detail SET budget = ad_detail.budget + $1 FROM ad WHERE ad_detail.ad_id = ad.id AND ad.id = $2 AND ad.client_id = $3"
 )
 
 type DB struct {
