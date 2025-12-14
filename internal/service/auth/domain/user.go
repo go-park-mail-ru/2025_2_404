@@ -17,8 +17,8 @@ type User struct {
 }
 
 var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
-var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9._@#$%&+!* =]+$`)
-var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9.+-_]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`);
+var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9!@#$%^&*()_+=\[\]{};':"\\|,.<>?/-]+$`)
+var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 var constUpperCase = regexp.MustCompile(`[A-Z]`)
 var constLowerCase = regexp.MustCompile(`[a-z]`)
 var constSpecialChar = regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`)

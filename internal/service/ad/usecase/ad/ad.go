@@ -41,6 +41,8 @@ func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]mode
 func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) (error) {
 	if ad.Budget < 100{
 		ad.Status = "non-active"
+	} else {
+		ad.Status = "active"
 	}
 	return u.adRepo.Create(ctx, ad)
 }

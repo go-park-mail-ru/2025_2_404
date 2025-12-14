@@ -10,7 +10,6 @@ import (
 	pbStorage "2025_2_404/protos/gen/go/storage"
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
 	"log/slog"
 	"net/http"
@@ -63,7 +62,8 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
     adResp, err := h.adClient.GetAdCount(ctx, &pbAd.GetAdCountRequest{})
 
     if err != nil {
-		fmt.Errorf("Failed to get ad count req_id: %v", reqID, "error: %w", err)
+		log.Printf("Failed to get ad count, req_id: %v, error: %v", reqID, err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	} else {
 		adsCount = adResp.Count
 	}
