@@ -34,12 +34,6 @@ func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]mode
 		return nil, err
 	}
 
-	for i := range ads {
-		if ads[i].Budget < 100 {
-			ads[i].Status = "non-active"
-		}
-	}
-
 	return ads, nil
 }
 

@@ -13,7 +13,7 @@ import (
 const(
 	sqlTextForSelectAds = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.client_id = $1"
 	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_path, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4, budget = $5, status = $6 WHERE id = $7 AND client_id = $8"
+	sqlTextForUpdateAds = `UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4 WHERE id = $5 AND client_id = $6`
 	sqlTextForSaveBudget = "INSERT INTO ad_detail (ad_id, budget, status, start_at, end_at) VALUES ($1, $2, $3, $4, $5)"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
 	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
@@ -29,6 +29,7 @@ const(
 	ORDER BY RANDOM()
 	LIMIT 1
 	)`
+	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1 WHERE ad_id = $2`
 )
 
 type DB struct {
@@ -120,7 +121,7 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 		ad.EndAt = ad.StartAt.Add(time.Hour * 24 * 7)
 	}
 
-	_, err = r.sql.ExecContext(ctx, sqlTextForSaveBudget, newAdID, ad.Budget, "active", ad.StartAt, ad.EndAt)
+	_, err = r.sql.ExecContext(ctx, sqlTextForSaveBudget, newAdID, ad.Budget, ad.Status, ad.StartAt, ad.EndAt)
 	if err != nil {
 		return fmt.Errorf("failed to save ad budget: %w", err)
 	}
@@ -129,10 +130,22 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 }
 
 func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
+	tx, err := r.sql.BeginTx(ctx, nil)
+	if err != nil {
+		return fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer tx.Rollback()
 
-	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.Status, ad.ID, ad.ClientID)
+	_, err = tx.ExecContext(ctx,sqlTextForUpdateAds,
+		ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID,
+	)
 	if err != nil {
 		return fmt.Errorf("failed to update ad: %w", err)
+	}
+
+	res, err := tx.ExecContext(ctx, sqlTextForUpdateAdDetail, ad.Status, ad.ID)
+	if err != nil {
+		return fmt.Errorf("failed to update ad_detail: %w", err)
 	}
 
 	rowsAffected, err := res.RowsAffected()
@@ -140,11 +153,17 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("ad with id %v and client_id %v not found", ad.ID,ad.ClientID)
+		return fmt.Errorf("ad_detail for ad_id %v not found", ad.ID)
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return nil
 }
+
 func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
 	
 	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)

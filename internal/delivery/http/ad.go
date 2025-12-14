@@ -177,18 +177,11 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	targetURL := r.FormValue("target_url")
-	budgetStr := r.FormValue("budget")
 	statusAd := r.FormValue("status")
 
 
-	if title == "" || content == "" || targetURL == "" || budgetStr == "" || statusAd == "" {
+	if title == "" || content == "" || targetURL == "" || statusAd == "" {
 		http.Error(w, `{"error":"title, content, target_url and budget are required"}`, http.StatusBadRequest)
-		return
-	}
-
-	budget, err := strconv.ParseUint(budgetStr, 10, 32)
-	if err != nil {
-		http.Error(w, `{"error":"invalid budget format"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -203,15 +196,6 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	if auth := r.Header.Get("Authorization"); auth != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
-	}
-
-	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
-		SubAmount: uint32(budget),
-	})
-	if err != nil {
-		st, _ := status.FromError(err)
-		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
-		return
 	}
 
 	// ———— ШАГ 2: Загружаем изображение (если есть) ————
@@ -239,7 +223,6 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 			Targeturl: targetURL,
 			ImgPath:   newImageFilename,
 			Status: statusAd,
-			Budget:    uint32(budget),
 		},
 	}
 
