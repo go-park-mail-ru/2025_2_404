@@ -20,6 +20,7 @@ message AdSlot  {
     string description = 2;
     string image_src = 3;
     string link = 4;
+    string id = 5;
 }
 
 message CreateSlotRequest {
@@ -54,10 +55,19 @@ message DeleteSlotRequest {
 }
 message DeleteSlotResponse {}
 
+message CreateMetricRequest{
+    string slot_id = 1;
+    string ad_id = 2;
+    string event_type = 3;
+}
+
+message CreateMetricResponse{}
+
 service SlotServ {
     rpc CreateSlot(CreateSlotRequest) returns (CreateSlotResponse);
     rpc GetSlot(GetSlotRequest) returns (GetSlotResponse);
     rpc ListSlots(ListSlotsRequest) returns (ListSlotsResponse);
     rpc UpdateSlot(UpdateSlotRequest) returns (UpdateSlotResponse);
     rpc DeleteSlot(DeleteSlotRequest) returns (DeleteSlotResponse);
+    rpc CreateMetric(CreateMetricRequest) returns (CreateMetricResponse);
 }

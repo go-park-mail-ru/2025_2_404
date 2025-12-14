@@ -16,6 +16,7 @@ const(
 	sqlTextForSaveBudget = "INSERT INTO ad_detail (ad_id, budget, status) VALUES ($1, $2, $3)"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
 	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
+	sqlTextForGetAdDetailID = "SELECT id FROM ad_detail WHERE ad_id = $1"
 )
 
 type DB struct {
@@ -122,4 +123,14 @@ func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID)
 	}
 	fmt.Printf("Пользователь с ID %d успешно удален. Затронуто строк: %d", adID, rowsAffected)
 	return nil
+}
+
+func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error){
+	var detail_id modelfullad.DetailID
+	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detail_id)
+	if err != nil{
+		return modelfullad.DetailID{}, fmt.Errorf("not found ad_detail_id")
+	}
+
+	return detail_id, nil
 }

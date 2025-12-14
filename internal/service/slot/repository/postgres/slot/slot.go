@@ -55,7 +55,8 @@ const (
 			WHERE id = (SELECT id FROM selected_ad_detail)
 			RETURNING ad_id
 		)
-		SELECT 
+		SELECT
+			ad.id,
 			ad.title, 
 			ad.content, 
 			ad.img_path, 
@@ -146,6 +147,7 @@ func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRende
 	var renderData slot.SlotRenderData
 
 	err = row.Scan(
+		&renderData.Banner,
 		&renderData.Title,
 		&renderData.Description,
 		&renderData.ImageSrc,
