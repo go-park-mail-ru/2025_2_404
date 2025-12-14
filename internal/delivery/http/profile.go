@@ -203,7 +203,7 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
         payId, err := uuid.Parse(payment.GetId())
         if err != nil {
             log.Printf("Ошибка: Взят неправильный uuid в истории платежей")
-            http.Error(w, "", http.StatusBadRequest)
+            http.Error(w, "Invalid payment ID format", http.StatusBadRequest)
             return
         }
         historyPayment := user.Payment{
