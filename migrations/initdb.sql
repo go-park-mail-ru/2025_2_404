@@ -91,9 +91,9 @@ CREATE TABLE IF NOT EXISTS ad_detail (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	ad_id UUID REFERENCES ad(id) ON DELETE CASCADE,
 	slot_id UUID REFERENCES slots(id) ON DELETE CASCADE,
-	budget INT NOT NULL CHECK (budget > 0),
+	budget INT NOT NULL CHECK (budget >= 0),
     status TEXT NOT NULL CHECK (
-		length(status) >= 1 AND length(status) <= 40
+		status IN ('active', 'non-active')
 	),
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -107,4 +107,21 @@ CREATE TABLE IF NOT EXISTS statistic (
 	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );;
+
+CREATE TABLE IF NOT EXISTS slot_event (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    slot_id UUID NOT NULL REFERENCES slots(id) ON DELETE CASCADE,
+    ad_detail_id UUID NOT NULL REFERENCES ad_detail(id) ON DELETE CASCADE,
+    event_type TEXT NOT NULL CHECK (event_type IN ('impression', 'click')),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_slot_event_slot_id_created_at 
+ON slot_event (slot_id, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_slot_event_created_at 
+ON slot_event (created_at);
+
+CREATE INDEX IF NOT EXISTS idx_slot_event_slot_id_event_type_created_at 
+ON slot_event (slot_id, event_type, created_at);
 

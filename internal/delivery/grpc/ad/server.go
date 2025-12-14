@@ -20,6 +20,7 @@ type adUsecaseI interface{
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
+	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
 }
 
 type adService struct{
@@ -154,4 +155,19 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 	return &adv1.GetAdResponse{Ad: ad}, nil
 }
 
+func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetailIDRequest) (* adv1.GetAdDetailIDResponse, error){
+	id, err := uuid.Parse(req.GetAdId())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
+	}
+
+	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelfullad.ID(id))
+	if err != nil{
+		return nil, err
+	}
+
+	return &adv1.GetAdDetailIDResponse{
+		AdDetailId: detailId.String(),
+	}, nil
+}
 

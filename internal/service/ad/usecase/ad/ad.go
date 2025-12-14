@@ -14,6 +14,7 @@ type adRepositoryI interface {
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
+	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
 }
 
 type UseCase struct {
@@ -53,4 +54,8 @@ func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modelu
 	}
 
 	return adInfo, conversion, nil
+}
+
+func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error){
+	return u.adRepo.GetAdDetailForSlot(ctx, id)
 }
