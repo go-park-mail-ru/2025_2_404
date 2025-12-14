@@ -16,7 +16,7 @@ import (
 
 type slotUsecaseI interface {
 	Create(ctx context.Context, s slot.Slot) (slot.ID, error) 
-	GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRenderData, error)
+	GetByID(ctx context.Context, id slot.ID) (slot.Slot, error)
 	ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error)
 	Update(ctx context.Context, s slot.Slot) error
 	Delete(ctx context.Context, id slot.ID, userID slot.UserID) error
@@ -81,10 +81,19 @@ func (s *slotService) GetSlot(ctx context.Context, req *slotpb.GetSlotRequest) (
 	id := req.GetId()
 	s.logger.Debug("GetSlot called", "slot_id", id)
 
-	slotDomain, adSlot, err := s.slotUsecase.GetByID(ctx, slot.ID(id))
+	slotDomain, err := s.slotUsecase.GetByID(ctx, slot.ID(id))
 	if err != nil {
 		s.logger.Warn("Slot not found", "slot_id", id, "error", err)
 		return nil, status.Errorf(codes.NotFound, "slot not found: %v", err)
+	}
+
+	adSlot, err := s.clientAD.GetAdSlot(ctx, &adpb.GetAdSlotRequest{
+		ClientId: string(slotDomain.UserID),
+		MinCost: uint32(slotDomain.MinCostAdv),
+	})
+	if err != nil{
+		s.logger.Warn("Bad request in adservice", "error", err)
+		return nil, status.Errorf(codes.NotFound, "Bad request in adservice: %v", err)
 	}
 
 	s.logger.Debug("Fetched slot data", "slot", slotDomain, "adSlot", adSlot)
@@ -101,11 +110,11 @@ func (s *slotService) GetSlot(ctx context.Context, req *slotpb.GetSlotRequest) (
 			TextColor:       slotDomain.TextColor,
 		},
 		AdSlot: &slotpb.AdSlot{
-			Id:          adSlot.Banner,
-			Title:       adSlot.Title,
-			Description: adSlot.Description,
-			ImageSrc:    adSlot.ImageSrc,
-			Link:        adSlot.Link,
+			Id:          adSlot.Ad.GetId(),
+			Title:       adSlot.Ad.GetTitle(),
+			Description: adSlot.Ad.GetDescription(),
+			ImageSrc:    adSlot.Ad.GetImageSrc(),
+			Link:        adSlot.Ad.GetLink(),
 		},
 	}
 

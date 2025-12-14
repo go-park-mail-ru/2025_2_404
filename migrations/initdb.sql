@@ -90,7 +90,6 @@ CREATE TABLE IF NOT EXISTS slots (
 CREATE TABLE IF NOT EXISTS ad_detail (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	ad_id UUID REFERENCES ad(id) ON DELETE CASCADE,
-	slot_id UUID REFERENCES slots(id) ON DELETE CASCADE,
 	budget INT NOT NULL CHECK (budget >= 0),
     status TEXT NOT NULL CHECK (
 		status IN ('active', 'non-active')

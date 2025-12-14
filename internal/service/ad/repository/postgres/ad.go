@@ -17,6 +17,17 @@ const(
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
 	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
 	sqlTextForGetAdDetailID = "SELECT id FROM ad_detail WHERE ad_id = $1"
+	sqlTextForGetAdSlot = `
+	SELECT id, title, content, img_path, target_url 
+	FROM ad 
+	WHERE id = (
+	SELECT ad_id 
+	FROM ad_detail
+	WHERE budget >= $1
+	AND status = 'active'
+	ORDER BY RANDOM()
+	LIMIT 1
+	)`
 )
 
 type DB struct {
@@ -133,4 +144,21 @@ func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad
 	}
 
 	return detail_id, nil
+}
+
+func (r *DB) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error) {
+	var adSlot modelad.Ads
+	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdSlot, min_cost).Scan(
+		&adSlot.ID, 
+		&adSlot.Title,
+		&adSlot.Content,
+		&adSlot.ImagePath,
+		&adSlot.TargetUrl,
+	)
+
+	if err != nil{
+		return modelad.Ads{}, fmt.Errorf("not found ad for slot")
+	}
+
+	return adSlot, nil
 }

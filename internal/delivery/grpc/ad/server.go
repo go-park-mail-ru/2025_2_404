@@ -21,6 +21,7 @@ type adUsecaseI interface{
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
 	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
+	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
 }
 
 type adService struct{
@@ -169,5 +170,22 @@ func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetai
 	return &adv1.GetAdDetailIDResponse{
 		AdDetailId: detailId.String(),
 	}, nil
+}
+
+func (s *adService) GetAdSlot(ctx context.Context, req *adv1.GetAdSlotRequest) (* adv1.GetAdSlotResponse, error){
+	adSlot, err := s.adUsecase.GetAdSlot(ctx, req.GetMinCost())
+	if err != nil{
+		fmt.Printf("WARNING : Problem in usecase GetAdSlot or empty slice")
+	}
+
+	adRes := &adv1.AdSlot{
+		Id: adSlot.ID.String(),
+		Title: adSlot.Title,
+		Description: adSlot.Content,
+		ImageSrc: adSlot.ImagePath,
+		Link: adSlot.TargetUrl,
+	}
+
+	return &adv1.GetAdSlotResponse{Ad: adRes}, nil
 }
 
