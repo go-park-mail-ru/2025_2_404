@@ -10,6 +10,8 @@ service AdServ{
     rpc GetAd(GetAdRequest) returns (GetAdResponse);
     rpc Update(UpdateRequest) returns (UpdateResponse);
     rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc GetAdDetailForSlot(GetAdDetailIDRequest) returns (GetAdDetailIDResponse);
+    rpc GetAdSlot(GetAdSlotRequest) returns (GetAdSlotResponse);
 }
 
 message Ad {
@@ -22,6 +24,17 @@ message Ad {
     uint32 budget = 7;
     string createdAt = 8;
     string updatedAt = 9;
+    string status = 10;
+    string start_at = 11;
+    string end_at = 12;
+}
+
+message AdSlot  {
+    string title = 1;
+    string description = 2;
+    string image_src = 3;
+    string link = 4;
+    string id = 5;
 }
 
 message CreateRequest{
@@ -62,4 +75,21 @@ message DeleteRequest{
 
 message DeleteResponse{
 
+}
+
+message GetAdDetailIDRequest{
+    string ad_id = 1;
+}
+
+message GetAdDetailIDResponse{
+    string ad_detail_id = 1;
+}
+
+message GetAdSlotRequest{
+    string client_id = 1;
+    uint32 min_cost = 2;
+}
+
+message GetAdSlotResponse{
+    AdSlot ad = 1;
 }

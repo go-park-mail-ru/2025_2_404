@@ -1,18 +1,28 @@
 package adfullinfo
 
-import "github.com/google/uuid"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type ID = uuid.UUID
+type DetailID = uuid.UUID
 
 type AdFullInfo struct {
 	ID        ID     `json:"add_id"`
+	AddDetailID	DetailID `json:"add_detail_id"`
 	Title     string `json:"title"`
 	Content   string `json:"content"`
 	ImgPath    string `json:"img_bin"`
 	TargetUrl string `json:"target_url"`
 
 	Budget uint32 `json:"budget"`
+	Status string `json:"status"`
 
-	Clicks      int `json:"clicks"`
+	StartAt time.Time `json:"start_at"`
+    EndAt   time.Time `json:"end_at"`
+
+	Clicks      int `json:"clicks"`	
 	Impressions int `json:"impressions"`
 }

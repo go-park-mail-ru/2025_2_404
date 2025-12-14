@@ -14,12 +14,11 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
-	
-	pbAuth "2025_2_404/protos/gen/go/auth"
 	pbAd "2025_2_404/protos/gen/go/ad"
+	pbAuth "2025_2_404/protos/gen/go/auth"
+	pbProfile "2025_2_404/protos/gen/go/profile"
 	slotpb "2025_2_404/protos/gen/go/slot"
 	pbStorage "2025_2_404/protos/gen/go/storage"
-	pbProfile "2025_2_404/protos/gen/go/profile"
 )
 
 func main() {
@@ -107,6 +106,7 @@ func main() {
 	adRouter := r.PathPrefix("/api/ads").Subrouter()
 	slotRouter := r.PathPrefix("/api/slots").Subrouter()
 	balanceRouter := r.PathPrefix("/api/balance").Subrouter()
+	metricRouter := r.PathPrefix("/api/metric").Subrouter()
 
 	// --- HTTP Handlers ---
 
@@ -126,7 +126,6 @@ func main() {
 
 	// Balance
 	balanceRouter.HandleFunc("", profileHandler.ShowBalance).Methods("GET")
-	balanceRouter.HandleFunc("/add", profileHandler.AddBalance).Methods("POST")
 	balanceRouter.HandleFunc("/subtract", profileHandler.SubtractBalance).Methods("POST")
 	balanceRouter.HandleFunc("/payment", profileHandler.CreatePayment).Methods("POST")
 
@@ -144,6 +143,10 @@ func main() {
 	slotRouter.HandleFunc("/{id}", slotHandler.GetOne).Methods("GET")
 	slotRouter.HandleFunc("/{id}", slotHandler.Update).Methods("PUT")
 	slotRouter.HandleFunc("/{id}", slotHandler.Delete).Methods("DELETE")
+	slotRouter.HandleFunc("/{id}/statistics", slotHandler.GetMetrics).Methods("GET")
+
+	//Metric
+	metricRouter.HandleFunc("", slotHandler.CreateMetric).Methods("GET")
 
 	handler := middleware.CorsMiddleware(r)
 	handler = middleware.AccessLogMiddleware(handler)

@@ -4,18 +4,31 @@ import (
 	"database/sql"
 	"context"
 	"fmt"
+	"time"
 	modelad "2025_2_404/internal/service/ad/domain/ad"
 	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
 	modeluser "2025_2_404/internal/service/ad/domain/user"
 )
 
 const(
-	sqlTextForSelectAds = "SELECT id, title, content, img_path, target_url FROM ad WHERE client_id = $1"
+	sqlTextForSelectAds = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.client_id = $1"
 	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_path, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4 WHERE id = $5 AND client_id = $6"
-	sqlTextForSaveBudget = "INSERT INTO ad_detail (ad_id, budget, status) VALUES ($1, $2, $3)"
+	sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4, budget = $5, status = $6 WHERE id = $7 AND client_id = $8"
+	sqlTextForSaveBudget = "INSERT INTO ad_detail (ad_id, budget, status, start_at, end_at) VALUES ($1, $2, $3, $4, $5)"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
-	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
+	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
+	sqlTextForGetAdDetailID = "SELECT id FROM ad_detail WHERE ad_id = $1"
+	sqlTextForGetAdSlot = `
+	SELECT id, title, content, img_path, target_url 
+	FROM ad 
+	WHERE id = (
+	SELECT ad_id 
+	FROM ad_detail
+	WHERE budget >= $1
+	AND status = 'active'
+	ORDER BY RANDOM()
+	LIMIT 1
+	)`
 )
 
 type DB struct {
@@ -28,28 +41,43 @@ func New(sql *sql.DB) *DB {
 	}
 }
 
-func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error) {
-	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAds, userID)
-	if err != nil {
-		return nil, fmt.Errorf("failed to query ads by user ID: %w", err)
-	}
-	defer rows.Close()
+func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error) {
+    rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAds, userID)
+    if err != nil {
+        return nil, fmt.Errorf("failed to query ads: %w", err)
+    }
+    defer rows.Close()
 
-	var ads []modelad.Ads
-	for rows.Next() {
-		var ad modelad.Ads
-		err := rows.Scan(&ad.ID, &ad.Title, &ad.Content, &ad.ImagePath, &ad.TargetUrl)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan ad: %w", err)
-		}
-		ads = append(ads, ad)
-	}
+    var ads []modelfullad.AdFullInfo
 
-	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows iteration error: %w", err)
-	}
+    for rows.Next() {
+        var adInfo modelfullad.AdFullInfo
+        var startAt, endAt sql.NullTime
 
-	return ads, nil
+        err := rows.Scan(
+            &adInfo.ID,
+            &adInfo.Title,
+            &adInfo.Content,
+            &adInfo.ImgPath,
+            &adInfo.TargetUrl,
+            &adInfo.Budget,
+            &adInfo.Status,
+            &startAt,
+            &endAt,
+            &adInfo.Clicks,
+            &adInfo.Impressions,
+        )
+        if err != nil {
+            return nil, fmt.Errorf("scan error: %w", err)
+        }
+
+        if startAt.Valid { adInfo.StartAt = startAt.Time }
+        if endAt.Valid { adInfo.EndAt = endAt.Time }
+
+        ads = append(ads, adInfo)
+    }
+
+    return ads, nil
 }
 
 func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error) {
@@ -63,6 +91,9 @@ func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.I
 		&adInfo.ImgPath,
 		&adInfo.TargetUrl,
 		&adInfo.Budget,
+		&adInfo.Status,
+		&adInfo.StartAt,
+		&adInfo.EndAt,
 		&adInfo.Clicks,
 		&adInfo.Impressions,
 	)
@@ -81,7 +112,15 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 		return fmt.Errorf("failed to create ad: %w", err)
 	}
 
-	_, err = r.sql.ExecContext(ctx, sqlTextForSaveBudget, newAdID, ad.Budget, "active")
+	if ad.StartAt.IsZero() {
+		ad.StartAt = time.Now()
+	}
+	
+	if ad.EndAt.IsZero() {
+		ad.EndAt = ad.StartAt.Add(time.Hour * 24 * 7)
+	}
+
+	_, err = r.sql.ExecContext(ctx, sqlTextForSaveBudget, newAdID, ad.Budget, "active", ad.StartAt, ad.EndAt)
 	if err != nil {
 		return fmt.Errorf("failed to save ad budget: %w", err)
 	}
@@ -91,7 +130,7 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 
 func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 
-	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID)
+	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.Status, ad.ID, ad.ClientID)
 	if err != nil {
 		return fmt.Errorf("failed to update ad: %w", err)
 	}
@@ -122,4 +161,31 @@ func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID)
 	}
 	fmt.Printf("Пользователь с ID %d успешно удален. Затронуто строк: %d", adID, rowsAffected)
 	return nil
+}
+
+func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error){
+	var detail_id modelfullad.DetailID
+	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detail_id)
+	if err != nil{
+		return modelfullad.DetailID{}, fmt.Errorf("not found ad_detail_id")
+	}
+
+	return detail_id, nil
+}
+
+func (r *DB) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error) {
+	var adSlot modelad.Ads
+	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdSlot, min_cost).Scan(
+		&adSlot.ID, 
+		&adSlot.Title,
+		&adSlot.Content,
+		&adSlot.ImagePath,
+		&adSlot.TargetUrl,
+	)
+
+	if err != nil{
+		return modelad.Ads{}, fmt.Errorf("not found ad for slot")
+	}
+
+	return adSlot, nil
 }
