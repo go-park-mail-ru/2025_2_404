@@ -24,6 +24,8 @@ type adUsecaseI interface{
 	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
 }
 
+//TODO отдельныый интерфейс юкейз budgetI
+
 type adService struct{
 	adUsecase	adUsecaseI
 	adv1.UnimplementedAdServServer
@@ -32,6 +34,7 @@ type adService struct{
 func New(adUsecase adUsecaseI) *adService{
 	return &adService{
 		adUsecase: adUsecase,
+		//TODO budgetI
 	}
 }
 
@@ -180,3 +183,4 @@ func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetai
 	}, nil
 }
 
+//TODO создать ручку пополнения бюджета в рекламе 
