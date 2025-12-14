@@ -270,3 +270,54 @@ func (h *AdHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+func (h *AdHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	if id == "" {
+		http.Error(w, `{"error":"id is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	budgetStr := r.FormValue("budget")
+	if budgetStr == "" {
+		http.Error(w, `{"error":"budget is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	budget, err := strconv.ParseUint(budgetStr, 10, 32)
+	if err != nil {
+		http.Error(w, `{"error":"invalid budget format"}`, http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
+	}
+
+	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
+		SubAmount: uint32(budget),
+	})
+	if err != nil {
+		st, _ := status.FromError(err)
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		return
+	}
+
+	req := &pbAd.UpdateBudgetRequest{
+		Id:     id,
+		Budget: uint32(budget),
+	}
+
+	resp, err := h.client.UpdateAdBudget(ctx, req)
+	if err != nil {
+		st, _ := status.FromError(err)
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusOK, "Budget updated successfully", resp)
+}
