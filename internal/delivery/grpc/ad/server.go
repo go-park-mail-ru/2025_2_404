@@ -8,6 +8,7 @@ import (
 	adv1 "2025_2_404/protos/gen/go/ad"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -15,7 +16,7 @@ import (
 )
 
 type adUsecaseI interface{
-	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
+	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error)
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
@@ -23,6 +24,8 @@ type adUsecaseI interface{
 	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
 	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
 }
+
+//TODO отдельныый интерфейс юкейз budgetI
 
 type adService struct{
 	adUsecase	adUsecaseI
@@ -32,6 +35,7 @@ type adService struct{
 func New(adUsecase adUsecaseI) *adService{
 	return &adService{
 		adUsecase: adUsecase,
+		//TODO budgetI
 	}
 }
 
@@ -67,19 +71,24 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	ads, err := s.adUsecase.FindByUserID(ctx, clientID)
+	adsFull, err := s.adUsecase.FindByUserID(ctx, clientID)
 	if err != nil {
 		return nil, err
 	}
 
 	var grpcAds []*adv1.Ad
-	for _, a := range ads {
+	for _, a := range adsFull {
 		grpcAds = append(grpcAds, &adv1.Ad{
 			Id:        uuid.UUID(a.ID).String(),
 			ClientID:  clientID.String(),
 			Title:     a.Title,
 			Content:   a.Content,
 			Targeturl: a.TargetUrl,
+			ImgPath:   a.ImgPath,
+			Budget:    a.Budget,
+			Status:    a.Status,
+			StartAt:   a.StartAt.Format(time.RFC3339),
+			EndAt:     a.EndAt.Format(time.RFC3339),
 		})
 	}
 
@@ -151,6 +160,9 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 		Targeturl: adFull.TargetUrl,
 		ImgPath: adFull.ImgPath,
 		Budget: adFull.Budget,
+		Status: adFull.Status,
+		StartAt: adFull.StartAt.Format(time.RFC3339),
+    	EndAt:   adFull.EndAt.Format(time.RFC3339),
 	}
 
 	return &adv1.GetAdResponse{Ad: ad}, nil
@@ -189,3 +201,4 @@ func (s *adService) GetAdSlot(ctx context.Context, req *adv1.GetAdSlotRequest) (
 	return &adv1.GetAdSlotResponse{Ad: adRes}, nil
 }
 
+//TODO создать ручку пополнения бюджета в рекламе 
