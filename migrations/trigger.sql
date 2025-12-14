@@ -10,6 +10,11 @@ CREATE TRIGGER tr_client_wallet_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER tr_wallet_top_up_updated_at
+    BEFORE UPDATE ON wallet_top_up
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER tr_ad_updated_at
     BEFORE UPDATE ON ad
     FOR EACH ROW

@@ -2,21 +2,23 @@ syntax="proto3";
 
 package auth;
 
-option go_package = "auth.v1;authv1";
+option go_package = "./protos/auth;";
 
 service Auth {
-    rpc Register(RegistetRequest) returns (RegisterResponse);
+    rpc Register(RegisterRequest) returns (RegisterResponse);
     rpc Login(LoginRequest) returns (LoginResponse); 
+    rpc ValidateToken(TokenRequest) returns (TokenResponse);
 }
 
-message RegistetRequest {
-    string login = 1;
+message RegisterRequest {
+    string user_name = 1;
     string email = 2;
     string password = 3;
 }
 
 message RegisterResponse {
     string token = 1;
+    string user_id = 2;
 }
 
 message LoginRequest {
@@ -26,4 +28,15 @@ message LoginRequest {
 
 message LoginResponse {
     string token = 1;
+    string user_id = 2;
+}
+
+message TokenRequest {
+    string token = 1;
+}
+
+message TokenResponse {
+    bool valid = 1;
+    string user_id = 2;
+    string error = 3;
 }

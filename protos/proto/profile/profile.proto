@@ -11,8 +11,17 @@ service Profile {
     rpc ShowBalance(ShowBalanceRequest) returns (ShowBalanceResponse);
     rpc AddBalance(AddBalanceRequest) returns (AddBalanceResponse);
     rpc SubtractBalance(SubtractBalanceRequest) returns (SubtractBalanceResponse);
-
+    rpc CreatePayment(PaymentCreateRequest) returns (PaymentCreateResponse);
+    rpc UpdatePaymentStatus(PaymentStatusRequest) returns (PaymentStatusResponse);
+    rpc GetPaymentsByClientID(PaymentsByClientIDRequest) returns (PaymentsByClientIDResponse);
     // rpc ValidateToken(TokenRequest) returns (TokenResponse); можно прописать метод смены пароля но в авторизации а также методы смены имейла и юзернейма
+}
+
+message Payment {
+    string id = 1;
+    uint32 amount = 2;
+    string status = 3;
+    string yoo_payment_id = 4;
 }
 
 message UpdateRequest {
@@ -81,4 +90,30 @@ message SubtractBalanceRequest {
 }
 
 message SubtractBalanceResponse {
+}
+
+message PaymentCreateRequest {
+    uint32 amount = 1;
+    string payment_method = 2;
+    string status = 3;
+    string yoo_payment_id = 4;
+}
+
+message PaymentCreateResponse {
+    string payment_url = 1;
+}
+
+message PaymentStatusRequest {
+    string yoo_payment_id = 1;
+    string status = 2;
+}
+
+message PaymentStatusResponse {
+}
+
+message PaymentsByClientIDRequest {
+}
+
+message PaymentsByClientIDResponse {
+    repeated Payment payments = 1;
 }

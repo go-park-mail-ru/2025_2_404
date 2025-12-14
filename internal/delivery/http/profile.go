@@ -1,18 +1,17 @@
 package http
 
 import (
+	"2025_2_404/internal/service/profile/domain"
+	"2025_2_404/pkg"
+	pkgfile "2025_2_404/pkg/readerFile"
+	"2025_2_404/pkg/utils"
+	pbProfile "2025_2_404/protos/gen/go/profile"
+	pbStorage "2025_2_404/protos/gen/go/storage"
 	"context"
 	"encoding/json"
 	"log/slog"
 	"net/http"
 	"time"
-
-	"2025_2_404/internal/service/profile/domain"
-	"2025_2_404/pkg"
-	pkgfile "2025_2_404/pkg/readerFile"
-	"2025_2_404/pkg/utils"
-	pbStorage "2025_2_404/protos/gen/go/storage"
-	pbProfile "2025_2_404/protos/profile"
 
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -258,4 +257,50 @@ func (h *ProfileHandler) SubtractBalance(w http.ResponseWriter, r *http.Request)
 
     slog.Info("✅ Balance subtracted successfully", "req_id", reqID, "amount", jsonReq.SubtractAmount, "new_balance-", req.SubAmount)
     pkg.JSONResponse(w, http.StatusOK, "Balance subtracted successfully", resp)
+}
+
+func (h *ProfileHandler) CreatePayment(w http.ResponseWriter, r *http.Request) {
+    reqID := r.Header.Get("X-Request-ID")
+    slog.Info("📥 Create payment request", "req_id", reqID)
+
+    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+    defer cancel()
+
+    if auth := r.Header.Get("Authorization"); auth != "" {
+        ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
+    }
+
+    var jsonReq user.Payment
+    if err := json.NewDecoder(r.Body).Decode(&jsonReq); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+    reqPayment := &pbProfile.PaymentCreateRequest{
+        Amount: jsonReq.AmountRub,
+        PaymentMethod: jsonReq.PaymentMethod,
+    }
+
+    resp, err := h.client.CreatePayment(ctx, reqPayment)
+    if err != nil{
+        st, _ := status.FromError(err)
+        slog.Error("❌ Failed to create payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+        return
+    }
+
+    reqAddBalance := &pbProfile.AddBalanceRequest{
+        AddAmount: jsonReq.AmountRub,
+    }
+
+    _, err = h.client.AddBalance(ctx, reqAddBalance)
+    if err != nil {
+        st, _ := status.FromError(err)
+        slog.Error("❌ Failed to add balance after payment", "req_id", reqID, "amount", jsonReq.AmountRub, "error", st.Message(), "code", st.Code())
+        http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+        return
+    }
+
+    slog.Info("✅ Payment created successfully", "req_id", reqID)
+    pkg.JSONResponse(w, http.StatusOK, "Payment created successfully", resp)
 }

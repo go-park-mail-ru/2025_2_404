@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             v3.21.12
-// source: protos/profile/profile.proto
+// source: profile/profile.proto
 
 package profile
 
@@ -19,12 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Profile_Update_FullMethodName          = "/profile.Profile/Update"
-	Profile_Delete_FullMethodName          = "/profile.Profile/Delete"
-	Profile_Show_FullMethodName            = "/profile.Profile/Show"
-	Profile_ShowBalance_FullMethodName     = "/profile.Profile/ShowBalance"
-	Profile_AddBalance_FullMethodName      = "/profile.Profile/AddBalance"
-	Profile_SubtractBalance_FullMethodName = "/profile.Profile/SubtractBalance"
+	Profile_Update_FullMethodName                = "/profile.Profile/Update"
+	Profile_Delete_FullMethodName                = "/profile.Profile/Delete"
+	Profile_Show_FullMethodName                  = "/profile.Profile/Show"
+	Profile_ShowBalance_FullMethodName           = "/profile.Profile/ShowBalance"
+	Profile_AddBalance_FullMethodName            = "/profile.Profile/AddBalance"
+	Profile_SubtractBalance_FullMethodName       = "/profile.Profile/SubtractBalance"
+	Profile_CreatePayment_FullMethodName         = "/profile.Profile/CreatePayment"
+	Profile_UpdatePaymentStatus_FullMethodName   = "/profile.Profile/UpdatePaymentStatus"
+	Profile_GetPaymentsByClientID_FullMethodName = "/profile.Profile/GetPaymentsByClientID"
 )
 
 // ProfileClient is the client API for Profile service.
@@ -37,6 +40,9 @@ type ProfileClient interface {
 	ShowBalance(ctx context.Context, in *ShowBalanceRequest, opts ...grpc.CallOption) (*ShowBalanceResponse, error)
 	AddBalance(ctx context.Context, in *AddBalanceRequest, opts ...grpc.CallOption) (*AddBalanceResponse, error)
 	SubtractBalance(ctx context.Context, in *SubtractBalanceRequest, opts ...grpc.CallOption) (*SubtractBalanceResponse, error)
+	CreatePayment(ctx context.Context, in *PaymentCreateRequest, opts ...grpc.CallOption) (*PaymentCreateResponse, error)
+	UpdatePaymentStatus(ctx context.Context, in *PaymentStatusRequest, opts ...grpc.CallOption) (*PaymentStatusResponse, error)
+	GetPaymentsByClientID(ctx context.Context, in *PaymentsByClientIDRequest, opts ...grpc.CallOption) (*PaymentsByClientIDResponse, error)
 }
 
 type profileClient struct {
@@ -107,6 +113,36 @@ func (c *profileClient) SubtractBalance(ctx context.Context, in *SubtractBalance
 	return out, nil
 }
 
+func (c *profileClient) CreatePayment(ctx context.Context, in *PaymentCreateRequest, opts ...grpc.CallOption) (*PaymentCreateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentCreateResponse)
+	err := c.cc.Invoke(ctx, Profile_CreatePayment_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileClient) UpdatePaymentStatus(ctx context.Context, in *PaymentStatusRequest, opts ...grpc.CallOption) (*PaymentStatusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentStatusResponse)
+	err := c.cc.Invoke(ctx, Profile_UpdatePaymentStatus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *profileClient) GetPaymentsByClientID(ctx context.Context, in *PaymentsByClientIDRequest, opts ...grpc.CallOption) (*PaymentsByClientIDResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(PaymentsByClientIDResponse)
+	err := c.cc.Invoke(ctx, Profile_GetPaymentsByClientID_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ProfileServer is the server API for Profile service.
 // All implementations must embed UnimplementedProfileServer
 // for forward compatibility.
@@ -117,6 +153,9 @@ type ProfileServer interface {
 	ShowBalance(context.Context, *ShowBalanceRequest) (*ShowBalanceResponse, error)
 	AddBalance(context.Context, *AddBalanceRequest) (*AddBalanceResponse, error)
 	SubtractBalance(context.Context, *SubtractBalanceRequest) (*SubtractBalanceResponse, error)
+	CreatePayment(context.Context, *PaymentCreateRequest) (*PaymentCreateResponse, error)
+	UpdatePaymentStatus(context.Context, *PaymentStatusRequest) (*PaymentStatusResponse, error)
+	GetPaymentsByClientID(context.Context, *PaymentsByClientIDRequest) (*PaymentsByClientIDResponse, error)
 	mustEmbedUnimplementedProfileServer()
 }
 
@@ -144,6 +183,15 @@ func (UnimplementedProfileServer) AddBalance(context.Context, *AddBalanceRequest
 }
 func (UnimplementedProfileServer) SubtractBalance(context.Context, *SubtractBalanceRequest) (*SubtractBalanceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubtractBalance not implemented")
+}
+func (UnimplementedProfileServer) CreatePayment(context.Context, *PaymentCreateRequest) (*PaymentCreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreatePayment not implemented")
+}
+func (UnimplementedProfileServer) UpdatePaymentStatus(context.Context, *PaymentStatusRequest) (*PaymentStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePaymentStatus not implemented")
+}
+func (UnimplementedProfileServer) GetPaymentsByClientID(context.Context, *PaymentsByClientIDRequest) (*PaymentsByClientIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPaymentsByClientID not implemented")
 }
 func (UnimplementedProfileServer) mustEmbedUnimplementedProfileServer() {}
 func (UnimplementedProfileServer) testEmbeddedByValue()                 {}
@@ -274,6 +322,60 @@ func _Profile_SubtractBalance_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Profile_CreatePayment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentCreateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServer).CreatePayment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Profile_CreatePayment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServer).CreatePayment(ctx, req.(*PaymentCreateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Profile_UpdatePaymentStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentStatusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServer).UpdatePaymentStatus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Profile_UpdatePaymentStatus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServer).UpdatePaymentStatus(ctx, req.(*PaymentStatusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Profile_GetPaymentsByClientID_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PaymentsByClientIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ProfileServer).GetPaymentsByClientID(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Profile_GetPaymentsByClientID_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ProfileServer).GetPaymentsByClientID(ctx, req.(*PaymentsByClientIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Profile_ServiceDesc is the grpc.ServiceDesc for Profile service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -305,7 +407,19 @@ var Profile_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "SubtractBalance",
 			Handler:    _Profile_SubtractBalance_Handler,
 		},
+		{
+			MethodName: "CreatePayment",
+			Handler:    _Profile_CreatePayment_Handler,
+		},
+		{
+			MethodName: "UpdatePaymentStatus",
+			Handler:    _Profile_UpdatePaymentStatus_Handler,
+		},
+		{
+			MethodName: "GetPaymentsByClientID",
+			Handler:    _Profile_GetPaymentsByClientID_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "protos/profile/profile.proto",
+	Metadata: "profile/profile.proto",
 }

@@ -10,6 +10,7 @@ import (
 type Config struct {
 	DBConfig  *PostgresConfig
 	AppConfig *AppConfig
+	PaymentConfig *PaymentConfig
 }
 
 type PostgresConfig struct {
@@ -25,6 +26,11 @@ type AppConfig struct {
 	ImgPath			  string
 }
 
+type PaymentConfig struct {
+	ShopID     string
+	SecretKey  string
+}
+
 func GetConfig() *Config {
 	err := godotenv.Load(os.Getenv("ENV_FILE"))
 	if err != nil {
@@ -38,6 +44,7 @@ func GetConfig() *Config {
 	return &Config{
 		DBConfig:  GetPostgresConfig(),
 		AppConfig: appCfg,
+		PaymentConfig: GetPaymentConfig(),
 	}
 }
 
@@ -55,5 +62,12 @@ func GetAppConfig() *AppConfig {
 	return &AppConfig{
 		Port: os.Getenv("GRPC_PORT_PROFILE"),
 		ImgPath: os.Getenv("IMG_PATH"),
+	}
+}
+
+func GetPaymentConfig() *PaymentConfig {
+	return &PaymentConfig{
+		ShopID:    os.Getenv("YOOKASSA_SHOP_ID"),
+		SecretKey: os.Getenv("YOOKASSA_SECRET_KEY"),
 	}
 }

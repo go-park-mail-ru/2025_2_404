@@ -15,6 +15,8 @@ RUN go build -o /profile ./cmd/profile/main.go
 FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
+RUN apk add --no-cache bash
+RUN apk add --no-cache curl
 WORKDIR /root/
 
 COPY .env /root/.env

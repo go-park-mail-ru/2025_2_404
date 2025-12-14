@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"2025_2_404/pkg/utils"
-	pbAuth "2025_2_404/protos/auth"
+	pbAuth "2025_2_404/protos/gen/go/auth"
 	"google.golang.org/grpc/status"
 )
 

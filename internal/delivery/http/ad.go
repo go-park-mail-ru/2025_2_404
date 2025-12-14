@@ -16,7 +16,7 @@ import (
 	"2025_2_404/pkg/utils"
 	pbAd "2025_2_404/protos/gen/go/ad"
 	pbStorage "2025_2_404/protos/gen/go/storage"
-	pbProfile "2025_2_404/protos/profile"
+	pbProfile "2025_2_404/protos/gen/go/profile"
 )
 
 type AdHandler struct {

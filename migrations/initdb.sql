@@ -29,14 +29,18 @@ CREATE TABLE IF NOT EXISTS client_wallet (
 CREATE TABLE IF NOT EXISTS wallet_top_up (
 	id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 	client_wallet_id UUID REFERENCES client_wallet(id) ON DELETE CASCADE,
-	amount NUMERIC(12, 2) NOT NULL CHECK (amount > 0),
+	yoo_payment_id TEXT UNIQUE NOT NULL CHECK (
+		length(yoo_payment_id) >= 1 AND length(yoo_payment_id) <= 100
+	),
+	amount INT NOT NULL CHECK (amount > 0),
     payment_method TEXT NOT NULL CHECK (
 		length(payment_method) >= 1 AND length(payment_method) <= 40
 	),
     status TEXT NOT NULL CHECK (
 		length(status) >= 1 AND length(status) <= 40
 	),
-	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+	created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS notification_user (

@@ -3,7 +3,7 @@ package handler
 import (
 	"2025_2_404/internal/delivery/grpc/interceptor"
 	modeluser "2025_2_404/internal/service/profile/domain"
-	"2025_2_404/protos/profile"
+	"2025_2_404/protos/gen/go/profile"
 	"context"
 	"fmt"
 
@@ -18,6 +18,9 @@ type ProfileUsecaseI interface{
 	ShowBalance(ctx context.Context, clientID modeluser.ID) (uint32, error)
 	AddBalance(ctx context.Context, clientID modeluser.ID, addAmount uint32) error
 	SubtractBalance(ctx context.Context, clientID modeluser.ID, subAmount uint32) error
+	CreatePayment(ctx context.Context, payment modeluser.Payment) (string, error)
+	UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modeluser.PaymentStatus) error
+	GetPaymentsByClientID(ctx context.Context, clientID modeluser.ID) ([]modeluser.Payment, error)
 }
 
 type ProfileServer struct {
@@ -144,3 +147,67 @@ func (h *ProfileServer) SubtractBalance(ctx context.Context, req *profile.Subtra
 	return &profile.SubtractBalanceResponse{}, nil
 }
 
+func (h *ProfileServer) GetPaymentsByClientID(ctx context.Context, req *profile.PaymentsByClientIDRequest) (*profile.PaymentsByClientIDResponse, error){
+	clientID, err := interceptor.GetUserID(ctx) 
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	payments, err := h.profileUsecase.GetPaymentsByClientID(ctx, clientID)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get payments: %v", err)
+	}
+
+	var pbPayments []*profile.Payment
+	for _, payment := range payments {
+		pbPayment := &profile.Payment{
+			Id:      	  payment.ID.String(),
+			Amount:       uint32(payment.AmountRub),
+			Status:       string(payment.Status),
+			YooPaymentId: payment.YooPaymentID,
+		}
+		pbPayments = append(pbPayments, pbPayment)
+	}
+
+	return &profile.PaymentsByClientIDResponse{
+		Payments: pbPayments,
+	}, nil
+}
+
+func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentCreateRequest) (*profile.PaymentCreateResponse, error){
+	clientID, err := interceptor.GetUserID(ctx) 
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	payment := modeluser.Payment{
+		ClientID:     clientID,
+		PaymentMethod: req.GetPaymentMethod(),
+		AmountRub:       req.GetAmount(),
+	}
+
+	yooKassaLink, err := h.profileUsecase.CreatePayment(ctx, payment)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create payment: %v", err)
+	}
+
+	
+
+	return &profile.PaymentCreateResponse{
+		PaymentUrl: yooKassaLink,
+	}, nil
+}
+
+func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.PaymentStatusRequest) (*profile.PaymentStatusResponse, error){
+	_, err := interceptor.GetUserID(ctx) 
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	err = h.profileUsecase.UpdatePaymentStatus(ctx, req.GetYooPaymentId(), modeluser.PaymentStatus(req.GetStatus()))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update payment status: %v", err)
+	}
+
+	return &profile.PaymentStatusResponse{}, nil
+}
