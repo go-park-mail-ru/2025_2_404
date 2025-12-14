@@ -111,7 +111,7 @@ func main() {
 	// --- HTTP Handlers ---
 
 	authHandler := httphandler.NewAuthHandler(authClient)
-	profileHandler := httphandler.NewProfileHandler(profileClient, storageClient)
+	profileHandler := httphandler.NewProfileHandler(profileClient, storageClient, adClient)
 	adHandler := httphandler.NewAdHandler(adClient, storageClient, profileClient)
 	slotHandler := httphandler.NewSlotHandler(slotClient, adClient, storageClient)
 

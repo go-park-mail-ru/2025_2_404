@@ -23,6 +23,7 @@ type adUsecaseI interface{
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
 	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
 	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
+	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
 }
 
 type budgetI interface{
@@ -231,6 +232,22 @@ func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRe
 
 	return &adv1.UpdateBudgetResponse{
 		Budget: newBudget,
+	}, nil
+}
+
+func (s *adService) GetAdCount(ctx context.Context, req *adv1.GetAdCountRequest) (*adv1.GetAdCountResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	count, err := s.adUsecase.GetAdCount(ctx, clientID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to get ad count")
+	}
+
+	return &adv1.GetAdCountResponse{
+		Count: count,
 	}, nil
 }
 

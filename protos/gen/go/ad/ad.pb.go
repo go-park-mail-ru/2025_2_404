@@ -925,6 +925,86 @@ func (x *UpdateBudgetResponse) GetBudget() uint32 {
 	return 0
 }
 
+type GetAdCountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAdCountRequest) Reset() {
+	*x = GetAdCountRequest{}
+	mi := &file_ad_ad_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAdCountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAdCountRequest) ProtoMessage() {}
+
+func (x *GetAdCountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ad_ad_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAdCountRequest.ProtoReflect.Descriptor instead.
+func (*GetAdCountRequest) Descriptor() ([]byte, []int) {
+	return file_ad_ad_proto_rawDescGZIP(), []int{18}
+}
+
+type GetAdCountResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Count         int64                  `protobuf:"varint,1,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAdCountResponse) Reset() {
+	*x = GetAdCountResponse{}
+	mi := &file_ad_ad_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAdCountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAdCountResponse) ProtoMessage() {}
+
+func (x *GetAdCountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ad_ad_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAdCountResponse.ProtoReflect.Descriptor instead.
+func (*GetAdCountResponse) Descriptor() ([]byte, []int) {
+	return file_ad_ad_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *GetAdCountResponse) GetCount() int64 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 var File_ad_ad_proto protoreflect.FileDescriptor
 
 const file_ad_ad_proto_rawDesc = "" +
@@ -982,7 +1062,10 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
 	"\x06budget\x18\x02 \x01(\rR\x06budget\".\n" +
 	"\x14UpdateBudgetResponse\x12\x16\n" +
-	"\x06budget\x18\x01 \x01(\rR\x06budget2\xcd\x03\n" +
+	"\x06budget\x18\x01 \x01(\rR\x06budget\"\x13\n" +
+	"\x11GetAdCountRequest\"*\n" +
+	"\x12GetAdCountResponse\x12\x14\n" +
+	"\x05count\x18\x01 \x01(\x03R\x05count2\x8a\x04\n" +
 	"\x06AdServ\x12/\n" +
 	"\x06Create\x12\x11.ad.CreateRequest\x1a\x12.ad.CreateResponse\x128\n" +
 	"\tGetAllAds\x12\x14.ad.GetAllAdsRequest\x1a\x15.ad.GetAllAdsResponse\x12,\n" +
@@ -991,7 +1074,9 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\x06Delete\x12\x11.ad.DeleteRequest\x1a\x12.ad.DeleteResponse\x12I\n" +
 	"\x12GetAdDetailForSlot\x12\x18.ad.GetAdDetailIDRequest\x1a\x19.ad.GetAdDetailIDResponse\x128\n" +
 	"\tGetAdSlot\x12\x14.ad.GetAdSlotRequest\x1a\x15.ad.GetAdSlotResponse\x12C\n" +
-	"\x0eUpdateAdBudget\x12\x17.ad.UpdateBudgetRequest\x1a\x18.ad.UpdateBudgetResponseB\fZ\n" +
+	"\x0eUpdateAdBudget\x12\x17.ad.UpdateBudgetRequest\x1a\x18.ad.UpdateBudgetResponse\x12;\n" +
+	"\n" +
+	"GetAdCount\x12\x15.ad.GetAdCountRequest\x1a\x16.ad.GetAdCountResponseB\fZ\n" +
 	"ad.v1;adv1b\x06proto3"
 
 var (
@@ -1006,7 +1091,7 @@ func file_ad_ad_proto_rawDescGZIP() []byte {
 	return file_ad_ad_proto_rawDescData
 }
 
-var file_ad_ad_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_ad_ad_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_ad_ad_proto_goTypes = []any{
 	(*Ad)(nil),                    // 0: ad.Ad
 	(*AdSlot)(nil),                // 1: ad.AdSlot
@@ -1026,6 +1111,8 @@ var file_ad_ad_proto_goTypes = []any{
 	(*GetAdSlotResponse)(nil),     // 15: ad.GetAdSlotResponse
 	(*UpdateBudgetRequest)(nil),   // 16: ad.UpdateBudgetRequest
 	(*UpdateBudgetResponse)(nil),  // 17: ad.UpdateBudgetResponse
+	(*GetAdCountRequest)(nil),     // 18: ad.GetAdCountRequest
+	(*GetAdCountResponse)(nil),    // 19: ad.GetAdCountResponse
 }
 var file_ad_ad_proto_depIdxs = []int32{
 	0,  // 0: ad.CreateRequest.ad:type_name -> ad.Ad
@@ -1041,16 +1128,18 @@ var file_ad_ad_proto_depIdxs = []int32{
 	12, // 10: ad.AdServ.GetAdDetailForSlot:input_type -> ad.GetAdDetailIDRequest
 	14, // 11: ad.AdServ.GetAdSlot:input_type -> ad.GetAdSlotRequest
 	16, // 12: ad.AdServ.UpdateAdBudget:input_type -> ad.UpdateBudgetRequest
-	3,  // 13: ad.AdServ.Create:output_type -> ad.CreateResponse
-	5,  // 14: ad.AdServ.GetAllAds:output_type -> ad.GetAllAdsResponse
-	7,  // 15: ad.AdServ.GetAd:output_type -> ad.GetAdResponse
-	9,  // 16: ad.AdServ.Update:output_type -> ad.UpdateResponse
-	11, // 17: ad.AdServ.Delete:output_type -> ad.DeleteResponse
-	13, // 18: ad.AdServ.GetAdDetailForSlot:output_type -> ad.GetAdDetailIDResponse
-	15, // 19: ad.AdServ.GetAdSlot:output_type -> ad.GetAdSlotResponse
-	17, // 20: ad.AdServ.UpdateAdBudget:output_type -> ad.UpdateBudgetResponse
-	13, // [13:21] is the sub-list for method output_type
-	5,  // [5:13] is the sub-list for method input_type
+	18, // 13: ad.AdServ.GetAdCount:input_type -> ad.GetAdCountRequest
+	3,  // 14: ad.AdServ.Create:output_type -> ad.CreateResponse
+	5,  // 15: ad.AdServ.GetAllAds:output_type -> ad.GetAllAdsResponse
+	7,  // 16: ad.AdServ.GetAd:output_type -> ad.GetAdResponse
+	9,  // 17: ad.AdServ.Update:output_type -> ad.UpdateResponse
+	11, // 18: ad.AdServ.Delete:output_type -> ad.DeleteResponse
+	13, // 19: ad.AdServ.GetAdDetailForSlot:output_type -> ad.GetAdDetailIDResponse
+	15, // 20: ad.AdServ.GetAdSlot:output_type -> ad.GetAdSlotResponse
+	17, // 21: ad.AdServ.UpdateAdBudget:output_type -> ad.UpdateBudgetResponse
+	19, // 22: ad.AdServ.GetAdCount:output_type -> ad.GetAdCountResponse
+	14, // [14:23] is the sub-list for method output_type
+	5,  // [5:14] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
 	5,  // [5:5] is the sub-list for extension extendee
 	0,  // [0:5] is the sub-list for field type_name
@@ -1067,7 +1156,7 @@ func file_ad_ad_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ad_ad_proto_rawDesc), len(file_ad_ad_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

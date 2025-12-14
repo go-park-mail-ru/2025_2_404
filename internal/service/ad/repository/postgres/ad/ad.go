@@ -29,6 +29,7 @@ const(
 	ORDER BY RANDOM()
 	LIMIT 1
 	)`
+	sqlTextForCountAds = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 )
 
 type DB struct {
@@ -190,4 +191,14 @@ func (r *DB) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error
 	}
 
 	return adSlot, nil
+}
+
+func (r *DB) GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error) {
+	var count int64
+	err := r.sql.QueryRowContext(ctx, sqlTextForCountAds, clientID).Scan(&count)
+	if err != nil {
+		return 0, fmt.Errorf("failed to count ads: %w", err)
+	}
+
+	return count, nil
 }

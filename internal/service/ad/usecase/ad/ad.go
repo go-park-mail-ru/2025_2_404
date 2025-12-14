@@ -16,6 +16,7 @@ type adRepositoryI interface {
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
 	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
+	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
 }
 
 type UseCase struct {
@@ -80,4 +81,8 @@ func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelf
 
 func (u *UseCase) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error){
 	return u.adRepo.GetAdSlot(ctx, min_cost)
+}
+
+func (u *UseCase) GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error) {
+	return u.adRepo.GetAdCount(ctx, clientID)
 }

@@ -13,6 +13,7 @@ service AdServ{
     rpc GetAdDetailForSlot(GetAdDetailIDRequest) returns (GetAdDetailIDResponse);
     rpc GetAdSlot(GetAdSlotRequest) returns (GetAdSlotResponse);
     rpc UpdateAdBudget(UpdateBudgetRequest) returns (UpdateBudgetResponse);
+    rpc GetAdCount(GetAdCountRequest) returns (GetAdCountResponse);
 }
 
 message Ad {
@@ -102,4 +103,10 @@ message UpdateBudgetRequest{
 
 message UpdateBudgetResponse{
     uint32 budget = 1;
+}
+
+message GetAdCountRequest{}
+
+message GetAdCountResponse{
+    int64 count = 1;
 }
