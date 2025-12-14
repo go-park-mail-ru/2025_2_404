@@ -28,6 +28,7 @@ type Payment struct {
 	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
 	YooPaymentId  string                 `protobuf:"bytes,4,opt,name=yoo_payment_id,json=yooPaymentId,proto3" json:"yoo_payment_id,omitempty"`
 	MethodPayment string                 `protobuf:"bytes,5,opt,name=method_payment,json=methodPayment,proto3" json:"method_payment,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -93,6 +94,13 @@ func (x *Payment) GetYooPaymentId() string {
 func (x *Payment) GetMethodPayment() string {
 	if x != nil {
 		return x.MethodPayment
+	}
+	return ""
+}
+
+func (x *Payment) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
 	}
 	return ""
 }
@@ -1101,13 +1109,15 @@ var File_profile_profile_proto protoreflect.FileDescriptor
 
 const file_profile_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x15profile/profile.proto\x12\aprofile\"\x96\x01\n" +
+	"\x15profile/profile.proto\x12\aprofile\"\xb5\x01\n" +
 	"\aPayment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\rR\x06amount\x12\x16\n" +
 	"\x06status\x18\x03 \x01(\tR\x06status\x12$\n" +
 	"\x0eyoo_payment_id\x18\x04 \x01(\tR\fyooPaymentId\x12%\n" +
-	"\x0emethod_payment\x18\x05 \x01(\tR\rmethodPayment\"\xd0\x02\n" +
+	"\x0emethod_payment\x18\x05 \x01(\tR\rmethodPayment\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\"\xd0\x02\n" +
 	"\rUpdateRequest\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +

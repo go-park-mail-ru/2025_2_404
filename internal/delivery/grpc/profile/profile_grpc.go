@@ -166,6 +166,7 @@ func (h *ProfileServer) GetPaymentsByClientID(ctx context.Context, req *profile.
 			Status:       string(payment.Status),
 			YooPaymentId: payment.YooPaymentID,
 			MethodPayment: payment.PaymentMethod,
+			CreatedAt: payment.CreatedTime,
 		}
 		pbPayments = append(pbPayments, pbPayment)
 	}

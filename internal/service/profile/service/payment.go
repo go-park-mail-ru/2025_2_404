@@ -37,7 +37,6 @@ func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Paymen
 		"payment_link", yooKassaLink,
 	)
 
-	// Устанавливаем статус ожидания
 	payment.Status = modelpayment.PaymentSucceeded
 
 	// Сохраняем в репозиторий

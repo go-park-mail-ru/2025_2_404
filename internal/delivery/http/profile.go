@@ -212,6 +212,7 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
             PaymentMethod: payment.GetMethodPayment(),
             Status: user.PaymentStatus(payment.Status),
             YooPaymentID: payment.GetYooPaymentId(),
+            CreatedTime: payment.CreatedAt,
         }
         paymentsResp = append(paymentsResp, historyPayment)
     }

@@ -1,6 +1,8 @@
 package user
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type PaymentStatus string
 
@@ -17,6 +19,7 @@ type Payment struct {
 	PaymentMethod string			`json:"payment_method"`
 	Status       PaymentStatus	`json:"status"`
 	YooPaymentID string			`json:"yoo_payment_id"`
+	CreatedTime	string          `json:"created_at"`
 }
 
 type PaymentRequest struct {
