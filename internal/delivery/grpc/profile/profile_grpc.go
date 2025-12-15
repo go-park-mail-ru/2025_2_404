@@ -238,19 +238,18 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 		"client_id", clientID.String(),
 		"add_amount_rub", amount,
 	)
-
-	_, err = h.AddBalance(ctx, &profile.AddBalanceRequest{
-		ClientId:   clientID.String(),
-		AddAmount:  uint32(amount),
-	})
-	if err != nil {
-		slog.Error("💸 Failed to add balance",
-			"client_id", clientID.String(),
-			"amount", amount,
-			"error", err,
-		)
-		// Внимание: сейчас вы игнорируете ошибку AddBalance!
-		// Возможно, стоит вернуть ошибку, если зачисление не удалось.
+	if req.Status == string(modeluser.PaymentSucceeded){
+		_, err = h.AddBalance(ctx, &profile.AddBalanceRequest{
+			ClientId:   clientID.String(),
+			AddAmount:  uint32(amount),
+		})
+		if err != nil {
+			slog.Error("💸 Failed to add balance",
+				"client_id", clientID.String(),
+				"amount", amount,
+				"error", err,
+			)
+		}	
 	}
 
 	slog.Info("✅ UpdatePaymentStatus completed successfully",
