@@ -81,6 +81,7 @@ message DeleteResponse{
 
 message GetAdDetailIDRequest{
     string ad_id = 1;
+    string event_type = 2;
 }
 
 message GetAdDetailIDResponse{

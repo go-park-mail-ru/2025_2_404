@@ -648,6 +648,7 @@ func (*DeleteResponse) Descriptor() ([]byte, []int) {
 type GetAdDetailIDRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AdId          string                 `protobuf:"bytes,1,opt,name=ad_id,json=adId,proto3" json:"ad_id,omitempty"`
+	EventType     string                 `protobuf:"bytes,2,opt,name=event_type,json=eventType,proto3" json:"event_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -685,6 +686,13 @@ func (*GetAdDetailIDRequest) Descriptor() ([]byte, []int) {
 func (x *GetAdDetailIDRequest) GetAdId() string {
 	if x != nil {
 		return x.AdId
+	}
+	return ""
+}
+
+func (x *GetAdDetailIDRequest) GetEventType() string {
+	if x != nil {
+		return x.EventType
 	}
 	return ""
 }
@@ -1046,9 +1054,11 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\x0eUpdateResponse\"\x1f\n" +
 	"\rDeleteRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\"\x10\n" +
-	"\x0eDeleteResponse\"+\n" +
+	"\x0eDeleteResponse\"J\n" +
 	"\x14GetAdDetailIDRequest\x12\x13\n" +
-	"\x05ad_id\x18\x01 \x01(\tR\x04adId\"9\n" +
+	"\x05ad_id\x18\x01 \x01(\tR\x04adId\x12\x1d\n" +
+	"\n" +
+	"event_type\x18\x02 \x01(\tR\teventType\"9\n" +
 	"\x15GetAdDetailIDResponse\x12 \n" +
 	"\fad_detail_id\x18\x01 \x01(\tR\n" +
 	"adDetailId\"J\n" +

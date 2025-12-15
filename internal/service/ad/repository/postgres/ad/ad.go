@@ -17,7 +17,7 @@ const(
 	sqlTextForSaveBudget = "INSERT INTO ad_detail (ad_id, budget, status, start_at, end_at) VALUES ($1, $2, $3, $4, $5)"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
 	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
-	sqlTextForGetAdDetailID = "SELECT id FROM ad_detail WHERE ad_id = $1"
+	sqlTextForGetAdDetailID = "UPDATE ad_detail SET budget = ad_detail.budget - 3 WHERE ad_id = $1 RETURNING id "
 	sqlTextForGetAdSlot = `
 	SELECT id, title, content, img_path, target_url 
 	FROM ad 
@@ -31,6 +31,7 @@ const(
 	)`
 	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1 WHERE ad_id = $2`
 	sqlTextForCountAds = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
+	sqlTextForUpdateStatistic = "UPDATE statistic SET clicks = statistic.clicks + $1, impressions = statistic.impressions + $2 WHERE ad_detail_id = $3"
 )
 
 type DB struct {
@@ -184,7 +185,7 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	return nil
 }
 
-func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error){
+func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error){
 	var detail_id modelfullad.DetailID
 	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detail_id)
 	if err != nil{

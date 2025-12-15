@@ -14,7 +14,7 @@ type adRepositoryI interface {
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
-	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
+	GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error)
 	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
 	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
 }
@@ -71,8 +71,16 @@ func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modelu
 	return adInfo, conversion, nil
 }
 
-func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error){
-	return u.adRepo.GetAdDetailForSlot(ctx, id)
+func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID, event_type string) (modelfullad.DetailID, error){
+	click := 0
+	impression := 0
+	if event_type == "impression"{
+		impression = 1
+	} else {
+		click = 1
+	}
+
+	return u.adRepo.GetAdDetailForSlot(ctx, id, click, impression)
 }
 
 func (u *UseCase) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error){

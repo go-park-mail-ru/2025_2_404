@@ -21,7 +21,7 @@ type adUsecaseI interface{
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
-	GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error)
+	GetAdDetailForSlot(ctx context.Context, id modelad.ID, event_type string) (modelfullad.DetailID, error)
 	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
 	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
 }
@@ -179,7 +179,9 @@ func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetai
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
 	}
 
-	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelfullad.ID(id))
+	
+
+	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelfullad.ID(id), req.GetEventType())
 	if err != nil{
 		return nil, err
 	}
