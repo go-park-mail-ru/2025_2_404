@@ -61,9 +61,9 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		st, _ := status.FromError(err)
 		log.Printf("Ошибка при получении слота (ID=%s): код=%d, сообщение=%q", slotID, st.Code(), st.Message())
 		if st.Code() == 5 { // NotFound
-			http.Error(w, "", http.StatusNotFound)
+			http.Error(w, "Not found slot", http.StatusNotFound)
 		} else {
-			http.Error(w, "", http.StatusInternalServerError)
+			http.Error(w, "Problem in logic back", http.StatusExpectationFailed)
 		}
 		return
 	}
@@ -72,7 +72,7 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 	imgData, err := h.storageClient.Get(ctx, &storagepb.GetRequest{ImagePath: resp.AdSlot.ImageSrc})
 	if err != nil {
 		log.Printf("Ошибка при получении изображения (путь=%s): %v", resp.AdSlot.ImageSrc, err)
-		http.Error(w, "", http.StatusInternalServerError)
+		http.Error(w, "Problem with load image", http.StatusNotFound)
 		return
 	}
 
@@ -87,7 +87,7 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Изображение успешно конвертировано в Base64: %s", imageSrc[:30]+"...")
 		if imageSrc == "" {
 			log.Printf("Ошибка: ConvertImageToBase64 вернула пустую строку")
-			http.Error(w, "", http.StatusInternalServerError)
+			http.Error(w, "Problem with convert image", http.StatusBadRequest)
 			return
 		}
 	}
@@ -110,7 +110,7 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Рендеринг HTML для слота ID=%s", slotID)
 	if err := h.tmpl.Execute(w, data); err != nil {
 		log.Printf("Ошибка при рендеринге шаблона: %v", err)
-		http.Error(w, "", http.StatusInternalServerError)
+		http.Error(w, "Render html bad", http.StatusNotFound)
 	}
 }
 
@@ -300,7 +300,7 @@ func (h *SlotHandler) CreateMetric(w http.ResponseWriter, r *http.Request){
     })
     if err != nil {
         log.Printf("Failed to record metric: %v", err)
-        http.Error(w, "internal error", http.StatusInternalServerError)
+        http.Error(w, "Metrics not created", http.StatusBadRequest)
         return
     }
 
@@ -320,7 +320,7 @@ func (h *SlotHandler) GetMetrics(w http.ResponseWriter, r *http.Request) {
 	res, err := h.client.GetMetrics(ctx, &slotpb.GetMetricsRequest{SlotId: id})
 	if err != nil {
 		log.Printf("Failed to get metric: %v", err)
-        http.Error(w, "internal error", http.StatusInternalServerError)
+        http.Error(w, "Not found metrics", http.StatusNotFound)
         return
 	}
 
