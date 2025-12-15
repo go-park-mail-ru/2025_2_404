@@ -21,7 +21,7 @@ func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Paymen
 	)
 
 	// Вызов внешнего платежного сервиса (YooKassa)
-	yooKassaLink, err := u.ext.CreatePayment(ctx, payment)
+	yooKassaResp, err := u.ext.CreatePayment(ctx, payment)
 	if err != nil {
 		slog.Error("Ошибка при создании платежа во внешнем сервисе",
 			"yoo_payment_id", yooKassaID,
@@ -33,12 +33,13 @@ func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Paymen
 	}
 
 	slog.Debug("Платеж успешно создан во внешнем сервисе",
-		"yoo_payment_id", yooKassaID,
-		"payment_link", yooKassaLink,
+		"yoo_payment_id", yooKassaResp.ID,
+		"payment_link", yooKassaResp.Confirmation.URL,
 	)
 
-	// Устанавливаем статус ожидания
+	payment.YooPaymentID = yooKassaResp.ID
 	payment.Status = modelpayment.PaymentPending
+	yooKassaLink := yooKassaResp.Confirmation.URL
 
 	// Сохраняем в репозиторий
 	if err := u.repo.CreatePayment(ctx, payment); err != nil {
@@ -60,7 +61,7 @@ func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Paymen
 	return yooKassaLink, nil
 }
 
-func (u *UseCase) UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modelpayment.PaymentStatus) error {
+func (u *UseCase) UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modelpayment.PaymentStatus) (modelpayment.ID, error) {
 	return u.repo.UpdatePaymentStatus(ctx, yooPaymentID, status)
 }
 

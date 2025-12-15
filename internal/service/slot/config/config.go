@@ -23,6 +23,7 @@ type AppConfig struct {
 	Host			  string
 	Port              string
 	PortAD			  string
+	PortProfile		  string
 	PortStorage       string
 	PortSlot          string
 	ImgPath			  string
@@ -57,6 +58,7 @@ func GetAppConfig() *AppConfig {
 		Host: os.Getenv("APP_HOST"),
 		Port: os.Getenv("APP_PORT"),
 		PortAD: os.Getenv("GRPC_AD_PORT"),
+		PortProfile: os.Getenv("GRPC_PORT_PROFILE"),
 		PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
 		PortSlot: os.Getenv("GRPC_PORT_SLOT"),
 		ImgPath: os.Getenv("IMG_PATH"),

@@ -5,9 +5,13 @@ import (
 	"2025_2_404/internal/delivery/grpc/slot"
 	"2025_2_404/internal/service/slot/config"
 	db "2025_2_404/internal/service/slot/connections"
-	repo "2025_2_404/internal/service/slot/repository/postgres"
+	metricRepo "2025_2_404/internal/service/slot/repository/postgres/metric"
+	repo "2025_2_404/internal/service/slot/repository/postgres/slot"
+	metricusecase "2025_2_404/internal/service/slot/usecase/metric"
 	usecase "2025_2_404/internal/service/slot/usecase/slot"
 	slotpb "2025_2_404/protos/gen/go/slot"
+	adpb "2025_2_404/protos/gen/go/ad"
+	profilepb "2025_2_404/protos/gen/go/profile"
 	"fmt"
 	"log"
 	"net"
@@ -16,6 +20,7 @@ import (
 	"syscall"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
@@ -26,9 +31,28 @@ func main() {
 	}
 	defer connCfg.CloseAll()
 
+	adServiceAddr := fmt.Sprintf("ad-service:%s", config.AppConfig.PortAD)
+	adConn, err := grpc.NewClient(adServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("failed to connect to Ad Service: %v", err)
+	}
+	defer adConn.Close()
+
+	profileServiceAddr := fmt.Sprintf("profile_service:%s", config.AppConfig.PortProfile)
+	profileConn, err := grpc.NewClient(profileServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("failed to connect to Ad Service: %v", err)
+	}
+	defer profileConn.Close()
+
+	adClient := adpb.NewAdServClient(adConn)
+	profileClient := profilepb.NewProfileClient(profileConn)
+
 	repoCfg := repo.New(connCfg.PostgresSQL)
+	metricRepo := metricRepo.New(connCfg.PostgresSQL)
 	useCaseCfg := usecase.New(repoCfg)
-	slotHandler := slot.New(useCaseCfg)
+	metricUsecase := metricusecase.New(metricRepo)
+	slotHandler := slot.New(useCaseCfg, metricUsecase, adClient, profileClient)
 	
 	authInterceptor, authConn := interceptor.InitAuthInterceptor()
     defer authConn.Close()

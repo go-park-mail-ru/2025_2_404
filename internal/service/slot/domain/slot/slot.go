@@ -2,13 +2,10 @@ package slot
 
 import "html/template"
 
-// ID — идентификатор слота.
 type ID string
 
-// UserID — идентификатор владельца.
 type UserID string
 
-// Slot — доменная модель рекламного слота.
 type Slot struct {
 	ID              ID
 	UserID          UserID
@@ -28,4 +25,6 @@ type SlotRenderData struct {
 	Link        string
 	Background  string
 	Color       string
+	Banner		string
+	Slot		string
 }

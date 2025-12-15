@@ -27,6 +27,8 @@ type Payment struct {
 	Amount        uint32                 `protobuf:"varint,2,opt,name=amount,proto3" json:"amount,omitempty"`
 	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
 	YooPaymentId  string                 `protobuf:"bytes,4,opt,name=yoo_payment_id,json=yooPaymentId,proto3" json:"yoo_payment_id,omitempty"`
+	MethodPayment string                 `protobuf:"bytes,5,opt,name=method_payment,json=methodPayment,proto3" json:"method_payment,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -85,6 +87,20 @@ func (x *Payment) GetStatus() string {
 func (x *Payment) GetYooPaymentId() string {
 	if x != nil {
 		return x.YooPaymentId
+	}
+	return ""
+}
+
+func (x *Payment) GetMethodPayment() string {
+	if x != nil {
+		return x.MethodPayment
+	}
+	return ""
+}
+
+func (x *Payment) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
 	}
 	return ""
 }
@@ -652,6 +668,7 @@ func (x *ShowBalanceResponse) GetBalance() uint32 {
 type AddBalanceRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AddAmount     uint32                 `protobuf:"varint,1,opt,name=add_amount,json=addAmount,proto3" json:"add_amount,omitempty"`
+	ClientId      string                 `protobuf:"bytes,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -691,6 +708,13 @@ func (x *AddBalanceRequest) GetAddAmount() uint32 {
 		return x.AddAmount
 	}
 	return 0
+}
+
+func (x *AddBalanceRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
 }
 
 type AddBalanceResponse struct {
@@ -814,6 +838,7 @@ type PaymentCreateRequest struct {
 	Amount        uint32                 `protobuf:"varint,1,opt,name=amount,proto3" json:"amount,omitempty"`
 	PaymentMethod string                 `protobuf:"bytes,2,opt,name=payment_method,json=paymentMethod,proto3" json:"payment_method,omitempty"`
 	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`
+	YooPaymentId  string                 `protobuf:"bytes,4,opt,name=yoo_payment_id,json=yooPaymentId,proto3" json:"yoo_payment_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -869,6 +894,13 @@ func (x *PaymentCreateRequest) GetStatus() string {
 	return ""
 }
 
+func (x *PaymentCreateRequest) GetYooPaymentId() string {
+	if x != nil {
+		return x.YooPaymentId
+	}
+	return ""
+}
+
 type PaymentCreateResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	PaymentUrl    string                 `protobuf:"bytes,1,opt,name=payment_url,json=paymentUrl,proto3" json:"payment_url,omitempty"`
@@ -915,8 +947,9 @@ func (x *PaymentCreateResponse) GetPaymentUrl() string {
 
 type PaymentStatusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	YooPaymentId  string                 `protobuf:"bytes,1,opt,name=yoo_payment_id,json=yooPaymentId,proto3" json:"yoo_payment_id,omitempty"`
+	YookassaId    string                 `protobuf:"bytes,1,opt,name=yookassa_id,json=yookassaId,proto3" json:"yookassa_id,omitempty"`
 	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
+	Amount        string                 `protobuf:"bytes,3,opt,name=amount,proto3" json:"amount,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -951,9 +984,9 @@ func (*PaymentStatusRequest) Descriptor() ([]byte, []int) {
 	return file_profile_profile_proto_rawDescGZIP(), []int{15}
 }
 
-func (x *PaymentStatusRequest) GetYooPaymentId() string {
+func (x *PaymentStatusRequest) GetYookassaId() string {
 	if x != nil {
-		return x.YooPaymentId
+		return x.YookassaId
 	}
 	return ""
 }
@@ -961,6 +994,13 @@ func (x *PaymentStatusRequest) GetYooPaymentId() string {
 func (x *PaymentStatusRequest) GetStatus() string {
 	if x != nil {
 		return x.Status
+	}
+	return ""
+}
+
+func (x *PaymentStatusRequest) GetAmount() string {
+	if x != nil {
+		return x.Amount
 	}
 	return ""
 }
@@ -1085,12 +1125,15 @@ var File_profile_profile_proto protoreflect.FileDescriptor
 
 const file_profile_profile_proto_rawDesc = "" +
 	"\n" +
-	"\x15profile/profile.proto\x12\aprofile\"o\n" +
+	"\x15profile/profile.proto\x12\aprofile\"\xb5\x01\n" +
 	"\aPayment\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
 	"\x06amount\x18\x02 \x01(\rR\x06amount\x12\x16\n" +
 	"\x06status\x18\x03 \x01(\tR\x06status\x12$\n" +
-	"\x0eyoo_payment_id\x18\x04 \x01(\tR\fyooPaymentId\"\xd0\x02\n" +
+	"\x0eyoo_payment_id\x18\x04 \x01(\tR\fyooPaymentId\x12%\n" +
+	"\x0emethod_payment\x18\x05 \x01(\tR\rmethodPayment\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\"\xd0\x02\n" +
 	"\rUpdateRequest\x12\x1b\n" +
 	"\tuser_name\x18\x01 \x01(\tR\buserName\x12\x14\n" +
 	"\x05email\x18\x02 \x01(\tR\x05email\x12\x1a\n" +
@@ -1141,25 +1184,29 @@ const file_profile_profile_proto_rawDesc = "" +
 	" \x01(\tR\vprofileType\"\x14\n" +
 	"\x12ShowBalanceRequest\"/\n" +
 	"\x13ShowBalanceResponse\x12\x18\n" +
-	"\abalance\x18\x01 \x01(\rR\abalance\"2\n" +
+	"\abalance\x18\x01 \x01(\rR\abalance\"O\n" +
 	"\x11AddBalanceRequest\x12\x1d\n" +
 	"\n" +
-	"add_amount\x18\x01 \x01(\rR\taddAmount\"\x14\n" +
+	"add_amount\x18\x01 \x01(\rR\taddAmount\x12\x1b\n" +
+	"\tclient_id\x18\x02 \x01(\tR\bclientId\"\x14\n" +
 	"\x12AddBalanceResponse\"7\n" +
 	"\x16SubtractBalanceRequest\x12\x1d\n" +
 	"\n" +
 	"sub_amount\x18\x01 \x01(\rR\tsubAmount\"\x19\n" +
-	"\x17SubtractBalanceResponse\"m\n" +
+	"\x17SubtractBalanceResponse\"\x93\x01\n" +
 	"\x14PaymentCreateRequest\x12\x16\n" +
 	"\x06amount\x18\x01 \x01(\rR\x06amount\x12%\n" +
 	"\x0epayment_method\x18\x02 \x01(\tR\rpaymentMethod\x12\x16\n" +
-	"\x06status\x18\x03 \x01(\tR\x06status\"8\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\x12$\n" +
+	"\x0eyoo_payment_id\x18\x04 \x01(\tR\fyooPaymentId\"8\n" +
 	"\x15PaymentCreateResponse\x12\x1f\n" +
 	"\vpayment_url\x18\x01 \x01(\tR\n" +
-	"paymentUrl\"T\n" +
-	"\x14PaymentStatusRequest\x12$\n" +
-	"\x0eyoo_payment_id\x18\x01 \x01(\tR\fyooPaymentId\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\"\x17\n" +
+	"paymentUrl\"g\n" +
+	"\x14PaymentStatusRequest\x12\x1f\n" +
+	"\vyookassa_id\x18\x01 \x01(\tR\n" +
+	"yookassaId\x12\x16\n" +
+	"\x06status\x18\x02 \x01(\tR\x06status\x12\x16\n" +
+	"\x06amount\x18\x03 \x01(\tR\x06amount\"\x17\n" +
 	"\x15PaymentStatusResponse\"\x1b\n" +
 	"\x19PaymentsByClientIDRequest\"J\n" +
 	"\x1aPaymentsByClientIDResponse\x12,\n" +

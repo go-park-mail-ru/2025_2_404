@@ -2,12 +2,11 @@ package slot
 import (
 	"context"
 	"2025_2_404/internal/service/slot/domain/slot"
-	"github.com/google/uuid"
 )
 
 type slotRepository interface {
 	Create(ctx context.Context, s slot.Slot) (slot.ID, error) 
-	GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRenderData, error)
+	GetByID(ctx context.Context, id slot.ID) (slot.Slot, error)
 	ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error)
 	Update(ctx context.Context, s slot.Slot) error
 	Delete(ctx context.Context, id slot.ID, userID slot.UserID) error
@@ -22,12 +21,10 @@ func New(repo slotRepository) *UseCase {
 }
 
 func (u *UseCase) Create(ctx context.Context, s slot.Slot) (slot.ID, error) {
-	newID := uuid.New()
-	s.ID = slot.ID(newID.String())
 	return u.repo.Create(ctx, s)
 }
 
-func (u *UseCase) GetByID(ctx context.Context, id slot.ID) (slot.Slot, slot.SlotRenderData, error) {
+func (u *UseCase) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
 	return u.repo.GetByID(ctx, id)
 }
 
