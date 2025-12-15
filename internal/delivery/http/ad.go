@@ -177,17 +177,11 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	targetURL := r.FormValue("target_url")
-	budgetStr := r.FormValue("budget")
+	statusAd := r.FormValue("status")
 
 
-	if title == "" || content == "" || targetURL == "" || budgetStr == "" {
+	if title == "" || content == "" || targetURL == "" || statusAd == "" {
 		http.Error(w, `{"error":"title, content, target_url and budget are required"}`, http.StatusBadRequest)
-		return
-	}
-
-	budget, err := strconv.ParseUint(budgetStr, 10, 32)
-	if err != nil {
-		http.Error(w, `{"error":"invalid budget format"}`, http.StatusBadRequest)
 		return
 	}
 
@@ -202,15 +196,6 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	if auth := r.Header.Get("Authorization"); auth != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
-	}
-
-	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
-		SubAmount: uint32(budget),
-	})
-	if err != nil {
-		st, _ := status.FromError(err)
-		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
-		return
 	}
 
 	// ———— ШАГ 2: Загружаем изображение (если есть) ————
@@ -237,7 +222,7 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 			Content:   content,
 			Targeturl: targetURL,
 			ImgPath:   newImageFilename,
-			Budget:    uint32(budget),
+			Status: statusAd,
 		},
 	}
 
@@ -269,4 +254,55 @@ func (h *AdHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *AdHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+	if id == "" {
+		http.Error(w, `{"error":"id is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	budgetStr := r.FormValue("budget")
+	if budgetStr == "" {
+		http.Error(w, `{"error":"budget is required"}`, http.StatusBadRequest)
+		return
+	}
+
+	budget, err := strconv.ParseUint(budgetStr, 10, 32)
+	if err != nil {
+		http.Error(w, `{"error":"invalid budget format"}`, http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
+	}
+
+	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
+		SubAmount: uint32(budget),
+	})
+	if err != nil {
+		st, _ := status.FromError(err)
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		return
+	}
+
+	req := &pbAd.UpdateBudgetRequest{
+		Id:     id,
+		Budget: uint32(budget),
+	}
+
+	resp, err := h.client.UpdateAdBudget(ctx, req)
+	if err != nil {
+		st, _ := status.FromError(err)
+		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		return
+	}
+
+	pkg.JSONResponse(w, http.StatusOK, "Budget updated successfully", resp)
 }

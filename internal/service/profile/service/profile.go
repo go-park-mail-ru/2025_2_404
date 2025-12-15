@@ -14,20 +14,20 @@ type repositoryI interface{
 	AddBalance(ctx context.Context, clientID modeluser.ID, addAmount uint32) error
 	SubtractBalance(ctx context.Context, clientID modeluser.ID, subAmount uint32) error
 	CreatePayment(ctx context.Context, payment modeluser.Payment) error
-	UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modeluser.PaymentStatus) error
+	UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modeluser.PaymentStatus) (modeluser.ID, error)
 	GetPaymentsByClientID(ctx context.Context, clientID modeluser.ID) ([]modeluser.Payment, error)
 }
 
-type externalHttpI interface{
-	CreatePayment(ctx context.Context, payment modeluser.Payment)(string, error)
+type externalYooKassaHttpI interface{
+	CreatePayment(ctx context.Context, payment modeluser.Payment)(modeluser.PaymentResponse, error)
 }
 
 type UseCase struct{
 	repo repositoryI
-	ext externalHttpI
+	ext externalYooKassaHttpI
 }
 
-func New(repo repositoryI, ext externalHttpI) *UseCase{
+func New(repo repositoryI, ext externalYooKassaHttpI) *UseCase{
 	return &UseCase{
 		repo: repo,
 		ext: ext,
