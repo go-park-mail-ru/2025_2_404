@@ -4,10 +4,11 @@ import (
 	modeluser "2025_2_404/internal/service/auth/domain"
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"log"
-
 	"github.com/google/uuid"
+	"github.com/lib/pq"
 )
 
 const(
@@ -33,15 +34,18 @@ func (r *DB) Create(ctx context.Context, user *modeluser.User) (modeluser.ID, er
 	// 	return uuid.Nil, fmt.Errorf("Пользователь с таким ID не существует")
 	// }
 	if err != nil {
-		log.Println("Не удалось создать пользователя, причина: %w", err)
-		return uuid.Nil, fmt.Errorf("failed to create user: %w", err)
-	}
+        var pgErr *pq.Error
+        if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+            return uuid.Nil, errors.New("already exists")
+        }
+        return uuid.Nil, err
+    }
+    return user.ID, nil
 	// _, err = r.sql.ExecContext(ctx, sqlTextForInsertBalance, user.ID, 0)
 	// if err != nil {
 	// 	log.Println("Не удалось создать баланс пользователя, причина: %w", err)
 	// 	return user.ID, fmt.Errorf("balance not added: %w", err)
 	// }
-	return user.ID, nil
 }
 
 func (r *DB) FindByEmail(ctx context.Context, email string) (modeluser.User, error) {
@@ -52,4 +56,4 @@ func (r *DB) FindByEmail(ctx context.Context, email string) (modeluser.User, err
 		return user, fmt.Errorf("failed to find user by email: %w", err)
 	}
 	return user, nil
-}
+}	

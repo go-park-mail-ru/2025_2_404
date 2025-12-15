@@ -86,6 +86,7 @@ func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*pr
 		Company:       user.Company,
 		Phone:         user.Phone,
 		AvatarPath:    user.ImagePath,
+		CreatedAt: user.CreatedAt,
 	}, nil
 }
 

@@ -4,9 +4,16 @@ import (
 	modeluser "2025_2_404/internal/service/auth/domain"
 	"2025_2_404/protos/gen/go/auth"
 	"context"
+	"errors"
+	"log"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+)
+
+var (
+    ErrAlreadyExists = errors.New("user already exists")
+    ErrNotFound      = errors.New("user not found")
 )
 
 type UseCase interface {
@@ -35,8 +42,16 @@ func NewAuthServer(useCase UseCase, useCaseJWT UseCaseJWT) *AuthServer {
 func (s *AuthServer) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	token, userID, err := s.useCase.Register(ctx, req.Email, req.Password, req.UserName)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "registration failed")
-	}
+        if errors.Is(err, ErrAlreadyExists) {
+            return nil, status.Error(codes.AlreadyExists, "user already exists")
+        }
+
+        if errors.Is(err, ErrNotFound) {
+            return nil, status.Error(codes.NotFound, "user not found")
+        }
+
+        return nil, status.Error(codes.Internal, "internal server error")
+    }
 
 	return &auth.RegisterResponse{
 		Token:  token,
@@ -46,6 +61,7 @@ func (s *AuthServer) Register(ctx context.Context, req *auth.RegisterRequest) (*
 
 func (s *AuthServer) Login(ctx context.Context, req *auth.LoginRequest) (*auth.LoginResponse, error) {
 	token, userID, err := s.useCase.Login(ctx, req.Email, req.Password)
+	log.Println("DEBUG LOGGER error is ", err)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "invalid email or password")
 	}
@@ -58,6 +74,7 @@ func (s *AuthServer) Login(ctx context.Context, req *auth.LoginRequest) (*auth.L
 
 func (s *AuthServer) ValidateToken(ctx context.Context, req *auth.TokenRequest) (*auth.TokenResponse, error) {
 	userID, err := s.useCaseJWT.ValidateToken(ctx, req.Token)
+	log.Println("DEBUG LOGGER error is ", err)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "invalid token")
 	}

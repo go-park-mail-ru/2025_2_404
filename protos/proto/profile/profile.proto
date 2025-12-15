@@ -72,6 +72,7 @@ message ShowResponse{
     string registered_at = 8;
     uint32 ads_count = 9;
     string profile_type = 10; 
+    string created_at = 11;
 }
 
 message ShowBalanceRequest {}
