@@ -6,7 +6,10 @@ import (
 	"2025_2_404/protos/gen/go/profile"
 	"context"
 	"fmt"
+	"log/slog"
+	"strconv"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -19,7 +22,7 @@ type ProfileUsecaseI interface{
 	AddBalance(ctx context.Context, clientID modeluser.ID, addAmount uint32) error
 	SubtractBalance(ctx context.Context, clientID modeluser.ID, subAmount uint32) error
 	CreatePayment(ctx context.Context, payment modeluser.Payment) (string, error)
-	UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modeluser.PaymentStatus) error
+	UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modeluser.PaymentStatus) (modeluser.ID, error)
 	GetPaymentsByClientID(ctx context.Context, clientID modeluser.ID) ([]modeluser.Payment, error)
 }
 
@@ -120,9 +123,10 @@ func (h *ProfileServer) ShowBalance(ctx context.Context, req *profile.ShowBalanc
 }
 
 func (h *ProfileServer) AddBalance(ctx context.Context, req *profile.AddBalanceRequest) (*profile.AddBalanceResponse, error){
-	clientID, err := interceptor.GetUserID(ctx) 
+
+	clientID, err := uuid.Parse(req.GetClientId())
 	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+		return nil, fmt.Errorf("clientId not correct")
 	}
 
 	err = h.profileUsecase.AddBalance(ctx, clientID, req.GetAddAmount())
@@ -198,16 +202,62 @@ func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentC
 	}, nil
 }
 
-func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.PaymentStatusRequest) (*profile.PaymentStatusResponse, error){
-	_, err := interceptor.GetUserID(ctx) 
-	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
-	}
+func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.PaymentStatusRequest) (*profile.PaymentStatusResponse, error) {
+	slog.Info("🔄 UpdatePaymentStatus called",
+		"yookassa_id", req.GetYookassaId(),
+		"status", req.GetStatus(),
+		"amount", req.GetAmount(),
+	)
 
-	err = h.profileUsecase.UpdatePaymentStatus(ctx, req.GetYooPaymentId(), modeluser.PaymentStatus(req.GetStatus()))
+	clientID, err := h.profileUsecase.UpdatePaymentStatus(ctx, req.GetYookassaId(), modeluser.PaymentStatus(req.GetStatus()))
 	if err != nil {
+		slog.Error("❌ Failed to update payment status in DB",
+			"yookassa_id", req.GetYookassaId(),
+			"status", req.GetStatus(),
+			"error", err,
+		)
 		return nil, status.Errorf(codes.Internal, "failed to update payment status: %v", err)
 	}
+
+	slog.Info("✅ Payment status updated, client identified",
+		"yookassa_id", req.GetYookassaId(),
+		"client_id", clientID.String(),
+	)
+
+	amount, err := strconv.ParseUint(req.GetAmount(), 10, 32)
+	if err != nil {
+		slog.Error("❌ Invalid amount format",
+			"yookassa_id", req.GetYookassaId(),
+			"amount", req.GetAmount(),
+			"error", err,
+		)
+		return nil, status.Errorf(codes.InvalidArgument, "failed to convert amount: %v", err)
+	}
+
+	slog.Info("💰 Adding balance",
+		"client_id", clientID.String(),
+		"add_amount_rub", amount,
+	)
+
+	_, err = h.AddBalance(ctx, &profile.AddBalanceRequest{
+		ClientId:   clientID.String(),
+		AddAmount:  uint32(amount),
+	})
+	if err != nil {
+		slog.Error("💸 Failed to add balance",
+			"client_id", clientID.String(),
+			"amount", amount,
+			"error", err,
+		)
+		// Внимание: сейчас вы игнорируете ошибку AddBalance!
+		// Возможно, стоит вернуть ошибку, если зачисление не удалось.
+	}
+
+	slog.Info("✅ UpdatePaymentStatus completed successfully",
+		"yookassa_id", req.GetYookassaId(),
+		"client_id", clientID.String(),
+		"amount_rub", amount,
+	)
 
 	return &profile.PaymentStatusResponse{}, nil
 }

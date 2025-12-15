@@ -25,7 +25,7 @@ func New(cfg *config.Config) *YooKassaHttp{
 	}
 }
 
-func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(string, error){
+func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(user.PaymentResponse, error){
 	paymentReq := user.PaymentRequest{}
 	paymentReq.Amount.Value = fmt.Sprintf("%d.00", payment.AmountRub)
 	paymentReq.Amount.Currency = "RUB"
@@ -43,7 +43,7 @@ func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(
 
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		return "", fmt.Errorf("Bad Request to YooKassa")
+		return user.PaymentResponse{}, fmt.Errorf("Bad Request to YooKassa")
 	}
 	defer resp.Body.Close()
 
@@ -51,16 +51,16 @@ func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(
 
 	if resp.StatusCode != http.StatusOK {
 		err := fmt.Errorf("YooKassa error: %d, body: %s\n", resp.StatusCode, string(respBody))
-		return "", err
+		return user.PaymentResponse{}, err
 	}
 
 	if resp.StatusCode != http.StatusOK {
 		err := fmt.Errorf("YooKassa error: %d, body: %s\n", resp.StatusCode, string(respBody))
-		return "", err
+		return user.PaymentResponse{}, err
 	}
 
 	var paymentResp user.PaymentResponse
 	json.Unmarshal(respBody, &paymentResp)
 
-	return paymentResp.Confirmation.URL, nil
+	return paymentResp, nil
 }

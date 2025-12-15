@@ -82,6 +82,7 @@ message ShowBalanceResponse {
 
 message AddBalanceRequest {
     uint32 add_amount = 1;
+    string client_id = 2;
 }
 
 message AddBalanceResponse {
@@ -106,8 +107,9 @@ message PaymentCreateResponse {
 }
 
 message PaymentStatusRequest {
-    string yoo_payment_id = 1;
+    string yookassa_id = 1;
     string status = 2;
+    string amount = 3;
 }
 
 message PaymentStatusResponse {

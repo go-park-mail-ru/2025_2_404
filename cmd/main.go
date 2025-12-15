@@ -128,6 +128,7 @@ func main() {
 	balanceRouter.HandleFunc("", profileHandler.ShowBalance).Methods("GET")
 	balanceRouter.HandleFunc("/subtract", profileHandler.SubtractBalance).Methods("POST")
 	balanceRouter.HandleFunc("/payment", profileHandler.CreatePayment).Methods("POST")
+	balanceRouter.HandleFunc("/payment/status", profileHandler.HandleYooKassaWebhook).Methods("POST")
 
 	// Ads
 	adRouter.HandleFunc("", adHandler.Create).Methods("POST")

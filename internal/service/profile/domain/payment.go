@@ -49,3 +49,14 @@ type BalanceResponse struct {
     Balance       int64            `json:"balance"`
     Payments      []Payment `json:"payments"`
 }
+
+type YooKassaAmount struct {
+	Value    string `json:"value"`
+	Currency string `json:"currency"`
+}
+
+type YooKassaNotification struct {
+	ID     string          `json:"id"`
+	Status string          `json:"status"`
+	Amount YooKassaAmount  `json:"amount"`
+}
