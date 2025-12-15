@@ -46,13 +46,13 @@ func (r *UseCase) Register(ctx context.Context, email, password, userName string
 	userID, err := r.repo.Create(ctx, user)
 	if err != nil {
 		log.Println("Траблы с созданием пользвоателя %w", err)
-		return "", uuid.Nil, fmt.Errorf("problem with repository CreateUser: %w", err)
+		return "", uuid.Nil, fmt.Errorf("usecase register failed: %w", err) 
 	}
 
 	token, err := r.tokenUsecase.GenerateToken(userID)
 	if err != nil {
 		log.Println("Не получилось создать токен, ошибка %w", err)
-		return "", uuid.Nil,fmt.Errorf("auth_login : %w", err)
+		return "", uuid.Nil, fmt.Errorf("auth_login : %w", err)
 	}
 	return token, userID, nil
 }

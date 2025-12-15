@@ -1,6 +1,10 @@
 package user
 
-import "github.com/google/uuid"
+import (
+	// "time"
+
+	"github.com/google/uuid"
+)
 
 type ID = uuid.UUID
 
@@ -17,4 +21,5 @@ type User struct {
 	RegistrationDate string `json:"registred_at"`
 	AdsCount int `json:"ads_count"`
 	ProfileType string `json:"profile_type"`
+	CreatedAt string `json:"created_at"`
 }

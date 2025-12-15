@@ -32,7 +32,7 @@ func NewProfileHandler(client pbProfile.ProfileClient, storageClient pbStorage.S
 
 func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
     reqID := r.Header.Get("X-Request-ID")
-    slog.Info("📥 Show profile request", "req_id", reqID)
+    slog.Info("Show profile request", "req_id", reqID)
 
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
@@ -44,7 +44,7 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
     resp, err := h.client.Show(ctx, &pbProfile.ShowRequest{})
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to show profile", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to show profile", "req_id", reqID, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
@@ -54,7 +54,7 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
     if imgPath != "" {
         resIMG, err = h.storageClient.Get(ctx, &pbStorage.GetRequest{ImagePath: imgPath})
         if err != nil {
-            slog.Warn("⚠️ Failed to get avatar", "req_id", reqID, "image_path", imgPath, "error", err)
+            slog.Warn("Failed to get avatar", "req_id", reqID, "image_path", imgPath, "error", err)
         }
     }
 
@@ -68,7 +68,7 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
 		adsCount = adResp.Count
 	}
 
-    slog.Info("✅ Profile shown successfully", "req_id", reqID, "user_name", resp.UserName)
+    slog.Info("Profile shown successfully", "req_id", reqID, "user_name", resp.UserName)
     pkg.JSONResponse(w, http.StatusOK, "Profile retrieved successfully", map[string]interface{}{
         "user_name":    resp.UserName,
         "email":        resp.Email,
@@ -79,6 +79,7 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
         "profile_type": resp.ProfileType,
         "imageData":  resIMG,
         "ads_count": adsCount,
+        "created_at": resp.CreatedAt,
     })
 }
 
@@ -89,10 +90,10 @@ func parseMultipartForm(r *http.Request) error {
 
 func (h *ProfileHandler) Update(w http.ResponseWriter, r *http.Request) {
     reqID := r.Header.Get("X-Request-ID")
-    slog.Info("📥 Update profile request", "req_id", reqID)
+    slog.Info("Update profile request", "req_id", reqID)
 
     if err := parseMultipartForm(r); err != nil {
-        slog.Error("❌ Failed to parse multipart form", "req_id", reqID, "error", err)
+        slog.Error("Failed to parse multipart form", "req_id", reqID, "error", err)
         http.Error(w, `{"error":"failed to parse form"}`, http.StatusBadRequest)
         return
     }
@@ -115,7 +116,7 @@ func (h *ProfileHandler) Update(w http.ResponseWriter, r *http.Request) {
 
     fileBytes, imageFilename, err := pkgfile.ExtractImage(r, "avatar/", "avatar")
     if err != nil {
-        slog.Error("❌ Failed to extract avatar", "req_id", reqID, "error", err)
+        slog.Error("Failed to extract avatar", "req_id", reqID, "error", err)
         http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
         return
     }
@@ -130,9 +131,9 @@ func (h *ProfileHandler) Update(w http.ResponseWriter, r *http.Request) {
             ImageData: fileBytes,
         })
         if err != nil {
-            slog.Error("❌ Failed to upload avatar", "req_id", reqID, "image_path", imageFilename, "error", err)
+            slog.Error("Failed to upload avatar", "req_id", reqID, "image_path", imageFilename, "error", err)
         } else {
-            slog.Info("✅ Avatar uploaded", "req_id", reqID, "image_path", imageFilename)
+            slog.Info("Avatar uploaded", "req_id", reqID, "image_path", imageFilename)
             avatarPath = imageFilename // ← важно: сохраняем путь!
         }
     }
@@ -152,18 +153,18 @@ func (h *ProfileHandler) Update(w http.ResponseWriter, r *http.Request) {
     resp, err := h.client.Update(ctx, req)
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to update profile", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to update profile", "req_id", reqID, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
 
-    slog.Info("✅ Profile updated successfully", "req_id", reqID, "user_name", userName)
+    slog.Info("Profile updated successfully", "req_id", reqID, "user_name", userName)
     pkg.JSONResponse(w, http.StatusOK, "Profile updated successfully", resp)
 }
 
 func (h *ProfileHandler) Delete(w http.ResponseWriter, r *http.Request) {
     reqID := r.Header.Get("X-Request-ID")
-    slog.Info("📥 Delete profile request", "req_id", reqID)
+    slog.Info("Delete profile request", "req_id", reqID)
 
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
@@ -175,17 +176,17 @@ func (h *ProfileHandler) Delete(w http.ResponseWriter, r *http.Request) {
     _, err := h.client.Delete(ctx, &pbProfile.DeleteRequest{})
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to delete profile", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to delete profile", "req_id", reqID, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
 
-    slog.Info("✅ Profile deleted successfully", "req_id", reqID)
+    slog.Info("Profile deleted successfully", "req_id", reqID)
     w.WriteHeader(http.StatusNoContent)
 }
 func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
     reqID := r.Header.Get("X-Request-ID")
-    slog.Info("📥 Show balance request", "req_id", reqID)
+    slog.Info("Show balance request", "req_id", reqID)
 
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
@@ -197,7 +198,7 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
     resp, err := h.client.ShowBalance(ctx, &pbProfile.ShowBalanceRequest{})
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to show balance", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to show balance", "req_id", reqID, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
@@ -205,7 +206,7 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
     payments, err := h.client.GetPaymentsByClientID(ctx, &pbProfile.PaymentsByClientIDRequest{})
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to show history payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to show history payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
@@ -230,7 +231,7 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
         paymentsResp = append(paymentsResp, historyPayment)
     }
 
-    slog.Info("✅ Balance shown successfully", "req_id", reqID, "balance", resp.Balance)
+    slog.Info("Balance shown successfully", "req_id", reqID, "balance", resp.Balance)
     pkg.JSONResponse(w, http.StatusOK, "Balance retrieved successfully", &user.BalanceResponse{
         Balance: int64(resp.GetBalance()),
         Payments: paymentsResp,
@@ -239,7 +240,7 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProfileHandler) AddBalance(w http.ResponseWriter, r *http.Request) {
     reqID := r.Header.Get("X-Request-ID")
-    slog.Info("📥 Add balance request", "req_id", reqID)
+    slog.Info("Add balance request", "req_id", reqID)
 
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
@@ -250,7 +251,7 @@ func (h *ProfileHandler) AddBalance(w http.ResponseWriter, r *http.Request) {
 
     var jsonReq user.BalanceOp
     if err := json.NewDecoder(r.Body).Decode(&jsonReq); err != nil {
-        slog.Error("❌ Invalid JSON in add balance", "req_id", reqID, "error", err)
+        slog.Error("Invalid JSON in add balance", "req_id", reqID, "error", err)
         http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
         return
     }
@@ -262,18 +263,18 @@ func (h *ProfileHandler) AddBalance(w http.ResponseWriter, r *http.Request) {
     resp, err := h.client.AddBalance(ctx, req)
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to add balance", "req_id", reqID, "amount", jsonReq.AddAmount, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to add balance", "req_id", reqID, "amount", jsonReq.AddAmount, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
 
-    slog.Info("✅ Balance added successfully", "req_id", reqID, "amount", jsonReq.AddAmount, "new_balance", req.AddAmount)
+    slog.Info("Balance added successfully", "req_id", reqID, "amount", jsonReq.AddAmount, "new_balance", req.AddAmount)
     pkg.JSONResponse(w, http.StatusOK, "Balance added successfully", resp)
 }
 
 func (h *ProfileHandler) SubtractBalance(w http.ResponseWriter, r *http.Request) {
     reqID := r.Header.Get("X-Request-ID")
-    slog.Info("📥 Subtract balance request", "req_id", reqID)
+    slog.Info("Subtract balance request", "req_id", reqID)
 
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
@@ -284,7 +285,7 @@ func (h *ProfileHandler) SubtractBalance(w http.ResponseWriter, r *http.Request)
 
     var jsonReq user.BalanceOp
     if err := json.NewDecoder(r.Body).Decode(&jsonReq); err != nil {
-        slog.Error("❌ Invalid JSON in subtract balance", "req_id", reqID, "error", err)
+        slog.Error("Invalid JSON in subtract balance", "req_id", reqID, "error", err)
         http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
         return
     }
@@ -296,18 +297,18 @@ func (h *ProfileHandler) SubtractBalance(w http.ResponseWriter, r *http.Request)
     resp, err := h.client.SubtractBalance(ctx, req)
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to subtract balance", "req_id", reqID, "amount", jsonReq.SubtractAmount, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to subtract balance", "req_id", reqID, "amount", jsonReq.SubtractAmount, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
 
-    slog.Info("✅ Balance subtracted successfully", "req_id", reqID, "amount", jsonReq.SubtractAmount, "new_balance-", req.SubAmount)
+    slog.Info("Balance subtracted successfully", "req_id", reqID, "amount", jsonReq.SubtractAmount, "new_balance-", req.SubAmount)
     pkg.JSONResponse(w, http.StatusOK, "Balance subtracted successfully", resp)
 }
 
 func (h *ProfileHandler) CreatePayment(w http.ResponseWriter, r *http.Request) {
     reqID := r.Header.Get("X-Request-ID")
-    slog.Info("📥 Create payment request", "req_id", reqID)
+    slog.Info("Create payment request", "req_id", reqID)
 
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
@@ -330,7 +331,7 @@ func (h *ProfileHandler) CreatePayment(w http.ResponseWriter, r *http.Request) {
     resp, err := h.client.CreatePayment(ctx, reqPayment)
     if err != nil{
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to create payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to create payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
@@ -342,11 +343,11 @@ func (h *ProfileHandler) CreatePayment(w http.ResponseWriter, r *http.Request) {
     _, err = h.client.AddBalance(ctx, reqAddBalance)
     if err != nil {
         st, _ := status.FromError(err)
-        slog.Error("❌ Failed to add balance after payment", "req_id", reqID, "amount", jsonReq.AmountRub, "error", st.Message(), "code", st.Code())
+        slog.Error("Failed to add balance after payment", "req_id", reqID, "amount", jsonReq.AmountRub, "error", st.Message(), "code", st.Code())
         http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
         return
     }
 
-    slog.Info("✅ Payment created successfully", "req_id", reqID)
+    slog.Info("Payment created successfully", "req_id", reqID)
     pkg.JSONResponse(w, http.StatusOK, "Payment created successfully", resp)
 }

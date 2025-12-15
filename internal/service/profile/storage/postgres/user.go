@@ -9,7 +9,7 @@ import (
 )
 
 const(
-    sqlTextForShowClient = "SELECT name, email, img_path, user_first_name, user_second_name, company, phone_number FROM client WHERE id = $1"
+    sqlTextForShowClient = "SELECT name, email, img_path, user_first_name, user_second_name, company, phone_number, created_at FROM client WHERE id = $1"
 	sqlTextForDeleteClient = "DELETE FROM client WHERE id = $1"
 )
 
@@ -99,8 +99,9 @@ func (r *DB) Update(ctx context.Context, client modeluser.User) error {
 
 func (r *DB) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error){
 	var ImagePath, UserFirstName, UserLastName, Company, Phone sql.NullString
+	var CreatedAt sql.NullTime
 	var client modeluser.User
-	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email, &ImagePath, &UserFirstName, &UserLastName, &Company, &Phone)
+	err := r.sql.QueryRowContext(ctx, sqlTextForShowClient, clientID).Scan(&client.UserName, &client.Email, &ImagePath, &UserFirstName, &UserLastName, &Company, &Phone, &CreatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
             return modeluser.User{}, fmt.Errorf("user with id %d not found", clientID)
@@ -113,6 +114,7 @@ func (r *DB) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, e
 	client.UserLastName = UserLastName.String
 	client.Company = Company.String
 	client.Phone = Phone.String
+	client.CreatedAt = CreatedAt.Time.String()
 
 	fmt.Println("Клиент ", client)
 	return client, nil
