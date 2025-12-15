@@ -89,6 +89,7 @@ func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*pr
 		Company:       user.Company,
 		Phone:         user.Phone,
 		AvatarPath:    user.ImagePath,
+		CreatedAt: user.CreatedAt,
 	}, nil
 }
 
@@ -211,7 +212,7 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 
 	clientID, err := h.profileUsecase.UpdatePaymentStatus(ctx, req.GetYookassaId(), modeluser.PaymentStatus(req.GetStatus()))
 	if err != nil {
-		slog.Error("❌ Failed to update payment status in DB",
+		slog.Error("Failed to update payment status in DB",
 			"yookassa_id", req.GetYookassaId(),
 			"status", req.GetStatus(),
 			"error", err,
@@ -219,14 +220,14 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 		return nil, status.Errorf(codes.Internal, "failed to update payment status: %v", err)
 	}
 
-	slog.Info("✅ Payment status updated, client identified",
+	slog.Info("Payment status updated, client identified",
 		"yookassa_id", req.GetYookassaId(),
 		"client_id", clientID.String(),
 	)
 
 	amount, err := strconv.ParseUint(req.GetAmount(), 10, 32)
 	if err != nil {
-		slog.Error("❌ Invalid amount format",
+		slog.Error("Invalid amount format",
 			"yookassa_id", req.GetYookassaId(),
 			"amount", req.GetAmount(),
 			"error", err,
@@ -234,7 +235,7 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 		return nil, status.Errorf(codes.InvalidArgument, "failed to convert amount: %v", err)
 	}
 
-	slog.Info("💰 Adding balance",
+	slog.Info("Adding balance",
 		"client_id", clientID.String(),
 		"add_amount_rub", amount,
 	)
@@ -252,7 +253,7 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 		}	
 	}
 
-	slog.Info("✅ UpdatePaymentStatus completed successfully",
+	slog.Info("UpdatePaymentStatus completed successfully",
 		"yookassa_id", req.GetYookassaId(),
 		"client_id", clientID.String(),
 		"amount_rub", amount,
