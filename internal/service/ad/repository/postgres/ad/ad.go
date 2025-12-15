@@ -29,7 +29,8 @@ const(
 	ORDER BY RANDOM()
 	LIMIT 1
 	)`
-	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1 WHERE ad_id = $2`
+	// sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1 WHERE ad_id = $2`
+	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1, start_at = $2, end_at = $3 WHERE ad_id = $4`
 	sqlTextForCountAds = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 )
 
@@ -149,6 +150,41 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 	return nil
 }
 
+// func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
+// 	tx, err := r.sql.BeginTx(ctx, nil)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to begin transaction: %w", err)
+// 	}
+// 	defer tx.Rollback()
+
+// 	_, err = tx.ExecContext(ctx,sqlTextForUpdateAds,
+// 		ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID,
+// 	)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to update ad: %w", err)
+// 	}
+
+// 	res, err := tx.ExecContext(ctx, sqlTextForUpdateAdDetail, ad.Status, ad.ID)
+// 	if err != nil {
+// 		return fmt.Errorf("failed to update ad_detail: %w", err)
+// 	}
+
+// 	rowsAffected, err := res.RowsAffected()
+// 	if err != nil {
+// 		return fmt.Errorf("failed to get rows affected: %w", err)
+// 	}
+// 	if rowsAffected == 0 {
+// 		return fmt.Errorf("ad_detail for ad_id %v not found", ad.ID)
+// 	}
+
+// 	err = tx.Commit()
+// 	if err != nil {
+// 		return fmt.Errorf("failed to commit transaction: %w", err)
+// 	}
+
+// 	return nil
+// }
+
 func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	tx, err := r.sql.BeginTx(ctx, nil)
 	if err != nil {
@@ -156,16 +192,11 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	}
 	defer tx.Rollback()
 
-	_, err = tx.ExecContext(ctx,sqlTextForUpdateAds,
+	res, err := tx.ExecContext(ctx, sqlTextForUpdateAds,
 		ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID,
 	)
 	if err != nil {
 		return fmt.Errorf("failed to update ad: %w", err)
-	}
-
-	res, err := tx.ExecContext(ctx, sqlTextForUpdateAdDetail, ad.Status, ad.ID)
-	if err != nil {
-		return fmt.Errorf("failed to update ad_detail: %w", err)
 	}
 
 	rowsAffected, err := res.RowsAffected()
@@ -173,16 +204,21 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 		return fmt.Errorf("failed to get rows affected: %w", err)
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("ad_detail for ad_id %v not found", ad.ID)
+		return fmt.Errorf("ad with id %v not found or access denied", ad.ID)
+	}
+	
+	_, err = tx.ExecContext(ctx, sqlTextForUpdateAdDetail, ad.Status, ad.StartAt, ad.EndAt, ad.ID)
+	if err != nil {
+		return fmt.Errorf("failed to update ad_detail: %w", err)
 	}
 
-	err = tx.Commit()
-	if err != nil {
+	if err := tx.Commit(); err != nil {
 		return fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
 	return nil
 }
+
 
 func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID) (modelfullad.DetailID, error){
 	var detail_id modelfullad.DetailID
