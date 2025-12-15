@@ -2,10 +2,12 @@ package slot
 
 import (
 	"2025_2_404/internal/delivery/grpc/interceptor"
+	user "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/internal/service/slot/domain/metric"
 	"2025_2_404/internal/service/slot/domain/slot"
 	adpb "2025_2_404/protos/gen/go/ad"
 	slotpb "2025_2_404/protos/gen/go/slot"
+	profilepb "2025_2_404/protos/gen/go/profile"
 	"context"
 	"log/slog"
 
@@ -23,7 +25,7 @@ type slotUsecaseI interface {
 }
 
 type metricUsecaseI interface{
-	CreateMetric(ctx context.Context, metric metric.Metric) error
+	CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,error)   //лучшее что я придумал добавить вывод из метрик юзера без транзакции
 	GetMetricForSlot(ctx context.Context, slotID metric.SlotID) (int, int, []metric.GetMetric, error)
 }
 
@@ -32,14 +34,16 @@ type slotService struct {
 	metricUsecase	metricUsecaseI	
 	slotpb.UnimplementedSlotServServer
 	clientAD adpb.AdServClient
+	clientProfile profilepb.ProfileClient
 	logger   *slog.Logger
 }
 
-func New(u slotUsecaseI, metricUsecase metricUsecaseI, clientAD adpb.AdServClient) *slotService {
+func New(u slotUsecaseI, metricUsecase metricUsecaseI, clientAD adpb.AdServClient, clientProfile profilepb.ProfileClient) *slotService {
 	return &slotService{
 		slotUsecase: u,
 		metricUsecase: metricUsecase,
 		clientAD: clientAD,
+		clientProfile: clientProfile,
 		logger:        slog.Default(),
 	}
 }
@@ -230,10 +234,19 @@ func (s *slotService) CreateMetric(ctx context.Context, req *slotpb.CreateMetric
 	}
 
 	s.logger.Debug("Creating metric", "metric", metric)
-	err = s.metricUsecase.CreateMetric(ctx, metric)
+	clientId, err := s.metricUsecase.CreateMetric(ctx, metric)
 	if err != nil {
 		s.logger.Error("Failed to store metric", "error", err)
 		return nil, status.Error(codes.Unknown, "metric not created")
+	}
+
+	_, err = s.clientProfile.AddBalance(ctx, &profilepb.AddBalanceRequest{
+		ClientId: clientId.String(),
+		AddAmount: 2,
+	})
+
+	if err != nil{
+		return &slotpb.CreateMetricResponse{}, status.Error(codes.Unknown, "balance not add")
 	}
 
 	s.logger.Info("Metric recorded successfully", "slot_id", slotID, "ad_detail_id", adDetailId, "event", req.GetEventType())

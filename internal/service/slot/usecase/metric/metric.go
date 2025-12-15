@@ -1,13 +1,14 @@
 package metric
 
 import (
+	user "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/internal/service/slot/domain/metric"
 	"context"
 	"fmt"
 )
 
 type metricRepositiryI interface{
-	CreateMetric(ctx context.Context, metric metric.Metric) error
+	CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,error)
 	GetMetricForDay(ctx context.Context, slotID metric.SlotID)  ([]metric.GetMetric, error)
 }
 
@@ -21,7 +22,7 @@ func New(repo metricRepositiryI) *MetricUsecase{
 	}
 }
 
-func (u *MetricUsecase) CreateMetric(ctx context.Context, metric metric.Metric) error{
+func (u *MetricUsecase) CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,error){
 	return u.repo.CreateMetric(ctx, metric)
 }
 

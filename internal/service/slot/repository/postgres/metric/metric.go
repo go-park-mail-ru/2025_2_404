@@ -1,6 +1,7 @@
 package postgres
 
 import (
+	user "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/internal/service/slot/domain/metric"
 	"context"
 	"database/sql"
@@ -12,6 +13,13 @@ const(
 		INSERT INTO slot_event (slot_id, ad_detail_id, event_type)
 		VALUES ($1, $2, $3)
 	`
+
+	sqlTextForGetClientID = `
+		SELECT user_id 
+		FROM slots 
+		WHERE id = $1
+	`
+
 	sqlTextForGetMetric = `
 		SELECT
 		slot_id,
@@ -37,12 +45,17 @@ func New(sql *sql.DB) *DB {
 	return &DB{sql: sql}
 }
 
-func (r *DB) CreateMetric(ctx context.Context, metric metric.Metric) error{
+func (r *DB) CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,error){
 	_, err := r.sql.ExecContext(ctx, sqlTextForCreateMetric, metric.SlotID, metric.AdDetailID, metric.EventType)
 	if err != nil{
-		return fmt.Errorf("failed to insert metric: %w", err)
+		return user.ID{}, fmt.Errorf("failed to insert metric: %w", err)
 	}
-	return nil
+	var id user.ID
+	err = r.sql.QueryRowContext(ctx, sqlTextForGetClientID, metric.SlotID).Scan(&id)
+	if err != nil {
+		return user.ID{}, fmt.Errorf("failed to select userID: %w", err)
+	}
+	return id, nil
 }
 
 func (r *DB) GetMetricForDay(ctx context.Context, slotID metric.SlotID)  ([]metric.GetMetric, error){
