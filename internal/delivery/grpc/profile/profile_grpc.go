@@ -165,6 +165,8 @@ func (h *ProfileServer) GetPaymentsByClientID(ctx context.Context, req *profile.
 			Amount:       uint32(payment.AmountRub),
 			Status:       string(payment.Status),
 			YooPaymentId: payment.YooPaymentID,
+			MethodPayment: payment.PaymentMethod,
+			CreatedAt: payment.CreatedTime,
 		}
 		pbPayments = append(pbPayments, pbPayment)
 	}
@@ -190,8 +192,6 @@ func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentC
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create payment: %v", err)
 	}
-
-	
 
 	return &profile.PaymentCreateResponse{
 		PaymentUrl: yooKassaLink,

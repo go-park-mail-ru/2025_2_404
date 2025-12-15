@@ -4,6 +4,7 @@ import (
 	modelpayment "2025_2_404/internal/service/profile/domain"
 	"context"
 	"fmt"
+	"time"
 )
 
 const (
@@ -18,9 +19,13 @@ const (
 		WHERE yoo_payment_id = $2`
 
 	sqlTextForGetPaymentByClientID = `
-		SELECT id, amount, status, payment_method
+		SELECT id, amount, status, payment_method, created_at
 		FROM wallet_top_up
-		WHERE client_wallet_id = $1`
+		WHERE client_wallet_id = (
+			SELECT id
+			FROM client_wallet
+			WHERE client_id = $1
+		)`
 )
 
 func (r *DB) CreatePayment(ctx context.Context, payment modelpayment.Payment) error {
@@ -53,18 +58,22 @@ func (r *DB) GetPaymentsByClientID(ctx context.Context, clientID modelpayment.ID
 	}
 	defer rows.Close()
 
+	var createdTime time.Time
+
 	var payments []modelpayment.Payment
 	for rows.Next() {
 		var p modelpayment.Payment
 		err := rows.Scan(
-			&p.ClientID,
+			&p.ID,
 			&p.AmountRub,
 			&p.Status,
 			&p.PaymentMethod,
+			&createdTime,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("failed to scan payment row: %w", err)
 		}
+		p.CreatedTime = createdTime.Format(time.RFC3339)
 		payments = append(payments, p)
 	}
 

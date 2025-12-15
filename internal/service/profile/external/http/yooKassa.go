@@ -30,7 +30,7 @@ func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(
 	paymentReq.Amount.Value = fmt.Sprintf("%d.00", payment.AmountRub)
 	paymentReq.Amount.Currency = "RUB"
 	paymentReq.Confirmation.Type = "redirect"
-	paymentReq.Confirmation.ReturnURL = "https://adnet.website/"
+	paymentReq.Confirmation.ReturnURL = "https://adnet.website/balance"
 	paymentReq.Description = "Оплата заказа"
 
 	body, _ := json.Marshal(paymentReq)

@@ -22,6 +22,8 @@ message Payment {
     uint32 amount = 2;
     string status = 3;
     string yoo_payment_id = 4;
+    string method_payment = 5;
+    string created_at = 6;
 }
 
 message UpdateRequest {

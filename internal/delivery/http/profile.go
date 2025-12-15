@@ -5,14 +5,17 @@ import (
 	"2025_2_404/pkg"
 	pkgfile "2025_2_404/pkg/readerFile"
 	"2025_2_404/pkg/utils"
+	pbAd "2025_2_404/protos/gen/go/ad"
 	pbProfile "2025_2_404/protos/gen/go/profile"
 	pbStorage "2025_2_404/protos/gen/go/storage"
 	"context"
 	"encoding/json"
+	"log"
 	"log/slog"
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
@@ -20,10 +23,11 @@ import (
 type ProfileHandler struct {
 	client pbProfile.ProfileClient
 	storageClient pbStorage.StorageClient
+    adClient pbAd.AdServClient
 }
 
-func NewProfileHandler(client pbProfile.ProfileClient, storageClient pbStorage.StorageClient) *ProfileHandler {
-	return &ProfileHandler{client: client, storageClient: storageClient}
+func NewProfileHandler(client pbProfile.ProfileClient, storageClient pbStorage.StorageClient, adClient pbAd.AdServClient) *ProfileHandler {
+	return &ProfileHandler{client: client, storageClient: storageClient, adClient: adClient}
 }
 
 func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
@@ -54,6 +58,16 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
         }
     }
 
+    var adsCount int64 = 0
+    adResp, err := h.adClient.GetAdCount(ctx, &pbAd.GetAdCountRequest{})
+
+    if err != nil {
+		log.Printf("Failed to get ad count, req_id: %v, error: %v", reqID, err)
+        http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	} else {
+		adsCount = adResp.Count
+	}
+
     slog.Info("✅ Profile shown successfully", "req_id", reqID, "user_name", resp.UserName)
     pkg.JSONResponse(w, http.StatusOK, "Profile retrieved successfully", map[string]interface{}{
         "user_name":    resp.UserName,
@@ -64,6 +78,7 @@ func (h *ProfileHandler) Show(w http.ResponseWriter, r *http.Request) {
         "phone":        resp.Phone,
         "profile_type": resp.ProfileType,
         "imageData":  resIMG,
+        "ads_count": adsCount,
     })
 }
 
@@ -187,8 +202,39 @@ func (h *ProfileHandler) ShowBalance(w http.ResponseWriter, r *http.Request) {
         return
     }
 
+    payments, err := h.client.GetPaymentsByClientID(ctx, &pbProfile.PaymentsByClientIDRequest{})
+    if err != nil {
+        st, _ := status.FromError(err)
+        slog.Error("❌ Failed to show history payment", "req_id", reqID, "error", st.Message(), "code", st.Code())
+        http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+        return
+    }
+
+    var paymentsResp []user.Payment
+
+    for _, payment := range payments.GetPayments(){
+        payId, err := uuid.Parse(payment.GetId())
+        if err != nil {
+            log.Printf("Ошибка: Взят неправильный uuid в истории платежей")
+            http.Error(w, "Invalid payment ID format", http.StatusBadRequest)
+            return
+        }
+        historyPayment := user.Payment{
+            ID: payId,
+            AmountRub: payment.GetAmount(),
+            PaymentMethod: payment.GetMethodPayment(),
+            Status: user.PaymentStatus(payment.Status),
+            YooPaymentID: payment.GetYooPaymentId(),
+            CreatedTime: payment.CreatedAt,
+        }
+        paymentsResp = append(paymentsResp, historyPayment)
+    }
+
     slog.Info("✅ Balance shown successfully", "req_id", reqID, "balance", resp.Balance)
-    pkg.JSONResponse(w, http.StatusOK, "Balance retrieved successfully", resp)
+    pkg.JSONResponse(w, http.StatusOK, "Balance retrieved successfully", &user.BalanceResponse{
+        Balance: int64(resp.GetBalance()),
+        Payments: paymentsResp,
+    })
 }
 
 func (h *ProfileHandler) AddBalance(w http.ResponseWriter, r *http.Request) {
