@@ -61,3 +61,8 @@ type YooKassaNotification struct {
 	Status string          `json:"status"`
 	Amount YooKassaAmount  `json:"amount"`
 }
+
+type YooKassaWebhook struct {
+	Event  string               `json:"event"`
+	Object YooKassaNotification `json:"object"`
+}

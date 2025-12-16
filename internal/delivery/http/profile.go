@@ -394,24 +394,24 @@ func (h *ProfileHandler) HandleYooKassaWebhook(w http.ResponseWriter, r *http.Re
     }
 
     // Логируем входящий webhook
-    slog.Info("Received YooKassa webhook", "ip", ip, "yookassa_id", "unknown", "status", "unknown")
+    slog.Info("Received YooKassa webhook", "ip", ip)
 
-    var notification user.YooKassaNotification
+    var notification user.YooKassaWebhook
     if err := json.NewDecoder(r.Body).Decode(&notification); err != nil {
         slog.Error("Failed to decode YooKassa webhook JSON", "ip", ip, "error", err)
         http.Error(w, "Invalid JSON", http.StatusBadRequest)
         return
     }
 
-    yookassaID := notification.ID
-    status := notification.Status
-    rublesStr := strings.Split(notification.Amount.Value, ".")[0]
+    yookassaID := notification.Object.ID
+    status := notification.Object.Status
+    rublesStr := strings.Split(notification.Object.Amount.Value, ".")[0]
 
     slog.Info("Parsed YooKassa webhook",
         "ip", ip,
         "yookassa_id", yookassaID,
         "status", status,
-        "amount", notification.Amount.Value,
+        "amount", rublesStr,
     )
 
     if status == "waiting_for_capture" {
