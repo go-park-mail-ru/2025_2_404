@@ -29,7 +29,7 @@ const (
 			SELECT id
 			FROM client_wallet
 			WHERE client_id = $1
-		)`
+		) AND status = 'succeeded'`
 )
 
 func (r *DB) CreatePayment(ctx context.Context, payment modelpayment.Payment) error {
