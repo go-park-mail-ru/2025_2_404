@@ -400,7 +400,7 @@ func (h *ProfileHandler) HandleYooKassaWebhook(w http.ResponseWriter, r *http.Re
 	var data map[string]interface{}
 	json.Unmarshal(body, &data)
 
-	log.Printf("📦 Webhook as map: %+v", data)
+	slog.Info("📦 Webhook as map: %+v", data)
     // Логируем входящий webhook
     slog.Info("Received YooKassa webhook", "ip", ip)
 
