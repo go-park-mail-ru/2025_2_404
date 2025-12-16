@@ -4,6 +4,7 @@ import (
 	"2025_2_404/internal/service/profile/domain"
 	"2025_2_404/pkg"
 	pkgfile "2025_2_404/pkg/readerFile"
+	"io"
 	"strings"
 
 	// pkgyookassa "2025_2_404/pkg/ReadYooKassaIP"
@@ -393,6 +394,13 @@ func (h *ProfileHandler) HandleYooKassaWebhook(w http.ResponseWriter, r *http.Re
         ip = r.RemoteAddr
     }
 
+    body, _ := io.ReadAll(r.Body)
+	defer r.Body.Close()
+
+	var data map[string]interface{}
+	json.Unmarshal(body, &data)
+
+	log.Printf("📦 Webhook as map: %+v", data)
     // Логируем входящий webhook
     slog.Info("Received YooKassa webhook", "ip", ip)
 
