@@ -394,15 +394,15 @@ func (h *ProfileHandler) HandleYooKassaWebhook(w http.ResponseWriter, r *http.Re
         ip = r.RemoteAddr
     }
 
-    body, _ := io.ReadAll(r.Body)
-	defer r.Body.Close()
+    body, err := io.ReadAll(r.Body)
+    if err != nil {
+        slog.Error("Failed to read request body", "ip", ip, "error", err)
+        http.Error(w, "Bad Request", http.StatusBadRequest)
+        return
+    }
+    defer r.Body.Close()
 
-	var data map[string]interface{}
-	json.Unmarshal(body, &data)
-
-	slog.Info("📦 Webhook as map: %+v", data)
-    // Логируем входящий webhook
-    slog.Info("Received YooKassa webhook", "ip", ip)
+    slog.Info("📥 Raw webhook body", "ip", ip, "body", string(body))
 
     var notification user.YooKassaWebhook
     if err := json.NewDecoder(r.Body).Decode(&notification); err != nil {
@@ -431,7 +431,7 @@ func (h *ProfileHandler) HandleYooKassaWebhook(w http.ResponseWriter, r *http.Re
     ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancel()
 
-    _, err := h.client.UpdatePaymentStatus(ctx, &pbProfile.PaymentStatusRequest{
+    _, err = h.client.UpdatePaymentStatus(ctx, &pbProfile.PaymentStatusRequest{
         YookassaId: yookassaID,
         Status:     status,
         Amount:     rublesStr,
