@@ -169,6 +169,12 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	
+	if auth := r.Header.Get("Authorization"); auth != "" {
+		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
+	}
 	if err := parseMultipartForm(r); err != nil {
 		http.Error(w, `{"error":"invalid form"}`, http.StatusBadRequest)
 		return
@@ -185,18 +191,19 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fileBytes, newImageFilename, err := pkgfile.ExtractImage(r, "ad/", "image")
-	if err != nil {
-		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
-		return
+
+	var fileBytes []byte
+	var newImageFilename string 
+	var err error
+
+	if r.FormValue("image") != ""{
+		fileBytes, newImageFilename, err = pkgfile.ExtractImage(r, "ad/", "image")
+		if err != nil {
+			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+			return
+		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	if auth := r.Header.Get("Authorization"); auth != "" {
-		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
-	}
 
 	// ———— ШАГ 2: Загружаем изображение (если есть) ————
 	if len(fileBytes) > 0 {

@@ -34,6 +34,7 @@ const(
 	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1, start_at = $2, end_at = $3 WHERE ad_id = $4`
 	sqlTextForCountAds = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 	sqlTextForUpdateStatistic = "UPDATE statistic SET clicks = statistic.clicks + $1, impressions = statistic.impressions + $2 WHERE ad_detail_id = $3"
+	sqlTextForGetPathImage = "SELECT img_path FROM ad WHERE id = $1"
 )
 
 type DB struct {
@@ -194,7 +195,12 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback()
-
+	if ad.ImagePath == ""{
+		err := tx.QueryRowContext(ctx, sqlTextForGetPathImage, ad.ID).Scan(&ad.ImagePath)
+		if err != nil{
+			return fmt.Errorf("failed to select image for ad: %w", err)
+		}
+	}
 	res, err := tx.ExecContext(ctx, sqlTextForUpdateAds,
 		ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID,
 	)
