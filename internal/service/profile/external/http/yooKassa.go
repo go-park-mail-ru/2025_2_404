@@ -32,6 +32,7 @@ func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(
 	paymentReq.Confirmation.Type = "redirect"
 	paymentReq.Confirmation.ReturnURL = "https://adnet.website/balance"
 	paymentReq.Description = "Оплата заказа"
+	paymentReq.Capture = true
 
 	body, _ := json.Marshal(paymentReq)
 

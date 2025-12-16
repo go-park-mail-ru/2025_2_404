@@ -32,6 +32,7 @@ type PaymentRequest struct {
 		ReturnURL string `json:"return_url"`
 	} `json:"confirmation"`
 	Description string                 `json:"description"`
+	Capture bool	`json:"capture"`
 	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 }
 
