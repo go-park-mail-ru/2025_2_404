@@ -168,6 +168,8 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 		Status: adFull.Status,
 		StartAt: adFull.StartAt.Format(time.RFC3339),
     	EndAt:   adFull.EndAt.Format(time.RFC3339),
+		Clicks: int64(adFull.Clicks),
+		Impressions: int64(adFull.Impressions),
 	}
 
 	return &adv1.GetAdResponse{Ad: ad}, nil

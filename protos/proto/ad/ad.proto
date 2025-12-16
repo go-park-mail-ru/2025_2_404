@@ -29,6 +29,8 @@ message Ad {
     string status = 10;
     string start_at = 11;
     string end_at = 12;
+    int64 clicks = 13;
+    int64 impressions = 14;
 }
 
 message AdSlot  {

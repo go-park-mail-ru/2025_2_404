@@ -35,6 +35,8 @@ type Ad struct {
 	Status        string                 `protobuf:"bytes,10,opt,name=status,proto3" json:"status,omitempty"`
 	StartAt       string                 `protobuf:"bytes,11,opt,name=start_at,json=startAt,proto3" json:"start_at,omitempty"`
 	EndAt         string                 `protobuf:"bytes,12,opt,name=end_at,json=endAt,proto3" json:"end_at,omitempty"`
+	Clicks        int64                  `protobuf:"varint,13,opt,name=clicks,proto3" json:"clicks,omitempty"`
+	Impressions   int64                  `protobuf:"varint,14,opt,name=impressions,proto3" json:"impressions,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -151,6 +153,20 @@ func (x *Ad) GetEndAt() string {
 		return x.EndAt
 	}
 	return ""
+}
+
+func (x *Ad) GetClicks() int64 {
+	if x != nil {
+		return x.Clicks
+	}
+	return 0
+}
+
+func (x *Ad) GetImpressions() int64 {
+	if x != nil {
+		return x.Impressions
+	}
+	return 0
 }
 
 type AdSlot struct {
@@ -1017,7 +1033,7 @@ var File_ad_ad_proto protoreflect.FileDescriptor
 
 const file_ad_ad_proto_rawDesc = "" +
 	"\n" +
-	"\vad/ad.proto\x12\x02ad\"\xb6\x02\n" +
+	"\vad/ad.proto\x12\x02ad\"\xf0\x02\n" +
 	"\x02Ad\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\bclientID\x18\x02 \x01(\tR\bclientID\x12\x14\n" +
@@ -1031,7 +1047,9 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\x06status\x18\n" +
 	" \x01(\tR\x06status\x12\x19\n" +
 	"\bstart_at\x18\v \x01(\tR\astartAt\x12\x15\n" +
-	"\x06end_at\x18\f \x01(\tR\x05endAt\"\x81\x01\n" +
+	"\x06end_at\x18\f \x01(\tR\x05endAt\x12\x16\n" +
+	"\x06clicks\x18\r \x01(\x03R\x06clicks\x12 \n" +
+	"\vimpressions\x18\x0e \x01(\x03R\vimpressions\"\x81\x01\n" +
 	"\x06AdSlot\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12 \n" +
 	"\vdescription\x18\x02 \x01(\tR\vdescription\x12\x1b\n" +

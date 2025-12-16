@@ -1,6 +1,7 @@
 package http
 
 import (
+	adfullinfo "2025_2_404/internal/service/ad/domain/ad_full_info"
 	"2025_2_404/pkg"
 	"context"
 	"log"
@@ -9,14 +10,16 @@ import (
 	"time"
 
 	pkgfile "2025_2_404/pkg/readerFile"
+
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
 	"2025_2_404/pkg/utils"
 	pbAd "2025_2_404/protos/gen/go/ad"
-	pbStorage "2025_2_404/protos/gen/go/storage"
 	pbProfile "2025_2_404/protos/gen/go/profile"
+	pbStorage "2025_2_404/protos/gen/go/storage"
 )
 
 type AdHandler struct {
@@ -136,7 +139,7 @@ func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
-	resp, err := h.client.GetAd(ctx, &pbAd.GetAdRequest{Id: id})
+	adProto, err := h.client.GetAd(ctx, &pbAd.GetAdRequest{Id: id})
 	if err != nil {
 		st, _ := status.FromError(err)
 		code := utils.HTTPStatusFromCode(st.Code())
@@ -148,7 +151,36 @@ func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	imgPath := resp.Ad.ImgPath
+	adID, err := uuid.Parse(adProto.Ad.GetId())
+	if err != nil {
+		// обработка ошибки
+	}
+
+	startAt, err := time.Parse(time.RFC3339, adProto.Ad.GetStartAt())
+	if err != nil {
+		
+	}
+
+	endAt, err := time.Parse(time.RFC3339, adProto.Ad.GetEndAt())
+	if err != nil {
+		// обработка ошибки
+	}
+
+	adFullResp := adfullinfo.AdFullInfo{
+		ID:              adID,
+		Title:           adProto.Ad.GetId(),
+		Content:         adProto.Ad.GetContent(),
+		ImgPath:         adProto.Ad.GetImgPath(),
+		TargetUrl:       adProto.Ad.GetTargeturl(),
+		Budget:          adProto.Ad.GetBudget(),
+		Status:          adProto.Ad.GetStatus(),
+		StartAt:         startAt,
+		EndAt:           endAt,
+		Clicks:          int(adProto.Ad.GetClicks()),
+		Impressions:     int(adProto.Ad.GetImpressions()),       
+	}
+
+	imgPath := adProto.Ad.ImgPath
 	var resIMG *pbStorage.GetResponse
 	if imgPath != "" {
 		resIMG, err = h.storageClient.Get(ctx, &pbStorage.GetRequest{
@@ -160,7 +192,7 @@ func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pkg.JSONResponse(w, http.StatusOK, "Ad retrieved successfully", map[string]interface{}{
-		"ad":        resp.Ad,
+		"ad":        adFullResp,
 		"imageData": resIMG,
 	})
 }

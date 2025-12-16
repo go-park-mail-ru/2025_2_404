@@ -228,11 +228,28 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	return nil
 }
 
-func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error){
+func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error) {
+	tx, err := r.sql.BeginTx(ctx, nil)
+	if err != nil {
+		return modelfullad.DetailID{}, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			_ = tx.Rollback()
+		} else {
+			_ = tx.Commit()
+		}
+	}()
+
 	var detail_id modelfullad.DetailID
-	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detail_id)
-	if err != nil{
-		return modelfullad.DetailID{}, fmt.Errorf("not found ad_detail_id")
+	err = tx.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detail_id)
+	if err != nil {
+		return modelfullad.DetailID{}, fmt.Errorf("failed to get ad_detail_id: %w", err)
+	}
+
+	_, err = tx.ExecContext(ctx, sqlTextForUpdateStatistic, click, impression, detail_id)
+	if err != nil {
+		return modelfullad.DetailID{}, fmt.Errorf("failed to update statistic: %w", err)
 	}
 
 	return detail_id, nil

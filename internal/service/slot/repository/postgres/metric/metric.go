@@ -22,18 +22,17 @@ const(
 
 	sqlTextForGetMetric = `
 		SELECT
-		slot_id,
-		DATE(created_at) AS event_date,
-		COUNT(*) FILTER (WHERE event_type = 'impression') AS impressions,
-		COUNT(*) FILTER (WHERE event_type = 'click') AS clicks
-	FROM
-		slot_event
-	GROUP BY
-		slot_id,
-		DATE(created_at)
-	ORDER BY
-		slot_id,
-		event_date;
+			DATE(created_at) AS event_date,
+			COUNT(*) FILTER (WHERE event_type = 'impression') AS impressions,
+			COUNT(*) FILTER (WHERE event_type = 'click') AS clicks
+		FROM
+			slot_event
+		WHERE
+			slot_id = $1
+		GROUP BY
+			DATE(created_at)
+		ORDER BY
+			event_date
 	`
 )
 
@@ -61,7 +60,7 @@ func (r *DB) CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,e
 func (r *DB) GetMetricForDay(ctx context.Context, slotID metric.SlotID)  ([]metric.GetMetric, error){
 	
 	var metrics []metric.GetMetric
-	rows, err := r.sql.QueryContext(ctx, sqlTextForGetMetric)
+	rows, err := r.sql.QueryContext(ctx, sqlTextForGetMetric, slotID)
 	if err != nil{
 		return nil, fmt.Errorf("failed to select metric: %w", err)
 	}
@@ -69,7 +68,7 @@ func (r *DB) GetMetricForDay(ctx context.Context, slotID metric.SlotID)  ([]metr
 
 	for rows.Next(){
 		var metric metric.GetMetric
-		if err := rows.Scan(&metric.SlotID, &metric.EventDate, &metric.Impressions, &metric.Clicks); err != nil {
+		if err := rows.Scan(&metric.EventDate, &metric.Impressions, &metric.Clicks); err != nil {
 			return nil, fmt.Errorf("failed to read rows: %w", err)
 		}
 		metrics = append(metrics, metric)

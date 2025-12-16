@@ -39,3 +39,8 @@ CREATE TRIGGER trigger_create_wallet_after_client_insert
     AFTER INSERT ON client
     FOR EACH ROW
     EXECUTE FUNCTION create_wallet_for_new_client();
+
+CREATE TRIGGER trigger_create_statistic
+    AFTER INSERT ON ad_detail
+    FOR EACH ROW
+    EXECUTE FUNCTION create_statistic_for_ad_detail();
