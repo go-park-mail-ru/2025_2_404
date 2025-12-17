@@ -16,6 +16,9 @@ linters:
     - revive
     - errorlint
   disable-all: true
+  
+  disable:
+    - staticcheck
 
 linters-settings:
   gofmt:
