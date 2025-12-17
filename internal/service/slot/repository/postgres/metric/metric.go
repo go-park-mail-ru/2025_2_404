@@ -3,9 +3,12 @@ package postgres
 import (
 	user "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/internal/service/slot/domain/metric"
+	"2025_2_404/pkg/globalerrors"
 	"context"
 	"database/sql"
-	"fmt"
+	"errors"
+
+	"github.com/jackc/pgconn"
 )
 
 const(
@@ -44,34 +47,58 @@ func New(sql *sql.DB) *DB {
 	return &DB{sql: sql}
 }
 
-func (r *DB) CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,error){
-	_, err := r.sql.ExecContext(ctx, sqlTextForCreateMetric, metric.SlotID, metric.AdDetailID, metric.EventType)
-	if err != nil{
-		return user.ID{}, fmt.Errorf("failed to insert metric: %w", err)
-	}
-	var id user.ID
-	err = r.sql.QueryRowContext(ctx, sqlTextForGetClientID, metric.SlotID).Scan(&id)
+func (r *DB) CreateMetric(ctx context.Context, m metric.Metric) (user.ID, error) {
+	_, err := r.sql.ExecContext(ctx, sqlTextForCreateMetric, m.SlotID, m.AdDetailID, m.EventType)
 	if err != nil {
-		return user.ID{}, fmt.Errorf("failed to select userID: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23503": // foreign_key_violation (slot_id или ad_detail_id не существуют)
+				return user.ID{}, globalerrors.ErrSlotNotFound
+			case "23514": // check_violation (event_type не 'click'/'impression')
+				return user.ID{}, globalerrors.ErrInvalidQuery
+			}
+		}
+		return user.ID{}, globalerrors.ErrInternal
 	}
-	return id, nil
+
+	var userID user.ID
+	err = r.sql.QueryRowContext(ctx, sqlTextForGetClientID, m.SlotID).Scan(&userID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return user.ID{}, globalerrors.ErrSlotNotFound
+		}
+		return user.ID{}, globalerrors.ErrInternal
+	}
+
+	return userID, nil
 }
 
-func (r *DB) GetMetricForDay(ctx context.Context, slotID metric.SlotID)  ([]metric.GetMetric, error){
-	
-	var metrics []metric.GetMetric
+func (r *DB) GetMetricForDay(ctx context.Context, slotID metric.SlotID) ([]metric.GetMetric, error) {
 	rows, err := r.sql.QueryContext(ctx, sqlTextForGetMetric, slotID)
-	if err != nil{
-		return nil, fmt.Errorf("failed to select metric: %w", err)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			// Например, неверный UUID
+			if pgErr.Code == "22P02" { // invalid_text_representation
+				return nil, globalerrors.ErrInvalidQuery
+			}
+		}
+		return nil, globalerrors.ErrInternal
 	}
 	defer rows.Close()
 
-	for rows.Next(){
-		var metric metric.GetMetric
-		if err := rows.Scan(&metric.EventDate, &metric.Impressions, &metric.Clicks); err != nil {
-			return nil, fmt.Errorf("failed to read rows: %w", err)
+	var metrics []metric.GetMetric
+	for rows.Next() {
+		var m metric.GetMetric
+		if err := rows.Scan(&m.EventDate, &m.Impressions, &m.Clicks); err != nil {
+			return nil, globalerrors.ErrInternal
 		}
-		metrics = append(metrics, metric)
+		metrics = append(metrics, m)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, globalerrors.ErrInternal
 	}
 
 	return metrics, nil

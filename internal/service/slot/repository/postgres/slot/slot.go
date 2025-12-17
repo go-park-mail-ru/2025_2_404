@@ -1,11 +1,14 @@
 package postgres
 
 import (
-	"database/sql"
-	"context"
-	"fmt"
-	"github.com/google/uuid"
 	"2025_2_404/internal/service/slot/domain/slot"
+	"2025_2_404/pkg/globalerrors"
+	"context"
+	"database/sql"
+	"errors"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgconn"
 )
 
 const (
@@ -52,9 +55,10 @@ func New(sql *sql.DB) *DB {
 func (r *DB) Create(ctx context.Context, s slot.Slot) (slot.ID, error) {
 	userID, err := uuid.Parse(string(s.UserID))
 	if err != nil {
-		return "",fmt.Errorf("invalid user ID: %w", err)
+		return "", globalerrors.ErrInvalidQuery
 	}
 
+	var newID uuid.UUID
 	err = r.sql.QueryRowContext(
 		ctx,
 		sqlTextForInsertSlot,
@@ -65,28 +69,38 @@ func (r *DB) Create(ctx context.Context, s slot.Slot) (slot.ID, error) {
 		s.Status,
 		s.BackColor,
 		s.TextColor,
-	).Scan(&s.ID)
-	
+	).Scan(&newID)
+
 	if err != nil {
-		return "", fmt.Errorf("failed to insert slot: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23503": // foreign_key_violation (несуществующий user_id)
+				return "", globalerrors.ErrInvalidQuery
+			case "23514": // check_violation (неверный format_of_banner, цвет и т.д.)
+				return "", globalerrors.ErrInvalidQuery
+			case "23505": // unique_violation (маловероятно, но возможно)
+				return "", globalerrors.ErrInternal
+			}
+		}
+		return "", globalerrors.ErrInternal
 	}
 
-	return s.ID, nil
+	return slot.ID(newID.String()), nil
 }
 
 func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
-	var s slot.Slot
 	idUUID, err := uuid.Parse(string(id))
 	if err != nil {
-		return slot.Slot{}, fmt.Errorf("invalid slot id: %w", err)
+		return slot.Slot{}, globalerrors.ErrInvalidQuery
 	}
+
+	var s slot.Slot
+	var idUuid, userUuid uuid.UUID
 	row := r.sql.QueryRowContext(ctx, sqlTextForSelectSlotByID, idUUID)
-	var idUuid, userUuid uuid.UUID 
 	err = row.Scan(
 		&idUuid,
 		&userUuid,
-		// &s.ID,
-		// &s.UserID,q
 		&s.SlotName,
 		&s.MinCostAdv,
 		&s.FormatOfBanner,
@@ -94,25 +108,27 @@ func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
 		&s.BackColor,
 		&s.TextColor,
 	)
-
 	if err != nil {
-		return slot.Slot{}, fmt.Errorf("failed to get slot by ID: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return slot.Slot{}, globalerrors.ErrSlotNotFound
+		}
+		return slot.Slot{}, globalerrors.ErrInternal
 	}
 
 	s.ID = slot.ID(idUuid.String())
 	s.UserID = slot.UserID(userUuid.String())
-
 	return s, nil
 }
 
 func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error) {
 	userUUID, err := uuid.Parse(string(userID))
 	if err != nil {
-		return nil, fmt.Errorf("invalid user id: %w", err)
+		return nil, globalerrors.ErrInvalidQuery
 	}
+
 	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectSlots, userUUID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query slots: %w", err)
+		return nil, globalerrors.ErrInternal
 	}
 	defer rows.Close()
 
@@ -120,20 +136,17 @@ func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot,
 	for rows.Next() {
 		var s slot.Slot
 		var idUuid, userUuid uuid.UUID
-		err := rows.Scan(
-			// &s.ID,
-			&idUuid,    
+		if err := rows.Scan(
+			&idUuid,
 			&userUuid,
-			// &s.UserID,
 			&s.SlotName,
 			&s.MinCostAdv,
 			&s.FormatOfBanner,
 			&s.Status,
 			&s.BackColor,
 			&s.TextColor,
-		)
-		if err != nil {
-			return nil, fmt.Errorf("failed to scan slot: %w", err)
+		); err != nil {
+			return nil, globalerrors.ErrInternal
 		}
 		s.ID = slot.ID(idUuid.String())
 		s.UserID = slot.UserID(userUuid.String())
@@ -141,7 +154,7 @@ func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot,
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("rows iteration error: %w", err)
+		return nil, globalerrors.ErrInternal
 	}
 
 	return slots, nil
@@ -150,12 +163,12 @@ func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot,
 func (r *DB) Update(ctx context.Context, s slot.Slot) error {
 	id, err := uuid.Parse(string(s.ID))
 	if err != nil {
-		return fmt.Errorf("invalid slot ID: %w", err)
+		return globalerrors.ErrInvalidQuery
 	}
 
 	userID, err := uuid.Parse(string(s.UserID))
 	if err != nil {
-		return fmt.Errorf("invalid user ID: %w", err)
+		return globalerrors.ErrInvalidQuery
 	}
 
 	res, err := r.sql.ExecContext(
@@ -171,15 +184,22 @@ func (r *DB) Update(ctx context.Context, s slot.Slot) error {
 		userID,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to update slot: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23514": // check_violation
+				return globalerrors.ErrInvalidQuery
+			}
+		}
+		return globalerrors.ErrInternal
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("failed to get rows affected: %w", err)
+		return globalerrors.ErrInternal
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("slot with ID %s and user ID %s not found", s.ID, s.UserID)
+		return globalerrors.ErrAccessDenied // слот не найден ИЛИ нет прав
 	}
 
 	return nil
@@ -188,25 +208,25 @@ func (r *DB) Update(ctx context.Context, s slot.Slot) error {
 func (r *DB) Delete(ctx context.Context, id slot.ID, userID slot.UserID) error {
 	idUUID, err := uuid.Parse(string(id))
 	if err != nil {
-		return fmt.Errorf("invalid slot ID: %w", err)
+		return globalerrors.ErrInvalidQuery
 	}
 
 	userIDUUID, err := uuid.Parse(string(userID))
 	if err != nil {
-		return fmt.Errorf("invalid user ID: %w", err)
+		return globalerrors.ErrInvalidQuery
 	}
 
 	res, err := r.sql.ExecContext(ctx, sqlTextForDeleteSlot, idUUID, userIDUUID)
 	if err != nil {
-		return fmt.Errorf("failed to delete slot: %w", err)
+		return globalerrors.ErrInternal
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("failed to get rows affected: %w", err)
+		return globalerrors.ErrInternal
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("slot with ID %s not found", id)
+		return globalerrors.ErrAccessDenied
 	}
 
 	return nil

@@ -4,7 +4,6 @@ import (
 	user "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/internal/service/slot/domain/metric"
 	"context"
-	"fmt"
 )
 
 type metricRepositiryI interface{
@@ -22,23 +21,22 @@ func New(repo metricRepositiryI) *MetricUsecase{
 	}
 }
 
-func (u *MetricUsecase) CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,error){
+func (u *MetricUsecase) CreateMetric(ctx context.Context, metric metric.Metric) (user.ID, error) {
 	return u.repo.CreateMetric(ctx, metric)
 }
 
-func (u *MetricUsecase) GetMetricForSlot(ctx context.Context, slotID metric.SlotID) (int, int, []metric.GetMetric, error){
-
+func (u *MetricUsecase) GetMetricForSlot(ctx context.Context, slotID metric.SlotID) (int, int, []metric.GetMetric, error) {
 	metrics, err := u.repo.GetMetricForDay(ctx, slotID)
-	if err != nil{
-		return 0, 0, nil, fmt.Errorf("failed work with sql:%w", err)
+	if err != nil {
+		return 0, 0, nil, err
 	}
 
-	total_clicks := 0
-	total_impressions := 0
-	for i := 0; i < len(metrics); i ++{
-		total_clicks = total_clicks + metrics[i].Clicks
-		total_impressions = total_impressions + metrics[i].Impressions
+	totalClicks := 0
+	totalImpressions := 0
+	for _, m := range metrics {
+		totalClicks += m.Clicks
+		totalImpressions += m.Impressions
 	}
-	
-	return  total_clicks, total_impressions, metrics, nil
+
+	return totalClicks, totalImpressions, metrics, nil
 }

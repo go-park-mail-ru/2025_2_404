@@ -5,9 +5,10 @@ import (
 	user "2025_2_404/internal/service/profile/domain"
 	"2025_2_404/internal/service/slot/domain/metric"
 	"2025_2_404/internal/service/slot/domain/slot"
+	"2025_2_404/pkg/utils"
 	adpb "2025_2_404/protos/gen/go/ad"
-	slotpb "2025_2_404/protos/gen/go/slot"
 	profilepb "2025_2_404/protos/gen/go/profile"
+	slotpb "2025_2_404/protos/gen/go/slot"
 	"context"
 	"log/slog"
 
@@ -73,7 +74,7 @@ func (s *slotService) CreateSlot(ctx context.Context, req *slotpb.CreateSlotRequ
 	slotID, err := s.slotUsecase.Create(ctx, domainSlot)
 	if err != nil {
 		s.logger.Error("Failed to create slot", "error", err)
-		return nil, status.Errorf(codes.Internal, "create slot: %v", err)
+		return nil, utils.ToGRPCError(err)
 	}
 
 	s.logger.Info("Slot created successfully", "slot_id", slotID)
@@ -88,7 +89,7 @@ func (s *slotService) GetSlot(ctx context.Context, req *slotpb.GetSlotRequest) (
 	slotDomain, err := s.slotUsecase.GetByID(ctx, slot.ID(id))
 	if err != nil {
 		s.logger.Warn("Slot not found", "slot_id", id, "error", err)
-		return nil, status.Errorf(codes.NotFound, "slot not found: %v", err)
+		return nil, utils.ToGRPCError(err)
 	}
 
 	adSlot, err := s.clientAD.GetAdSlot(ctx, &adpb.GetAdSlotRequest{
@@ -97,7 +98,7 @@ func (s *slotService) GetSlot(ctx context.Context, req *slotpb.GetSlotRequest) (
 	})
 	if err != nil{
 		s.logger.Warn("Bad request in adservice", "error", err)
-		return nil, status.Errorf(codes.NotFound, "Bad request in adservice: %v", err)
+		return nil, utils.ToGRPCError(err)
 	}
 
 	s.logger.Debug("Fetched slot data", "slot", slotDomain, "adSlot", adSlot)
@@ -134,7 +135,7 @@ func (s *slotService) ListSlots(ctx context.Context, req *slotpb.ListSlotsReques
 
 	slots, err := s.slotUsecase.ListByUserID(ctx, slot.UserID(userID.String()))
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "list slots: %v", err)
+		return nil, utils.ToGRPCError(err)
 	}
 
 	var grpcSlots []*slotpb.Slot
@@ -173,7 +174,7 @@ func (s *slotService) UpdateSlot(ctx context.Context, req *slotpb.UpdateSlotRequ
 	}
 
 	if err := s.slotUsecase.Update(ctx, domainSlot); err != nil {
-		return nil, status.Errorf(codes.Internal, "update slot: %v", err)
+		return nil, utils.ToGRPCError(err)
 	}
 
 	return &slotpb.UpdateSlotResponse{}, nil
@@ -182,13 +183,13 @@ func (s *slotService) UpdateSlot(ctx context.Context, req *slotpb.UpdateSlotRequ
 func (s *slotService) DeleteSlot(ctx context.Context, req *slotpb.DeleteSlotRequest) (*slotpb.DeleteSlotResponse, error) {
 	userID, err := interceptor.GetUserID(ctx)
 	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	id := req.GetId()
 
 	if err := s.slotUsecase.Delete(ctx, slot.ID(id), slot.UserID(userID.String())); err != nil {
-		return nil, status.Errorf(codes.Internal, "delete slot")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	return &slotpb.DeleteSlotResponse{}, nil
@@ -200,13 +201,13 @@ func (s *slotService) CreateMetric(ctx context.Context, req *slotpb.CreateMetric
 	slotID, err := uuid.Parse(req.SlotId)
 	if err != nil {
 		s.logger.Warn("Invalid slot_id in CreateMetric", "slot_id", req.SlotId, "error", err)
-		return nil, status.Error(codes.InvalidArgument, "bad slot id")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	adId, err := uuid.Parse(req.AdId)
 	if err != nil {
 		s.logger.Warn("Invalid ad_id in CreateMetric", "ad_id", req.AdId, "error", err)
-		return nil, status.Error(codes.InvalidArgument, "bad ad id")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	// Запрос в ad-service
@@ -218,7 +219,7 @@ func (s *slotService) CreateMetric(ctx context.Context, req *slotpb.CreateMetric
 	resAd, err := s.clientAD.GetAdDetailForSlot(ctx, reqAd)
 	if err != nil {
 		s.logger.Error("ad-service.GetAdDetailForSlot failed", "error", err)
-		return nil, status.Error(codes.Internal, "failed to get ad detail from ad-service")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	adDetailId, err := uuid.Parse(resAd.GetAdDetailId())
@@ -237,7 +238,7 @@ func (s *slotService) CreateMetric(ctx context.Context, req *slotpb.CreateMetric
 	clientId, err := s.metricUsecase.CreateMetric(ctx, metric)
 	if err != nil {
 		s.logger.Error("Failed to store metric", "error", err)
-		return nil, status.Error(codes.Unknown, "metric not created")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	_, err = s.clientProfile.AddBalance(ctx, &profilepb.AddBalanceRequest{
@@ -246,7 +247,7 @@ func (s *slotService) CreateMetric(ctx context.Context, req *slotpb.CreateMetric
 	})
 
 	if err != nil{
-		return &slotpb.CreateMetricResponse{}, status.Error(codes.Unknown, "balance not add")
+		return &slotpb.CreateMetricResponse{}, utils.ToGRPCError(err)
 	}
 
 	s.logger.Info("Metric recorded successfully", "slot_id", slotID, "ad_detail_id", adDetailId, "event", req.GetEventType())
@@ -265,7 +266,7 @@ func (s *slotService) GetMetrics(ctx context.Context, req *slotpb.GetMetricsRequ
 	total_clicks, total_impressions, metrics, err := s.metricUsecase.GetMetricForSlot(ctx, metric.SlotID(slotID))
 	if err != nil {
 		s.logger.Error("Failed to get metric", "error", err)
-		return nil, status.Error(codes.Internal, "in repository problem")
+		return nil, utils.ToGRPCError(err)
 	}
 
 	var grpcMetrics []*slotpb.MetricsForDay

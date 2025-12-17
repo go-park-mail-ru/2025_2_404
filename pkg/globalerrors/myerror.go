@@ -35,4 +35,5 @@ var (
 	ErrFileRead       		 = errors.New("failed to read file")
 	ErrFileDelete     		 = errors.New("failed to delete file")
 	ErrInvalidPath    		 = errors.New("invalid file path")
+	ErrSlotNotFound      = errors.New("slot not found")
 )
