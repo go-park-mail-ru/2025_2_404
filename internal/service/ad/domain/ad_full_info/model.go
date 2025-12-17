@@ -22,6 +22,7 @@ type AdFullInfo struct {
 
 	StartAt time.Time `json:"start_at"`
     EndAt   time.Time `json:"end_at"`
+	CreatedAt time.Time  `json:"created_at"`
 
 	Clicks      int `json:"clicks"`	
 	Impressions int `json:"impressions"`

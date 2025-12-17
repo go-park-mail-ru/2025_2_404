@@ -84,15 +84,9 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 	for _, a := range adsFull {
 		grpcAds = append(grpcAds, &adv1.Ad{
 			Id:        uuid.UUID(a.ID).String(),
-			ClientID:  clientID.String(),
 			Title:     a.Title,
-			Content:   a.Content,
-			Targeturl: a.TargetUrl,
-			ImgPath:   a.ImgPath,
-			Budget:    a.Budget,
 			Status:    a.Status,
-			StartAt:   a.StartAt.Format(time.RFC3339),
-			EndAt:     a.EndAt.Format(time.RFC3339),
+			CreatedAt:   a.CreatedAt.Format(time.RFC3339),
 		})
 	}
 

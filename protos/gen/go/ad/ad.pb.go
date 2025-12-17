@@ -30,7 +30,7 @@ type Ad struct {
 	ImgPath       string                 `protobuf:"bytes,5,opt,name=imgPath,proto3" json:"imgPath,omitempty"`
 	Targeturl     string                 `protobuf:"bytes,6,opt,name=targeturl,proto3" json:"targeturl,omitempty"`
 	Budget        uint32                 `protobuf:"varint,7,opt,name=budget,proto3" json:"budget,omitempty"`
-	CreatedAt     string                 `protobuf:"bytes,8,opt,name=createdAt,proto3" json:"createdAt,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 	UpdatedAt     string                 `protobuf:"bytes,9,opt,name=updatedAt,proto3" json:"updatedAt,omitempty"`
 	Status        string                 `protobuf:"bytes,10,opt,name=status,proto3" json:"status,omitempty"`
 	StartAt       string                 `protobuf:"bytes,11,opt,name=start_at,json=startAt,proto3" json:"start_at,omitempty"`
@@ -1033,7 +1033,7 @@ var File_ad_ad_proto protoreflect.FileDescriptor
 
 const file_ad_ad_proto_rawDesc = "" +
 	"\n" +
-	"\vad/ad.proto\x12\x02ad\"\xf0\x02\n" +
+	"\vad/ad.proto\x12\x02ad\"\xf1\x02\n" +
 	"\x02Ad\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1a\n" +
 	"\bclientID\x18\x02 \x01(\tR\bclientID\x12\x14\n" +
@@ -1041,8 +1041,9 @@ const file_ad_ad_proto_rawDesc = "" +
 	"\acontent\x18\x04 \x01(\tR\acontent\x12\x18\n" +
 	"\aimgPath\x18\x05 \x01(\tR\aimgPath\x12\x1c\n" +
 	"\ttargeturl\x18\x06 \x01(\tR\ttargeturl\x12\x16\n" +
-	"\x06budget\x18\a \x01(\rR\x06budget\x12\x1c\n" +
-	"\tcreatedAt\x18\b \x01(\tR\tcreatedAt\x12\x1c\n" +
+	"\x06budget\x18\a \x01(\rR\x06budget\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\b \x01(\tR\tcreatedAt\x12\x1c\n" +
 	"\tupdatedAt\x18\t \x01(\tR\tupdatedAt\x12\x16\n" +
 	"\x06status\x18\n" +
 	" \x01(\tR\x06status\x12\x19\n" +
