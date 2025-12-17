@@ -15,7 +15,6 @@ linters:
     - misspell
     - revive
     - errorlint
-  disable-all: true
   
   disable:
     - staticcheck
