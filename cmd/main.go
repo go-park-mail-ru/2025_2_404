@@ -114,6 +114,7 @@ func main() {
 	go func() {
 		http.Handle("/api/metrics", promhttp.Handler())
 		if err := http.ListenAndServe(":9090", nil); err != nil {
+			return
 		}
 	}()
 
