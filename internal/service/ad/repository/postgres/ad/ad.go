@@ -78,7 +78,7 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfull
             return nil, fmt.Errorf("scan error: %w", err)
         }
 
-        if createAt.Valid { adInfo.StartAt = createAt.Time }
+        if createAt.Valid { adInfo.CreatedAt = createAt.Time }
 
         ads = append(ads, adInfo)
     }
