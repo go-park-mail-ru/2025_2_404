@@ -171,6 +171,7 @@ func main() {
 	r.Handle("/metrics", promhttp.Handler())
 
 	handler := middleware.CorsMiddleware(r)
+	handler = middleware.MetricsMiddleware(handler)
 	handler = middleware.AccessLogMiddleware(handler)
 	slog.Info("API Gateway running on " + gatewayPort)
 	srv := &http.Server{
