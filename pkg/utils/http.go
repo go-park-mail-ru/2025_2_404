@@ -10,14 +10,8 @@ func HTTPStatusFromCode(code codes.Code) int {
 	switch code {
 	case codes.OK:
 		return http.StatusOK
-	case codes.Canceled:
-		return http.StatusRequestTimeout
-	case codes.Unknown:
-		return http.StatusInternalServerError // Было 400, должно быть 500
 	case codes.InvalidArgument:
 		return http.StatusBadRequest
-	case codes.DeadlineExceeded:
-		return http.StatusGatewayTimeout // Или RequestTimeout
 	case codes.NotFound:
 		return http.StatusNotFound
 	case codes.AlreadyExists:
@@ -36,13 +30,20 @@ func HTTPStatusFromCode(code codes.Code) int {
 		return http.StatusBadRequest
 	case codes.Unimplemented:
 		return http.StatusNotImplemented
-	case codes.Internal:
-		return http.StatusInternalServerError // Было Teapot, должно быть 500
+	case codes.DeadlineExceeded:
+		return http.StatusInternalServerError
 	case codes.Unavailable:
-		return http.StatusServiceUnavailable // <--- ИСПРАВЛЕНО: Было 400, стало 503
+		return http.StatusInternalServerError
+	case codes.Internal:
+		return http.StatusInternalServerError
 	case codes.DataLoss:
 		return http.StatusInternalServerError
+	case codes.Unknown:
+		return http.StatusInternalServerError
+	case codes.Canceled:
+		return http.StatusInternalServerError
+
 	default:
-		return http.StatusInternalServerError // Было Teapot, должно быть 500
+		return http.StatusInternalServerError
 	}
 }
