@@ -16,7 +16,7 @@ func HTTPStatusFromCode(code codes.Code) int {
 	case codes.InvalidArgument:
 		return http.StatusBadRequest
 	case codes.DeadlineExceeded:
-		return http.StatusGatewayTimeout
+		return http.StatusRequestTimeout
 	case codes.NotFound:
 		return http.StatusNotFound
 	case codes.AlreadyExists:
@@ -27,13 +27,21 @@ func HTTPStatusFromCode(code codes.Code) int {
 		return http.StatusUnauthorized
 	case codes.ResourceExhausted:
 		return http.StatusTooManyRequests
+	case codes.FailedPrecondition:
+		return http.StatusPreconditionFailed
+	case codes.Aborted:
+		return http.StatusConflict
+	case codes.OutOfRange:
+		return http.StatusBadRequest
 	case codes.Unimplemented:
 		return http.StatusNotImplemented
 	case codes.Internal:
-		return http.StatusInternalServerError
+		return http.StatusTeapot
 	case codes.Unavailable:
 		return http.StatusServiceUnavailable
+	case codes.DataLoss:
+		return http.StatusNotFound
 	default:
-		return http.StatusInternalServerError
+		return http.StatusTeapot
 	}
 }

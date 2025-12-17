@@ -2,10 +2,6 @@ package globalerrors
 
 import (
 	"errors"
-	"net/http"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 var (
@@ -31,67 +27,3 @@ var (
 	ErrorContextTimeout		 = errors.New("dedline timeout")
 	ErrNoAuth    			 = errors.New("no auth")
 )
-
-func ToGRPCError(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	switch {
-	case err == ErrUserAlreadyExists:
-		return status.Error(codes.AlreadyExists, err.Error())
-	case err == ErrUserNotFound:
-		return status.Error(codes.NotFound, err.Error())
-	case err == ErrWrongEmailOrPassword:
-		return status.Error(codes.Unauthenticated, err.Error())
-	case err == ErrNonValidEmail:
-		return status.Error(codes.InvalidArgument, err.Error())
-	case err == ErrInvalidQuery:
-		return status.Error(codes.InvalidArgument, err.Error())
-	case err == ErrNoAuth:
-		return status.Error(codes.Unauthenticated, err.Error())
-	default:
-		return status.Error(codes.Internal, "internal server error")
-	}
-}
-
-func HTTPStatusFromCode(code codes.Code) int {
-	switch code {
-	case codes.OK:
-		return http.StatusOK
-	case codes.Canceled:
-		return http.StatusRequestTimeout
-	case codes.Unknown:
-		return http.StatusInternalServerError
-	case codes.InvalidArgument:
-		return http.StatusBadRequest
-	case codes.DeadlineExceeded:
-		return http.StatusRequestTimeout
-	case codes.NotFound:
-		return http.StatusNotFound
-	case codes.AlreadyExists:
-		return http.StatusConflict
-	case codes.PermissionDenied:
-		return http.StatusForbidden
-	case codes.Unauthenticated:
-		return http.StatusUnauthorized
-	case codes.ResourceExhausted:
-		return http.StatusTooManyRequests
-	case codes.FailedPrecondition:
-		return http.StatusPreconditionFailed
-	case codes.Aborted:
-		return http.StatusConflict
-	case codes.OutOfRange:
-		return http.StatusBadRequest
-	case codes.Unimplemented:
-		return http.StatusNotImplemented
-	case codes.Internal:
-		return http.StatusInternalServerError
-	case codes.Unavailable:
-		return http.StatusServiceUnavailable
-	case codes.DataLoss:
-		return http.StatusInternalServerError
-	default:
-		return http.StatusInternalServerError
-	}
-}

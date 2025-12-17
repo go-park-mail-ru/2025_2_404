@@ -1,0 +1,32 @@
+package utils
+
+import (
+	"2025_2_404/pkg/globalerrors"
+	"errors"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+)
+
+func ToGRPCError(err error) error {
+	if err == nil {
+		return nil
+	}
+
+	switch {
+	case errors.Is(err, globalerrors.ErrUserAlreadyExists):
+		return status.Error(codes.AlreadyExists, err.Error())
+	case errors.Is(err, globalerrors.ErrUserNotFound):
+		return status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, globalerrors.ErrWrongEmailOrPassword):
+		return status.Error(codes.Unauthenticated, err.Error())
+	case errors.Is(err, globalerrors.ErrNonValidEmail):
+		return status.Error(codes.InvalidArgument, err.Error())
+	case errors.Is(err, globalerrors.ErrInvalidQuery):
+		return status.Error(codes.InvalidArgument, err.Error())
+	case errors.Is(err, globalerrors.ErrNoAuth):
+		return status.Error(codes.Unauthenticated, err.Error())
+	default:
+		return status.Error(codes.Unknown, "I'm a teapot")
+	}
+}

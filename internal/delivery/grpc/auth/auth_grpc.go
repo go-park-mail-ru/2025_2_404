@@ -2,7 +2,7 @@ package handler
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
-	"2025_2_404/pkg/globalerrors"
+	"2025_2_404/pkg/utils"
 	"2025_2_404/protos/gen/go/auth"
 	"context"
 	"errors"
@@ -41,7 +41,7 @@ func (s *AuthServer) Register(ctx context.Context, req *auth.RegisterRequest) (*
 	token, userID, err := s.useCase.Register(ctx, req.Email, req.Password, req.UserName)
 	if err != nil {
 		log.Printf("Register error: %v", err)
-		return nil, globalerrors.ToGRPCError(err) // ← преобразуем в gRPC-статус
+		return nil, utils.ToGRPCError(err) // ← преобразуем в gRPC-статус
 	}
 	return &auth.RegisterResponse{Token: token, UserId: userID.String()}, nil
 }
@@ -50,7 +50,7 @@ func (s *AuthServer) Login(ctx context.Context, req *auth.LoginRequest) (*auth.L
 	token, userID, err := s.useCase.Login(ctx, req.Email, req.Password)
 	if err != nil {
 		log.Printf("Login error: %v", err)
-		return nil, globalerrors.ToGRPCError(err)
+		return nil, utils.ToGRPCError(err)
 	}
 	return &auth.LoginResponse{Token: token, UserId: userID.String()}, nil
 }
@@ -59,7 +59,7 @@ func (s *AuthServer) ValidateToken(ctx context.Context, req *auth.TokenRequest) 
 	userID, err := s.useCaseJWT.ValidateToken(ctx, req.Token)
 	if err != nil {
 		log.Printf("Token validation error: %v", err)
-		return nil, globalerrors.ToGRPCError(err)
+		return nil, utils.ToGRPCError(err)
 	}
 	return &auth.TokenResponse{Valid: true, UserId: userID.String()}, nil
 }
