@@ -56,6 +56,8 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
 
+            sudo bash
+
             git pull origin feature/borodin/grpc-Graphan
 
             docker compose up -d --build
