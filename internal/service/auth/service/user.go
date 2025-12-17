@@ -2,9 +2,9 @@ package service
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
+	"2025_2_404/pkg/globalerrors"
 	"context"
 	"errors"
-	"fmt"
 	"log"
 
 	// "log"
@@ -38,36 +38,37 @@ func New(repo repositoryI, tokenUsecase tokenUsecaseI) *UseCase {
 func (r *UseCase) Register(ctx context.Context, email, password, userName string) (string, modeluser.ID, error) {
 	user, err := modeluser.ValidateRegisterUser(userName, email, password)
 	if err != nil {
-		// log.Printf("ОШИБКААА ПИЗДЦ")
 		log.Println("Не валидированный пользователь %w", err)
-		return "", uuid.Nil, fmt.Errorf("not validate user: %w", err)
+		return "", uuid.Nil, err
 	}
 
 	userID, err := r.repo.Create(ctx, user)
 	if err != nil {
 		log.Println("Траблы с созданием пользвоателя %w", err)
-		return "", uuid.Nil, fmt.Errorf("usecase register failed: %w", err) 
+		return "", uuid.Nil, err
 	}
 
 	token, err := r.tokenUsecase.GenerateToken(userID)
 	if err != nil {
 		log.Println("Не получилось создать токен, ошибка %w", err)
-		return "", uuid.Nil, fmt.Errorf("auth_login : %w", err)
+		return "", uuid.Nil, err
 	}
 	return token, userID, nil
 }
 
-func (u *UseCase) Check(ctx context.Context, email string, password string) (modeluser.ID, error) {
+func (u *UseCase) Check(ctx context.Context, email, password string) (modeluser.ID, error) {
 	user, err := u.repo.FindByEmail(ctx, email)
 	if err != nil {
-		log.Println("Не валидированный пользователь %w", err)
-		return uuid.Nil, err
+		if errors.Is(err, globalerrors.ErrUserNotFound) {
+			return uuid.Nil, globalerrors.ErrWrongEmailOrPassword
+		}
+		return uuid.Nil, globalerrors.ErrInternal
 	}
-	err = bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password))
-	if err != nil {
-		log.Println("Неправильный пароль %w", err)
-		return uuid.Nil, errors.New("invalid password")
+
+	if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password)); err != nil {
+		return uuid.Nil, globalerrors.ErrWrongEmailOrPassword
 	}
+
 	return user.ID, nil
 }
 
@@ -75,7 +76,7 @@ func (u *UseCase) Login(ctx context.Context, email string, password string) (str
 	err := modeluser.ValidateLoginUser(email, password)
 	if err != nil {
 		log.Println("Валидация пароля или emaik не прошла, ошибка валидейт логин  %w", err)
-		return "", uuid.Nil, fmt.Errorf("wrong validation of data: %w", err)
+		return "", uuid.Nil, err
 	}
 	
 	userID, err := u.Check(ctx, email, password)
@@ -87,7 +88,7 @@ func (u *UseCase) Login(ctx context.Context, email string, password string) (str
 	token, err := u.tokenUsecase.GenerateToken(userID)
 	if err != nil {
 		log.Println("Токен не сгенерировался, %w", err)
-		return  "",uuid.Nil, fmt.Errorf("auth_login : %w", err)
+		return  "",uuid.Nil, err
 	}
 
 	return token, userID, nil

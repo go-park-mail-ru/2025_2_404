@@ -2,13 +2,11 @@ package handler
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
+	"2025_2_404/pkg/globalerrors"
 	"2025_2_404/protos/gen/go/auth"
 	"context"
 	"errors"
 	"log"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 var (
@@ -42,46 +40,26 @@ func NewAuthServer(useCase UseCase, useCaseJWT UseCaseJWT) *AuthServer {
 func (s *AuthServer) Register(ctx context.Context, req *auth.RegisterRequest) (*auth.RegisterResponse, error) {
 	token, userID, err := s.useCase.Register(ctx, req.Email, req.Password, req.UserName)
 	if err != nil {
-        if errors.Is(err, ErrAlreadyExists) {
-            return nil, status.Error(codes.AlreadyExists, "user already exists")
-        }
-
-        if errors.Is(err, ErrNotFound) {
-            return nil, status.Error(codes.NotFound, "user not found")
-        }
-
-        return nil, status.Error(codes.Internal, "internal server error")
-    }
-
-	return &auth.RegisterResponse{
-		Token:  token,
-		UserId: userID.String(),
-	}, nil
+		log.Printf("Register error: %v", err)
+		return nil, globalerrors.ToGRPCError(err) // ← преобразуем в gRPC-статус
+	}
+	return &auth.RegisterResponse{Token: token, UserId: userID.String()}, nil
 }
 
 func (s *AuthServer) Login(ctx context.Context, req *auth.LoginRequest) (*auth.LoginResponse, error) {
 	token, userID, err := s.useCase.Login(ctx, req.Email, req.Password)
-	log.Println("DEBUG LOGGER error is ", err)
 	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "invalid email or password")
+		log.Printf("Login error: %v", err)
+		return nil, globalerrors.ToGRPCError(err)
 	}
-
-	return &auth.LoginResponse{
-		Token:  token,
-		UserId: userID.String(),
-	}, nil
+	return &auth.LoginResponse{Token: token, UserId: userID.String()}, nil
 }
 
 func (s *AuthServer) ValidateToken(ctx context.Context, req *auth.TokenRequest) (*auth.TokenResponse, error) {
 	userID, err := s.useCaseJWT.ValidateToken(ctx, req.Token)
-	log.Println("DEBUG LOGGER error is ", err)
 	if err != nil {
-		return nil, status.Error(codes.Unauthenticated, "invalid token")
+		log.Printf("Token validation error: %v", err)
+		return nil, globalerrors.ToGRPCError(err)
 	}
-
-	return &auth.TokenResponse{
-		Valid: true,
-		UserId:  userID.String(),
-		Error: "",
-	}, nil
+	return &auth.TokenResponse{Valid: true, UserId: userID.String()}, nil
 }

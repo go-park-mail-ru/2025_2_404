@@ -2,13 +2,11 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /build
 
-COPY ../../../go.mod ../../../go.sum ./
+COPY go.mod go.sum ./
 
-COPY internal/delivery/grpc/auth ./internal/delivery/grpc/auth
-COPY internal/delivery/grpc/interceptor ./internal/delivery/grpc/interceptor
-COPY internal/service/auth ./internal/service/auth
-COPY protos ./protos
-COPY cmd/auth ./cmd/auth
+RUN go mod download
+
+COPY . .
 
 RUN go build -o /auth ./cmd/auth/main.go
 

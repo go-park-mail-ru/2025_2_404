@@ -3,11 +3,13 @@ package http
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
 	"2025_2_404/pkg/utils"
 	pbAuth "2025_2_404/protos/gen/go/auth"
+
 	"google.golang.org/grpc/status"
 )
 
@@ -30,19 +32,20 @@ type loginDTO struct {
 	Password string `json:"password"`
 }
 
+type errorResponse struct {
+	Error string `json:"error"`
+}
+
+func writeError(w http.ResponseWriter, msg string, code int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(code)
+	json.NewEncoder(w).Encode(errorResponse{Error: msg})
+}
+
 func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	var req registerDTO
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
-		return
-	}
-
-	if req.Email == "" || req.Password == "" || req.UserName == "" {
-		http.Error(w, `{"error":"email, password, and user_name are required"}`, http.StatusBadRequest)
-		return
-	}
-	if len(req.Password) < 6 {
-		http.Error(w, `{"error":"password must be at least 6 characters"}`, http.StatusBadRequest)
+		writeError(w, "invalid JSON", http.StatusBadRequest)
 		return
 	}
 
@@ -56,7 +59,9 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		st, _ := status.FromError(err)
-		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		httpCode := utils.HTTPStatusFromCode(st.Code())
+		log.Printf("gRPC Register error: %v (gRPC code: %v, HTTP code: %d)", err, st.Code(), httpCode)
+		writeError(w, st.Message(), httpCode)
 		return
 	}
 
@@ -68,12 +73,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var req loginDTO
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, `{"error":"invalid JSON"}`, http.StatusBadRequest)
-		return
-	}
-
-	if req.Email == "" || req.Password == "" {
-		http.Error(w, `{"error":"email and password are required"}`, http.StatusBadRequest)
+		writeError(w, "invalid JSON", http.StatusBadRequest)
 		return
 	}
 
@@ -86,7 +86,9 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil {
 		st, _ := status.FromError(err)
-		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
+		httpCode := utils.HTTPStatusFromCode(st.Code())
+		log.Printf("gRPC Login error: %v (gRPC code: %v, HTTP code: %d)", err, st.Code(), httpCode)
+		writeError(w, st.Message(), httpCode)
 		return
 	}
 

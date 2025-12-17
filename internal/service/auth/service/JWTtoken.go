@@ -2,6 +2,7 @@ package service
 
 import (
 	modeluser "2025_2_404/internal/service/auth/domain"
+	"2025_2_404/pkg/globalerrors"
 	"context"
 	"crypto/ecdsa"
 	"fmt"
@@ -33,18 +34,21 @@ func (u *UseCaseJWT) GenerateToken(userID modeluser.ID) (string, error) {
 		UserID: userID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expTime),
-			IssuedAt: jwt.NewNumericDate(time.Now()),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	ss, err:= token.SignedString(u.privateKey)
-	return ss, err
+	ss, err := token.SignedString(u.privateKey)
+	if err != nil {
+		return "", globalerrors.ErrInternal
+	}
+	return ss, nil
 }
 
 func (u *UseCaseJWT) ValidateToken(ctx context.Context, tokenString string) (modeluser.ID, error) {
 	claims := &Claims{}
-	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
+	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("unexpected signature method: %v", token.Header["alg"])
 		}
@@ -52,14 +56,14 @@ func (u *UseCaseJWT) ValidateToken(ctx context.Context, tokenString string) (mod
 	})
 
 	if err != nil {
-		return modeluser.ID{}, fmt.Errorf("token parsing error: %v", err)
+		return modeluser.ID{}, globalerrors.ErrNoAuth
 	}
 
 	if claims, ok := token.Claims.(*Claims); ok && token.Valid {
 		return claims.UserID, nil
 	}
 
-	return modeluser.ID{}, fmt.Errorf("invalid token")
+	return modeluser.ID{}, globalerrors.ErrNoAuth
 }
 
 // func (u *UseCase) InvalidateToken(tokenString string) (string, error) {

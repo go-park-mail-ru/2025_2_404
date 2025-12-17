@@ -1,8 +1,9 @@
 package domain
 
 import (
-	"errors"
+	"2025_2_404/pkg/globalerrors"
 	"regexp"
+
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -24,91 +25,100 @@ var constLowerCase = regexp.MustCompile(`[a-z]`)
 var constSpecialChar = regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`)
 
 
-func ValidateRegisterUser(userName, email, password string) (*User, error){
-	if len(userName)<4 || len(userName)>20{
-		return nil, errors.New("username must be at least 4 and no more than 20 characters")
+func ValidateRegisterUser(userName, email, password string) (*User, error) {
+	if len(userName) < 4 {
+		return nil, globalerrors.ErrUsernameTooShort
+	}
+	if len(userName) > 20 {
+		return nil, globalerrors.ErrUsernameTooLong
 	}
 
 	if !allowedSymbols.MatchString(userName) {
-		return nil, errors.New("username contains invalid values")
+		return nil, globalerrors.ErrUsernameInvalidChars
 	}
 
-	if !constLowerCase.MatchString(userName) && !constUpperCase.MatchString(userName){
-		return nil, errors.New("username must contain at least one symbol")
+	if !constLowerCase.MatchString(userName) && !constUpperCase.MatchString(userName) {
+		return nil, globalerrors.ErrUsernameNoLetters
 	}
 
 	if !allowedEmail.MatchString(email) {
-		return nil, errors.New("invalid email format")
+		return nil, globalerrors.ErrNonValidEmail
 	}
 
 	if len(email) >= 100 {
-		return nil, errors.New("email must be between 5 and 100 characters")
-	} 
-	
-	if len(password) < 8 || len(password) > 50 {
-		return nil, errors.New("password must be between 8 and 50 characters")
+		return nil, globalerrors.ErrNonValidEmail // или отдельная ошибка, но обычно длина покрывается email-валидацией
 	}
-	
-	if !allowedPassword.MatchString(password){
-		return nil, errors.New("invalid values")
+
+	if len(password) < 8 {
+		return nil, globalerrors.ErrPasswordTooShort
+	}
+	if len(password) > 50 {
+		return nil, globalerrors.ErrPasswordTooLong
+	}
+
+	if !allowedPassword.MatchString(password) {
+		return nil, globalerrors.ErrPasswordInvalidChars
 	}
 
 	if !constLowerCase.MatchString(password) {
-		return nil, errors.New("password must contain at least one lower case symbol")
+		return nil, globalerrors.ErrPasswordNoLower
 	}
 
 	if !constUpperCase.MatchString(password) {
-		return nil, errors.New("password must contain at least one upper case symbol")
+		return nil, globalerrors.ErrPasswordNoUpper
 	}
 
 	if !constSpecialChar.MatchString(password) {
-		return nil, errors.New("password must contain at least one secial symbol")
+		return nil, globalerrors.ErrPasswordNoSpecial
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return nil, globalerrors.ErrInternal
 	}
 
 	return &User{
-		ID: uuid.New(),
-		UserName:    userName,
-		Email:      email,
+		ID:             uuid.New(),
+		UserName:       userName,
+		Email:          email,
 		HashedPassword: string(hashedPassword),
 	}, nil
 }
 
-func ValidateLoginUser(email, password string) (error){
+func ValidateLoginUser(email, password string) error {
 	if email == "" {
-		return errors.New("email required")
+		return globalerrors.ErrEmailRequired
 	}
 
-	if !allowedEmail.MatchString(email){
-		return errors.New("invalid email name")
+	if !allowedEmail.MatchString(email) {
+		return globalerrors.ErrNonValidEmail
 	}
-	
+
 	if password == "" {
-		return errors.New("password required")
+		return globalerrors.ErrPasswordRequired
 	}
 
-	if len(password) < 8 || len(password) > 50 {
-		return errors.New("password must be between 8 and 50 characters")
+	if len(password) < 8 {
+		return globalerrors.ErrPasswordTooShort
+	}
+	if len(password) > 50 {
+		return globalerrors.ErrPasswordTooLong
 	}
 
-	if !allowedPassword.MatchString(password){
-		return errors.New("invalid values")
+	if !allowedPassword.MatchString(password) {
+		return globalerrors.ErrPasswordInvalidChars
 	}
 
 	if !constLowerCase.MatchString(password) {
-		return errors.New("password must contain at least one lower case symbol")
+		return globalerrors.ErrPasswordNoLower
 	}
 
 	if !constUpperCase.MatchString(password) {
-		return errors.New("password must contain at least one upper case symbol")
+		return globalerrors.ErrPasswordNoUpper
 	}
 
 	if !constSpecialChar.MatchString(password) {
-		return errors.New("password must contain at least one secial symbol")
+		return globalerrors.ErrPasswordNoSpecial
 	}
 
 	return nil
