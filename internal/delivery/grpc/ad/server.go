@@ -152,7 +152,7 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 
 	adFull, _, err := s.adUsecase.GetOneAd(ctx, adID, modeluser.ID(clientID))
 	if err != nil {
-		return nil, utils.ToGRPCError(err) // ← обёртка!
+		return nil, utils.ToGRPCError(err)
 	}
 
 	ad := &adv1.Ad{
@@ -180,7 +180,7 @@ func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetai
 
 	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelad.ID(id), req.GetEventType())
 	if err != nil {
-		return nil, utils.ToGRPCError(err) // ← обёртка!
+		return nil, utils.ToGRPCError(err)
 	}
 
 	return &adv1.GetAdDetailIDResponse{
@@ -225,7 +225,7 @@ func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRe
 
 	newBudget := req.GetBudget()
 	if err := s.budgetUsecase.UpdateBudget(ctx, modelad.ID(id), clientID, newBudget); err != nil {
-		return nil, utils.ToGRPCError(err) // ← обёртка!
+		return nil, utils.ToGRPCError(err) 
 	}
 
 	return &adv1.UpdateBudgetResponse{
@@ -241,7 +241,7 @@ func (s *adService) GetAdCount(ctx context.Context, req *adv1.GetAdCountRequest)
 
 	count, err := s.adUsecase.GetAdCount(ctx, clientID)
 	if err != nil {
-		return nil, utils.ToGRPCError(err) // ← обёртка!
+		return nil, utils.ToGRPCError(err)
 	}
 
 	return &adv1.GetAdCountResponse{

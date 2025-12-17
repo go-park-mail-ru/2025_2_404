@@ -77,15 +77,6 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
-		SubAmount: uint32(budget),
-	})
-	if err != nil {
-		st, _ := status.FromError(err)
-		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
-		return
-	}
-
 	if len(fileBytes) > 0 {
 		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
@@ -153,17 +144,17 @@ func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 
 	adID, err := uuid.Parse(adProto.Ad.GetId())
 	if err != nil {
-		// обработка ошибки
+		http.Error(w, `{"error":"invalid adId format"}`, http.StatusBadRequest)
 	}
 
 	startAt, err := time.Parse(time.RFC3339, adProto.Ad.GetStartAt())
 	if err != nil {
-		
+		http.Error(w, `{"error":"invalid startAt format"}`, http.StatusBadRequest)
 	}
 
 	endAt, err := time.Parse(time.RFC3339, adProto.Ad.GetEndAt())
 	if err != nil {
-		// обработка ошибки
+		http.Error(w, `{"error":"invalid endAt format"}`, http.StatusBadRequest)
 	}
 
 	adFullResp := adfullinfo.AdFullInfo{

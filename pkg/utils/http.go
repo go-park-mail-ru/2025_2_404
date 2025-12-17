@@ -12,7 +12,7 @@ func HTTPStatusFromCode(code codes.Code) int {
 	case codes.Canceled:
 		return http.StatusRequestTimeout
 	case codes.Unknown:
-		return http.StatusInternalServerError
+		return http.StatusBadRequest
 	case codes.InvalidArgument:
 		return http.StatusBadRequest
 	case codes.DeadlineExceeded:
@@ -34,11 +34,11 @@ func HTTPStatusFromCode(code codes.Code) int {
 	case codes.OutOfRange:
 		return http.StatusBadRequest
 	case codes.Unimplemented:
-		return http.StatusNotImplemented
+		return http.StatusBadRequest
 	case codes.Internal:
 		return http.StatusTeapot
 	case codes.Unavailable:
-		return http.StatusServiceUnavailable
+		return http.StatusBadRequest
 	case codes.DataLoss:
 		return http.StatusNotFound
 	default:
