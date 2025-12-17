@@ -10,17 +10,20 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"go.uber.org/zap"
 )
 
 type UseCaseJWT struct {
 	privateKey *ecdsa.PrivateKey
 	publicKey  *ecdsa.PublicKey
+	logger     *zap.Logger
 }
 
-func NewJWT(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey) *UseCaseJWT {
+func NewJWT(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey, logger *zap.Logger) *UseCaseJWT {
 	return &UseCaseJWT{
 		privateKey: privateKey,
 		publicKey:  publicKey,
+		logger:     logger,
 	}
 }
 

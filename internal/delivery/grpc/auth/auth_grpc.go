@@ -8,6 +8,8 @@ import (
 	"context"
 	"errors"
 	"log"
+
+	"go.uber.org/zap"
 )
 
 var (
@@ -29,12 +31,14 @@ type AuthServer struct {
 	auth.UnimplementedAuthServer
 	useCase    UseCase
 	useCaseJWT UseCaseJWT
+	logger     *zap.Logger
 }
 
-func NewAuthServer(useCase UseCase, useCaseJWT UseCaseJWT) *AuthServer {
+func NewAuthServer(useCase UseCase, useCaseJWT UseCaseJWT, logger *zap.Logger) *AuthServer {
 	return &AuthServer{
 		useCase:    useCase,
 		useCaseJWT: useCaseJWT,
+		logger:     logger,
 	}
 }
 

@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/jackc/pgconn"
+	"go.uber.org/zap"
 )
 
 const (
@@ -19,12 +20,14 @@ const (
 )
 
 type DB struct {
-	sql *sql.DB
+	sql    *sql.DB
+	logger *zap.Logger
 }
 
-func New(sql *sql.DB) *DB {
+func New(sql *sql.DB, logger *zap.Logger) *DB {
 	return &DB{
-		sql: sql,
+		sql:    sql,
+		logger: logger,
 	}
 }
 

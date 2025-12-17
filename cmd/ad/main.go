@@ -10,80 +10,79 @@ import (
 	repoBudget "2025_2_404/internal/service/ad/repository/postgres/budget"
 	usecase "2025_2_404/internal/service/ad/usecase/ad"
 	budget "2025_2_404/internal/service/ad/usecase/budget"
+	"2025_2_404/pkg/logger"
 	adpb "2025_2_404/protos/gen/go/ad"
-	"fmt"
-	"log"
 	"net"
 	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
+	log, err := logger.New()
+	if err != nil {
+		panic("failed to initialize logger")
+	}
+	defer func() {
+		_ = log.Sync()
+	}()
+
+	log.Info("starting Advertisement gRPC server")
+
 	config := config.GetConfig()
 	connCfg, err := db.New(config)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal("failed to connect to DB", zap.Error(err))
 	}
 	defer connCfg.CloseAll()
 
+	// --- Metrics server (можно тоже логировать через zap)
 	go func() {
-		log.Println("Starting metrics server on :9090")
+		log.Info("starting metrics server", zap.String("addr", ":9090"))
 		http.Handle("/metrics", promhttp.Handler())
 		if err := http.ListenAndServe(":9090", nil); err != nil {
-			log.Printf("Metrics server failed: %v", err)
+			log.Error("metrics server failed", zap.Error(err))
 		}
 	}()
 
+	// --- Auth connection
 	authServiceAddr := "auth:8077"
-
 	authConn, err := grpc.NewClient(authServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
-		log.Fatalf("failed to connect to Auth Service: %v", err)
+		log.Fatal("failed to connect to Auth Service", zap.Error(err))
 	}
 	defer func() {
 		_ = authConn.Close()
 	}()
 
-	// authClient := authProto.NewAuthClient(authConn)
+	// --- Инициализация слоёв с логгером
+	repoAd := repoAd.New(connCfg.PostgresSQL, log.Named("repo.ad"))
+	repoBudget := repoBudget.New(connCfg.PostgresSQL, log.Named("repo.budget"))
 
-	repoCfgAd := repoAd.New(connCfg.PostgresSQL)
-	repoCfgBudget := repoBudget.New(connCfg.PostgresSQL)
-	adUC := usecase.New(repoCfgAd)
-	budgetUC := budget.New(repoCfgBudget)
-	authInterceptor, authConn := interceptor.InitAuthInterceptor()
-	adHandler := adhandler.New(adUC, budgetUC)
+	adUC := usecase.New(repoAd, log.Named("usecase.ad"))
+	budgetUC := budget.New(repoBudget, log.Named("usecase.budget"))
 
-	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortAD))
+	authInterceptor, _ := interceptor.InitAuthInterceptor()
+	adHandler := adhandler.New(adUC, budgetUC, log.Named("handler.ad"))
+
+	// --- Запуск gRPC сервера
+	lis, err := net.Listen("tcp", ":"+config.AppConfig.PortAD)
 	if err != nil {
-		log.Fatalln("cant listet port", err)
+		log.Fatal("failed to listen", zap.Error(err))
 	}
 
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(authInterceptor))
-
 	adpb.RegisterAdServServer(grpcServer, adHandler)
 
-	log.Println("Starting server on", fmt.Sprintf("%s:%s", config.AppConfig.Host, config.AppConfig.PortAD))
+	log.Info("gRPC server started",
+		zap.String("host", config.AppConfig.Host),
+		zap.String("port", config.AppConfig.PortAD),
+	)
+
 	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("Failed to serve: %v", err)
+		log.Fatal("gRPC server failed", zap.Error(err))
 	}
-
-	gracefulShutdown(grpcServer, lis)
-
-}
-
-func gracefulShutdown(grpcServer *grpc.Server, lis net.Listener) {
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
-
-	sig := <-c
-	log.Printf("Received signal %v. Shutting down gracefully...", sig)
-
-	grpcServer.GracefulStop()
-	log.Println("Server stopped")
 }

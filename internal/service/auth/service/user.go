@@ -10,6 +10,7 @@ import (
 	// "log"
 
 	"github.com/google/uuid"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -26,12 +27,14 @@ type tokenUsecaseI interface {
 type UseCase struct {
 	repo         repositoryI
 	tokenUsecase tokenUsecaseI
+	logger       *zap.Logger
 }
 
-func New(repo repositoryI, tokenUsecase tokenUsecaseI) *UseCase {
+func New(repo repositoryI, tokenUsecase tokenUsecaseI, logger *zap.Logger) *UseCase {
 	return &UseCase{
 		repo:         repo,
 		tokenUsecase: tokenUsecase,
+		logger:       logger,
 	}
 }
 

@@ -5,6 +5,8 @@ import (
 	modelad "2025_2_404/internal/service/ad/domain/ad"
 	modeluser "2025_2_404/internal/service/ad/domain/user"
 	"context"
+
+	"go.uber.org/zap"
 )
 
 type budgetRepositoryI interface {
@@ -13,11 +15,13 @@ type budgetRepositoryI interface {
 
 type UseCase struct {
 	budgetRepo budgetRepositoryI
+	logger     *zap.Logger
 }
 
-func New(budgetRepo budgetRepositoryI) *UseCase {
+func New(budgetRepo budgetRepositoryI, logger *zap.Logger) *UseCase {
 	return &UseCase{
 		budgetRepo: budgetRepo,
+		logger:     logger,
 	}
 }
 

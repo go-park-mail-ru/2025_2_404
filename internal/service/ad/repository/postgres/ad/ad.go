@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgconn"
+	"go.uber.org/zap"
 )
 
 const (
@@ -48,18 +49,21 @@ const (
 )
 
 type DB struct {
-	sql *sql.DB
+	sql    *sql.DB
+	logger *zap.Logger
 }
 
-func New(sql *sql.DB) *DB {
+func New(sql *sql.DB, logger *zap.Logger) *DB {
 	return &DB{
-		sql: sql,
+		sql:    sql,
+		logger: logger,
 	}
 }
 
 func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error) {
 	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAds, userID)
 	if err != nil {
+		r.logger.Error("failed to query ads by user ID", zap.Error(err))
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -81,6 +85,7 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfull
 		var createAt sql.NullTime
 
 		if err := rows.Scan(&adInfo.ID, &adInfo.Title, &adInfo.Status, &createAt); err != nil {
+			r.logger.Error("failed to scan ad row", zap.Error(err))
 			return nil, globalerrors.ErrInternal
 		}
 		if createAt.Valid {
@@ -90,6 +95,7 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfull
 	}
 
 	if err = rows.Err(); err != nil {
+		r.logger.Error("rows iteration error", zap.Error(err))
 		return nil, globalerrors.ErrInternal
 	}
 
@@ -112,17 +118,20 @@ func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.I
 		&adInfo.Impressions,
 	)
 	if err != nil {
+		r.logger.Error("failed to get ad by ID", zap.Error(err))
 		if errors.Is(err, sql.ErrNoRows) {
 			return modelfullad.AdFullInfo{}, globalerrors.ErrAdNotFound
 		}
 		return modelfullad.AdFullInfo{}, globalerrors.ErrInternal
 	}
+	r.logger.Info("ad found", zap.String("ad_id", adID.String()), zap.String("client_id", clientID.String()))
 	return adInfo, nil
 }
 
 func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
 	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)
 	if err != nil {
+		r.logger.Error("ad not delete", zap.Error(err))
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -135,6 +144,7 @@ func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID)
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
+		r.logger.Error("failed to get rows affected on delete", zap.Error(err))
 		return globalerrors.ErrInternal
 	}
 	if rowsAffected == 0 {
@@ -147,6 +157,7 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 	var newAdID modelad.ID
 	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImagePath, ad.TargetURL).Scan(&newAdID)
 	if err != nil {
+		r.logger.Error("failed to insert ad", zap.Error(err))
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -168,6 +179,10 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 
 	_, err = r.sql.ExecContext(ctx, sqlTextForSaveBudget, newAdID, ad.Budget, ad.Status, ad.StartAt, ad.EndAt)
 	if err != nil {
+		r.logger.Warn("rolling back ad creation due to budget insert failure",
+			zap.String("ad_id", newAdID.String()),
+			zap.Error(err),
+		)
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -180,6 +195,10 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 		_ = r.Delete(ctx, newAdID, ad.ClientID)
 		return globalerrors.ErrInternal
 	}
+	r.logger.Debug("ad created in DB",
+		zap.String("ad_id", newAdID.String()),
+		zap.String("client_id", ad.ClientID.String()),
+	)
 
 	return nil
 }
@@ -187,6 +206,7 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	tx, err := r.sql.BeginTx(ctx, nil)
 	if err != nil {
+		r.logger.Error("failed to begin transaction for update", zap.Error(err))
 		return globalerrors.ErrInternal
 	}
 	defer func() {
@@ -195,6 +215,7 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 
 	if ad.ImagePath == "" {
 		if err := tx.QueryRowContext(ctx, sqlTextForGetPathImage, ad.ID).Scan(&ad.ImagePath); err != nil {
+			r.logger.Error("failed to get image path during update", zap.Error(err))
 			if errors.Is(err, sql.ErrNoRows) {
 				return globalerrors.ErrAdNotFound
 			}
@@ -204,6 +225,7 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 
 	res, err := tx.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetURL, ad.ID, ad.ClientID)
 	if err != nil {
+		r.logger.Error("failed to update ad", zap.Error(err))
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -216,6 +238,7 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
+		r.logger.Error("failed to get rows affected on update", zap.Error(err))
 		return globalerrors.ErrInternal
 	}
 	if rowsAffected == 0 {
@@ -224,6 +247,7 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 
 	_, err = tx.ExecContext(ctx, sqlTextForUpdateAdDetail, ad.Status, ad.StartAt, ad.EndAt, ad.ID)
 	if err != nil {
+		r.logger.Error("failed to update ad detail", zap.Error(err))
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			switch pgErr.Code {
@@ -235,14 +259,20 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	}
 
 	if err := tx.Commit(); err != nil {
+		r.logger.Error("failed to commit update transaction", zap.Error(err))
 		return globalerrors.ErrInternal
 	}
+	r.logger.Debug("ad updated successfully",
+		zap.String("ad_id", ad.ID.String()),
+		zap.String("client_id", ad.ClientID.String()),
+	)
 	return nil
 }
 
 func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error) {
 	tx, err := r.sql.BeginTx(ctx, nil)
 	if err != nil {
+		r.logger.Error("failed to begin transaction for GetAdDetailForSlot", zap.Error(err))
 		return modelfullad.DetailID{}, globalerrors.ErrInternal
 	}
 	defer func() {
@@ -252,6 +282,7 @@ func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impre
 	var detailID modelfullad.DetailID
 	err = tx.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detailID)
 	if err != nil {
+		r.logger.Error("failed to get ad detail ID", zap.Error(err))
 		if errors.Is(err, sql.ErrNoRows) {
 			return modelfullad.DetailID{}, globalerrors.ErrBudgetTooLow
 		}
@@ -260,10 +291,12 @@ func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impre
 
 	_, err = tx.ExecContext(ctx, sqlTextForUpdateStatistic, click, impression, detailID)
 	if err != nil {
+		r.logger.Error("failed to update statistic", zap.Error(err))
 		return modelfullad.DetailID{}, globalerrors.ErrInternal
 	}
 
 	if err := tx.Commit(); err != nil {
+		r.logger.Error("failed to commit GetAdDetailForSlot transaction", zap.Error(err))
 		return modelfullad.DetailID{}, globalerrors.ErrInternal
 	}
 
@@ -280,6 +313,7 @@ func (r *DB) GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error)
 		&adSlot.TargetURL,
 	)
 	if err != nil {
+		r.logger.Error("failed to get ad slot", zap.Error(err))
 		if errors.Is(err, sql.ErrNoRows) {
 			return modelad.Ads{}, globalerrors.ErrAdNotFound
 		}
@@ -291,6 +325,7 @@ func (r *DB) GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error)
 func (r *DB) GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error) {
 	var count int64
 	if err := r.sql.QueryRowContext(ctx, sqlTextForCountAds, clientID).Scan(&count); err != nil {
+		r.logger.Error("failed to get ad count", zap.Error(err))
 		return 0, globalerrors.ErrInternal
 	}
 	return count, nil

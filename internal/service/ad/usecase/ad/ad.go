@@ -6,6 +6,8 @@ import (
 	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
 	modeluser "2025_2_404/internal/service/ad/domain/user"
 	"context"
+
+	"go.uber.org/zap"
 )
 
 type adRepositoryI interface {
@@ -21,11 +23,13 @@ type adRepositoryI interface {
 
 type UseCase struct {
 	adRepo adRepositoryI
+	logger *zap.Logger
 }
 
-func New(adRepo adRepositoryI) *UseCase {
+func New(adRepo adRepositoryI, logger *zap.Logger) *UseCase {
 	return &UseCase{
 		adRepo: adRepo,
+		logger: logger,
 	}
 }
 
@@ -34,21 +38,71 @@ func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]mode
 }
 
 func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) error {
-	// Устанавливаем статус на основе бюджета
+	// Если бюджет меньше 100 делаем неактивной
 	if ad.Budget < 100 {
 		ad.Status = "non-active"
 	} else {
 		ad.Status = "active"
 	}
-	return u.adRepo.Create(ctx, ad)
+
+	u.logger.Info("creating ad",
+		zap.String("ad_id", ad.ID.String()),
+		zap.String("client_id", ad.ClientID.String()),
+		zap.String("title", ad.Title),
+		zap.Uint32("budget", ad.Budget),
+		zap.String("status", ad.Status),
+	)
+
+	if err := u.adRepo.Create(ctx, ad); err != nil {
+		u.logger.Error("failed to create ad in repo",
+			zap.String("client_id", ad.ClientID.String()),
+			zap.Error(err),
+		)
+		return err
+	}
+
+	u.logger.Info("ad created successfully",
+		zap.String("ad_id", ad.ID.String()),
+		zap.String("client_id", ad.ClientID.String()),
+	)
+
+	return nil
 }
 
 func (u *UseCase) Update(ctx context.Context, ad modelad.Ads) error {
-	return u.adRepo.Update(ctx, ad)
+	u.logger.Info("updating ad",
+		zap.String("ad_id", ad.ID.String()),
+		zap.String("client_id", ad.ClientID.String()),
+	)
+
+	if err := u.adRepo.Update(ctx, ad); err != nil {
+		u.logger.Error("failed to update ad", zap.Error(err))
+		return err
+	}
+
+	u.logger.Info("ad updated successfully",
+		zap.String("ad_id", ad.ID.String()),
+		zap.String("client_id", ad.ClientID.String()),
+	)
+	return nil
 }
 
 func (u *UseCase) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
-	return u.adRepo.Delete(ctx, adID, clientID)
+	u.logger.Info("deleting ad",
+		zap.String("ad_id", adID.String()),
+		zap.String("client_id", clientID.String()),
+	)
+
+	if err := u.adRepo.Delete(ctx, adID, clientID); err != nil {
+		u.logger.Error("failed to delete ad", zap.Error(err))
+		return err
+	}
+
+	u.logger.Info("ad deleted successfully",
+		zap.String("ad_id", adID.String()),
+		zap.String("client_id", clientID.String()),
+	)
+	return nil
 }
 
 func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error) {
