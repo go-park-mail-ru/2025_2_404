@@ -42,7 +42,7 @@ func main() {
 
 	go func() {
 		log.Println("Starting metrics server on :9090")
-		http.Handle("/metrics", promhttp.Handler())
+		http.Handle("/api/metrics", promhttp.Handler())
 		if err := http.ListenAndServe(":9090", nil); err != nil {
 			log.Printf("Metrics server failed: %v", err)
 		}

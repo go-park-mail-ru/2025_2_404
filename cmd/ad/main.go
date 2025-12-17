@@ -19,6 +19,9 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+	"github.com/grpc-ecosystem/go-grpc-prometheus"
+
 )
 
 func main() {
@@ -38,6 +41,9 @@ func main() {
 		log.Fatal("failed to connect to DB", zap.Error(err))
 	}
 	defer connCfg.CloseAll()
+
+	grpcMetrics := grpc_prometheus.NewServerMetrics()
+	grpcMetrics.EnableHandlingTimeHistogram()
 
 	go func() {
 		log.Info("starting metrics server", zap.String("addr", ":9090"))
@@ -73,7 +79,15 @@ func main() {
 		log.Fatal("failed to listen", zap.Error(err))
 	}
 
-	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(authInterceptor))
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(
+			grpc_middleware.ChainUnaryServer(
+				authInterceptor,
+				grpcMetrics.UnaryServerInterceptor(),
+			),
+		),
+	)
+	grpcMetrics.InitializeMetrics(grpcServer)
 	adpb.RegisterAdServServer(grpcServer, adHandler)
 
 	log.Info("gRPC server started",

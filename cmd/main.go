@@ -111,6 +111,12 @@ func main() {
 	}()
 	slotClient := slotpb.NewSlotServClient(connSlot)
 
+	go func() {
+		http.Handle("/api/metrics", promhttp.Handler())
+		if err := http.ListenAndServe(":9090", nil); err != nil {
+		}
+	}()
+
 	r := mux.NewRouter()
 
 	authRouter := r.PathPrefix("/api/auth").Subrouter()
