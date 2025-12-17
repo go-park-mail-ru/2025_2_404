@@ -5,7 +5,6 @@ import (
 	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
 	modeluser "2025_2_404/internal/service/ad/domain/user"
 	"context"
-	"fmt"
 )
 
 type adRepositoryI interface {
@@ -30,16 +29,12 @@ func New(adRepo adRepositoryI) *UseCase {
 }
 
 func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error) {
-	ads, err := u.adRepo.FindByUserID(ctx, userID)
-	if err != nil {
-		return nil, err
-	}
-
-	return ads, nil
+	return u.adRepo.FindByUserID(ctx, userID)
 }
 
-func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) (error) {
-	if ad.Budget < 100{
+func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) error {
+	// Устанавливаем статус на основе бюджета
+	if ad.Budget < 100 {
 		ad.Status = "non-active"
 	} else {
 		ad.Status = "active"
@@ -57,33 +52,39 @@ func (u *UseCase) Delete(ctx context.Context, adID modelad.ID, clientID modeluse
 
 func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error) {
 	adInfo, err := u.adRepo.GetOneAd(ctx, adID, clientID)
-	conversion := -1
 	if err != nil {
-		return modelfullad.AdFullInfo{}, conversion, fmt.Errorf("Failed to get ad with id error %w", err)
+		// Репозиторий уже возвращает globalerrors — просто прокидываем
+		return modelfullad.AdFullInfo{}, -1, err
 	}
-	if adInfo.Impressions != 0{
-		conversion = adInfo.Clicks / adInfo.Impressions
+
+	// Вычисляем конверсию (целочисленное деление → может быть 0!)
+	conversion := -1
+	if adInfo.Impressions > 0 {
+		conversion = adInfo.Clicks * 100 / adInfo.Impressions // ← проценты? или оставить как есть?
+		// Если нужен float — возвращать float64, но в твоём случае int — ок.
 	}
-	if adInfo.Budget < 100{
+
+	// Обновляем статус на лету, если бюджет < 100
+	if adInfo.Budget < 100 {
 		adInfo.Status = "non-active"
 	}
 
 	return adInfo, conversion, nil
 }
 
-func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID, event_type string) (modelfullad.DetailID, error){
+func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID, event_type string) (modelfullad.DetailID, error) {
 	click := 0
 	impression := 0
-	if event_type == "impression"{
+	if event_type == "impression" {
 		impression = 1
-	} else {
+	} else if event_type == "click" {
 		click = 1
 	}
 
 	return u.adRepo.GetAdDetailForSlot(ctx, id, click, impression)
 }
 
-func (u *UseCase) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error){
+func (u *UseCase) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error) {
 	return u.adRepo.GetAdSlot(ctx, min_cost)
 }
 

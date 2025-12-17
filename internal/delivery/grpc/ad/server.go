@@ -5,9 +5,9 @@ import (
 	modelad "2025_2_404/internal/service/ad/domain/ad"
 	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
 	modeluser "2025_2_404/internal/service/ad/domain/user"
+	"2025_2_404/pkg/utils"
 	adv1 "2025_2_404/protos/gen/go/ad"
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -43,41 +43,38 @@ func New(adUsecase adUsecaseI, budgetUsecase budgetI) *adService{
 	}
 }
 
-func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.CreateResponse, error){
+func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.CreateResponse, error) {
 	clientID, err := interceptor.GetUserID(ctx)
-	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
-
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
+
 	protoAd := req.GetAd()
-	
-	ad := modelad.Ads {
-		Title: protoAd.Title,
-		ClientID: clientID,
-		Content: protoAd.Content,
-		Budget: protoAd.Budget,
-		ImagePath: protoAd.ImgPath,
-		TargetUrl: protoAd.Targeturl,
+	ad := modelad.Ads{
+		Title:      protoAd.Title,
+		ClientID:   clientID,
+		Content:    protoAd.Content,
+		Budget:     protoAd.Budget,
+		ImagePath:  protoAd.ImgPath,
+		TargetUrl:  protoAd.Targeturl,
 	}
-	if err := s.adUsecase.Create(ctx, ad); err != nil{
-		return nil, err
+
+	if err := s.adUsecase.Create(ctx, ad); err != nil {
+		return nil, utils.ToGRPCError(err) // ← обёртка!
 	}
 
 	return &adv1.CreateResponse{}, nil
 }
 
-func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (*adv1.GetAllAdsResponse, error){
+func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (*adv1.GetAllAdsResponse, error) {
 	clientID, err := interceptor.GetUserID(ctx)
-	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
-
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
 	adsFull, err := s.adUsecase.FindByUserID(ctx, clientID)
 	if err != nil {
-		return nil, err
+		return nil, utils.ToGRPCError(err)
 	}
 
 	var grpcAds []*adv1.Ad
@@ -86,61 +83,67 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 			Id:        uuid.UUID(a.ID).String(),
 			Title:     a.Title,
 			Status:    a.Status,
-			CreatedAt:   a.CreatedAt.Format(time.RFC3339),
+			CreatedAt: a.CreatedAt.Format(time.RFC3339),
 		})
 	}
 
 	return &adv1.GetAllAdsResponse{Ads: grpcAds}, nil
 }
 
-func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.UpdateResponse, error){
+func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.UpdateResponse, error) {
 	clientID, err := interceptor.GetUserID(ctx)
-	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
-	
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
-	protoAd := req.GetAd()
 
+	protoAd := req.GetAd()
 	id, err := uuid.Parse(protoAd.Id)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
 	}
 
-	ad := modelad.Ads {
-		ID: modelad.ID(id),
-		ClientID: clientID,
-		Title: protoAd.Title,
-		Content: protoAd.Content,
+	ad := modelad.Ads{
+		ID:        modelad.ID(id),
+		ClientID:  clientID,
+		Title:     protoAd.Title,
+		Content:   protoAd.Content,
 		ImagePath: protoAd.ImgPath,
 		TargetUrl: protoAd.Targeturl,
-		Status: protoAd.Status,
+		Status:    protoAd.Status,
 	}
 
-	if err := s.adUsecase.Update(ctx, ad); err != nil{
-		return nil, err
+	if err := s.adUsecase.Update(ctx, ad); err != nil {
+		return nil, utils.ToGRPCError(err) // ← обёртка!
 	}
 
 	return &adv1.UpdateResponse{}, nil
 }
 
-func (s *adService) Delete(ctx context.Context, req *adv1.DeleteRequest) (*adv1.DeleteResponse, error){
+func (s *adService) Delete(ctx context.Context, req *adv1.DeleteRequest) (*adv1.DeleteResponse, error) {
 	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
 	id, err := uuid.Parse(req.GetId())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
 	}
 	adID := modelad.ID(id)
 
-	if err := s.adUsecase.Delete(ctx, modelad.ID(adID), modeluser.ID(clientID)); err != nil{
-		return nil, err
+	if err := s.adUsecase.Delete(ctx, adID, modeluser.ID(clientID)); err != nil {
+		return nil, utils.ToGRPCError(err) // ← обёртка!
 	}
 
 	return &adv1.DeleteResponse{}, nil
 }
 
-func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.GetAdResponse, error){
+func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.GetAdResponse, error) {
 	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
 	id, err := uuid.Parse(req.GetId())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
@@ -148,38 +151,36 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 	adID := modelad.ID(id)
 
 	adFull, _, err := s.adUsecase.GetOneAd(ctx, adID, modeluser.ID(clientID))
-	if err != nil{
-		return &adv1.GetAdResponse{}, err
+	if err != nil {
+		return nil, utils.ToGRPCError(err) // ← обёртка!
 	}
 
 	ad := &adv1.Ad{
-		Id: uuid.UUID(adFull.ID).String(),
-		Title: adFull.Title,
-		Content: adFull.Content,
-		Targeturl: adFull.TargetUrl,
-		ImgPath: adFull.ImgPath,
-		Budget: adFull.Budget,
-		Status: adFull.Status,
-		StartAt: adFull.StartAt.Format(time.RFC3339),
-    	EndAt:   adFull.EndAt.Format(time.RFC3339),
-		Clicks: int64(adFull.Clicks),
-		Impressions: int64(adFull.Impressions),
+		Id:           uuid.UUID(adFull.ID).String(),
+		Title:        adFull.Title,
+		Content:      adFull.Content,
+		Targeturl:    adFull.TargetUrl,
+		ImgPath:      adFull.ImgPath,
+		Budget:       adFull.Budget,
+		Status:       adFull.Status,
+		StartAt:      adFull.StartAt.Format(time.RFC3339),
+		EndAt:        adFull.EndAt.Format(time.RFC3339),
+		Clicks:       int64(adFull.Clicks),
+		Impressions:  int64(adFull.Impressions),
 	}
 
 	return &adv1.GetAdResponse{Ad: ad}, nil
 }
 
-func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetailIDRequest) (* adv1.GetAdDetailIDResponse, error){
+func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetailIDRequest) (*adv1.GetAdDetailIDResponse, error) {
 	id, err := uuid.Parse(req.GetAdId())
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
 	}
 
-	
-
-	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelfullad.ID(id), req.GetEventType())
-	if err != nil{
-		return nil, err
+	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelad.ID(id), req.GetEventType())
+	if err != nil {
+		return nil, utils.ToGRPCError(err) // ← обёртка!
 	}
 
 	return &adv1.GetAdDetailIDResponse{
@@ -187,31 +188,31 @@ func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetai
 	}, nil
 }
 
-func (s *adService) GetAdSlot(ctx context.Context, req *adv1.GetAdSlotRequest) (* adv1.GetAdSlotResponse, error){
+func (s *adService) GetAdSlot(ctx context.Context, req *adv1.GetAdSlotRequest) (*adv1.GetAdSlotResponse, error) {
 	adSlot, err := s.adUsecase.GetAdSlot(ctx, req.GetMinCost())
-	if err != nil{
-		fmt.Printf("WARNING : Problem in usecase GetAdSlot or empty slice")
+	if err != nil {
+		return &adv1.GetAdSlotResponse{
+			Ad: &adv1.AdSlot{},
+		}, nil
 	}
 
 	adRes := &adv1.AdSlot{
-		Id: adSlot.ID.String(),
-		Title: adSlot.Title,
+		Id:          adSlot.ID.String(),
+		Title:       adSlot.Title,
 		Description: adSlot.Content,
-		ImageSrc: adSlot.ImagePath,
-		Link: adSlot.TargetUrl,
+		ImageSrc:    adSlot.ImagePath,
+		Link:        adSlot.TargetUrl,
 	}
 
 	return &adv1.GetAdSlotResponse{Ad: adRes}, nil
 }
 
-//TODO создать ручку пополнения бюджета в рекламе
-func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRequest) (* adv1.UpdateBudgetResponse, error) {
+func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRequest) (*adv1.UpdateBudgetResponse, error) {
 	clientID, err := interceptor.GetUserID(ctx)
-	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
-	
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
+
 	adIDStr := req.GetId()
 	if adIDStr == "" {
 		return nil, status.Error(codes.InvalidArgument, "ad id is required")
@@ -223,10 +224,8 @@ func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRe
 	}
 
 	newBudget := req.GetBudget()
-
-	err = s.budgetUsecase.UpdateBudget(ctx, modelad.ID(id), clientID, newBudget)
-	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+	if err := s.budgetUsecase.UpdateBudget(ctx, modelad.ID(id), clientID, newBudget); err != nil {
+		return nil, utils.ToGRPCError(err) // ← обёртка!
 	}
 
 	return &adv1.UpdateBudgetResponse{
@@ -242,12 +241,10 @@ func (s *adService) GetAdCount(ctx context.Context, req *adv1.GetAdCountRequest)
 
 	count, err := s.adUsecase.GetAdCount(ctx, clientID)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get ad count")
+		return nil, utils.ToGRPCError(err) // ← обёртка!
 	}
 
 	return &adv1.GetAdCountResponse{
 		Count: count,
 	}, nil
 }
-
-

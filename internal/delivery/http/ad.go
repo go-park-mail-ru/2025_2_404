@@ -168,7 +168,7 @@ func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 
 	adFullResp := adfullinfo.AdFullInfo{
 		ID:              adID,
-		Title:           adProto.Ad.GetId(),
+		Title:           adProto.Ad.GetTitle(),
 		Content:         adProto.Ad.GetContent(),
 		ImgPath:         adProto.Ad.GetImgPath(),
 		TargetUrl:       adProto.Ad.GetTargeturl(),

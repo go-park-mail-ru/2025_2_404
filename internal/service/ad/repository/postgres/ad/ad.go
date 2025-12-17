@@ -1,13 +1,16 @@
 package postgres
 
 import (
-	"database/sql"
-	"context"
-	"fmt"
-	"time"
 	modelad "2025_2_404/internal/service/ad/domain/ad"
 	modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
 	modeluser "2025_2_404/internal/service/ad/domain/user"
+	"2025_2_404/pkg/globalerrors"
+	"context"
+	"database/sql"
+	"errors"
+	"time"
+
+	"github.com/jackc/pgconn"
 )
 
 const(
@@ -21,7 +24,6 @@ const(
 		JOIN ad_detail ON ad_detail.ad_id = ad.id 
 		WHERE ad.client_id = $1`
 	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_path, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	// sqlTextForUpdateAds = "UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4, budget = $5, status = $6 WHERE id = $7 AND client_id = $8"
 	sqlTextForUpdateAds = `UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4 WHERE id = $5 AND client_id = $6`
 	sqlTextForSaveBudget = "INSERT INTO ad_detail (ad_id, budget, status, start_at, end_at) VALUES ($1, $2, $3, $4, $5)"
 	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
@@ -38,7 +40,6 @@ const(
 	ORDER BY RANDOM()
 	LIMIT 1
 	)`
-	// sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1 WHERE ad_id = $2`
 	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1, start_at = $2, end_at = $3 WHERE ad_id = $4`
 	sqlTextForCountAds = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 	sqlTextForUpdateStatistic = "UPDATE statistic SET clicks = statistic.clicks + $1, impressions = statistic.impressions + $2 WHERE ad_detail_id = $3"
@@ -56,41 +57,45 @@ func New(sql *sql.DB) *DB {
 }
 
 func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error) {
-    rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAds, userID)
-    if err != nil {
-        return nil, fmt.Errorf("failed to query ads: %w", err)
-    }
-    defer rows.Close()
+	rows, err := r.sql.QueryContext(ctx, sqlTextForSelectAds, userID)
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "42P01":
+				return nil, globalerrors.ErrInternal
+			case "42703":
+				return nil, globalerrors.ErrInternal
+			}
+		}
+		return nil, globalerrors.ErrInternal
+	}
+	defer rows.Close()
 
-    var ads []modelfullad.AdFullInfo
+	var ads []modelfullad.AdFullInfo
+	for rows.Next() {
+		var adInfo modelfullad.AdFullInfo
+		var createAt sql.NullTime
 
-    for rows.Next() {
-        var adInfo modelfullad.AdFullInfo
-        var createAt sql.NullTime
+		if err := rows.Scan(&adInfo.ID, &adInfo.Title, &adInfo.Status, &createAt); err != nil {
+			return nil, globalerrors.ErrInternal
+		}
+		if createAt.Valid {
+			adInfo.CreatedAt = createAt.Time
+		}
+		ads = append(ads, adInfo)
+	}
 
-        err := rows.Scan(
-            &adInfo.ID,
-            &adInfo.Title,
-            &adInfo.Status,
-            &createAt,
-        )
-        if err != nil {
-            return nil, fmt.Errorf("scan error: %w", err)
-        }
+	if err = rows.Err(); err != nil {
+		return nil, globalerrors.ErrInternal
+	}
 
-        if createAt.Valid { adInfo.CreatedAt = createAt.Time }
-
-        ads = append(ads, adInfo)
-    }
-
-    return ads, nil
+	return ads, nil
 }
 
 func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error) {
 	var adInfo modelfullad.AdFullInfo
-	row := r.sql.QueryRowContext(ctx, sqlTextForFullAdInfo, adID, clientID)
-
-	err :=  row.Scan(
+	err := r.sql.QueryRowContext(ctx, sqlTextForFullAdInfo, adID, clientID).Scan(
 		&adInfo.ID,
 		&adInfo.Title,
 		&adInfo.Content,
@@ -103,29 +108,35 @@ func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.I
 		&adInfo.Clicks,
 		&adInfo.Impressions,
 	)
-
 	if err != nil {
-		return modelfullad.AdFullInfo{}, fmt.Errorf("failed to find an ad: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return modelfullad.AdFullInfo{}, globalerrors.ErrAdNotFound
+		}
+		return modelfullad.AdFullInfo{}, globalerrors.ErrInternal
 	}
-
 	return adInfo, nil
 }
 
 func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
-	
 	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)
 	if err != nil {
-		return fmt.Errorf("failed to delete ad: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23503":
+				return globalerrors.ErrForeignKeyViolation
+			}
+		}
+		return globalerrors.ErrInternal
 	}
 
 	rowsAffected, err := result.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("Failed to get a rows: %w", err)
+		return globalerrors.ErrInternal
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("Ad with ID %d not found", adID)
+		return globalerrors.ErrAdNotFound
 	}
-	fmt.Printf("Пользователь с ID %d успешно удален. Затронуто строк: %d", adID, rowsAffected)
 	return nil
 }
 
@@ -133,151 +144,149 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 	var newAdID modelad.ID
 	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl).Scan(&newAdID)
 	if err != nil {
-		return fmt.Errorf("failed to create ad: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23503":
+				return globalerrors.ErrForeignKeyViolation
+			case "23514":
+				return globalerrors.ErrInvalidQuery
+			}
+		}
+		return globalerrors.ErrInternal
 	}
 
 	if ad.StartAt.IsZero() {
 		ad.StartAt = time.Now()
 	}
-	
 	if ad.EndAt.IsZero() {
-		ad.EndAt = ad.StartAt.Add(time.Hour * 24 * 7)
+		ad.EndAt = ad.StartAt.Add(7 * 24 * time.Hour)
 	}
 
 	_, err = r.sql.ExecContext(ctx, sqlTextForSaveBudget, newAdID, ad.Budget, ad.Status, ad.StartAt, ad.EndAt)
 	if err != nil {
-		r.Delete(ctx, ad.ID, ad.ClientID)
-		return fmt.Errorf("failed to save ad budget: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23505":
+				return globalerrors.ErrInternal
+			case "23514":
+				return globalerrors.ErrInvalidQuery
+			}
+		}
+		_ = r.Delete(ctx, newAdID, ad.ClientID)
+		return globalerrors.ErrInternal
 	}
 
 	return nil
 }
 
-// func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
-// 	tx, err := r.sql.BeginTx(ctx, nil)
-// 	if err != nil {
-// 		return fmt.Errorf("failed to begin transaction: %w", err)
-// 	}
-// 	defer tx.Rollback()
-
-// 	_, err = tx.ExecContext(ctx,sqlTextForUpdateAds,
-// 		ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID,
-// 	)
-// 	if err != nil {
-// 		return fmt.Errorf("failed to update ad: %w", err)
-// 	}
-
-// 	res, err := tx.ExecContext(ctx, sqlTextForUpdateAdDetail, ad.Status, ad.ID)
-// 	if err != nil {
-// 		return fmt.Errorf("failed to update ad_detail: %w", err)
-// 	}
-
-// 	rowsAffected, err := res.RowsAffected()
-// 	if err != nil {
-// 		return fmt.Errorf("failed to get rows affected: %w", err)
-// 	}
-// 	if rowsAffected == 0 {
-// 		return fmt.Errorf("ad_detail for ad_id %v not found", ad.ID)
-// 	}
-
-// 	err = tx.Commit()
-// 	if err != nil {
-// 		return fmt.Errorf("failed to commit transaction: %w", err)
-// 	}
-
-// 	return nil
-// }
-
-
 func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	tx, err := r.sql.BeginTx(ctx, nil)
 	if err != nil {
-		return fmt.Errorf("failed to begin transaction: %w", err)
+		return globalerrors.ErrInternal
 	}
 	defer tx.Rollback()
-	if ad.ImagePath == ""{
-		err := tx.QueryRowContext(ctx, sqlTextForGetPathImage, ad.ID).Scan(&ad.ImagePath)
-		if err != nil{
-			return fmt.Errorf("failed to select image for ad: %w", err)
+
+	if ad.ImagePath == "" {
+		if err := tx.QueryRowContext(ctx, sqlTextForGetPathImage, ad.ID).Scan(&ad.ImagePath); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return globalerrors.ErrAdNotFound
+			}
+			return globalerrors.ErrInternal
 		}
 	}
-	res, err := tx.ExecContext(ctx, sqlTextForUpdateAds,
-		ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID,
-	)
+
+	res, err := tx.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID)
 	if err != nil {
-		return fmt.Errorf("failed to update ad: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23514":
+				return globalerrors.ErrInvalidQuery
+			}
+		}
+		return globalerrors.ErrInternal
 	}
 
 	rowsAffected, err := res.RowsAffected()
 	if err != nil {
-		return fmt.Errorf("failed to get rows affected: %w", err)
+		return globalerrors.ErrInternal
 	}
 	if rowsAffected == 0 {
-		return fmt.Errorf("ad with id %v not found or access denied", ad.ID)
+		return globalerrors.ErrAccessDenied
 	}
-	
+
 	_, err = tx.ExecContext(ctx, sqlTextForUpdateAdDetail, ad.Status, ad.StartAt, ad.EndAt, ad.ID)
 	if err != nil {
-		return fmt.Errorf("failed to update ad_detail: %w", err)
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23514":
+				return globalerrors.ErrInvalidQuery
+			}
+		}
+		return globalerrors.ErrInternal
 	}
 
 	if err := tx.Commit(); err != nil {
-		return fmt.Errorf("failed to commit transaction: %w", err)
+		return globalerrors.ErrInternal
 	}
-
 	return nil
 }
 
 func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error) {
 	tx, err := r.sql.BeginTx(ctx, nil)
 	if err != nil {
-		return modelfullad.DetailID{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return modelfullad.DetailID{}, globalerrors.ErrInternal
 	}
 	defer func() {
-		if err != nil {
-			_ = tx.Rollback()
-		} else {
-			_ = tx.Commit()
-		}
+		_ = tx.Rollback()
 	}()
 
-	var detail_id modelfullad.DetailID
-	err = tx.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detail_id)
+	var detailID modelfullad.DetailID
+	err = tx.QueryRowContext(ctx, sqlTextForGetAdDetailID, id).Scan(&detailID)
 	if err != nil {
-		return modelfullad.DetailID{}, fmt.Errorf("failed to get ad_detail_id: %w", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return modelfullad.DetailID{}, globalerrors.ErrBudgetTooLow
+		}
+		return modelfullad.DetailID{}, globalerrors.ErrInternal
 	}
 
-	_, err = tx.ExecContext(ctx, sqlTextForUpdateStatistic, click, impression, detail_id)
+	_, err = tx.ExecContext(ctx, sqlTextForUpdateStatistic, click, impression, detailID)
 	if err != nil {
-		return modelfullad.DetailID{}, fmt.Errorf("failed to update statistic: %w", err)
+		return modelfullad.DetailID{}, globalerrors.ErrInternal
 	}
 
-	return detail_id, nil
+	if err := tx.Commit(); err != nil {
+		return modelfullad.DetailID{}, globalerrors.ErrInternal
+	}
+
+	return detailID, nil
 }
 
 func (r *DB) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error) {
 	var adSlot modelad.Ads
 	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdSlot, min_cost).Scan(
-		&adSlot.ID, 
+		&adSlot.ID,
 		&adSlot.Title,
 		&adSlot.Content,
 		&adSlot.ImagePath,
 		&adSlot.TargetUrl,
 	)
-
-	if err != nil{
-		return modelad.Ads{}, fmt.Errorf("not found ad for slot")
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return modelad.Ads{}, globalerrors.ErrAdNotFound
+		}
+		return modelad.Ads{}, globalerrors.ErrInternal
 	}
-
 	return adSlot, nil
 }
 
 func (r *DB) GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error) {
 	var count int64
-	err := r.sql.QueryRowContext(ctx, sqlTextForCountAds, clientID).Scan(&count)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count ads: %w", err)
+	if err := r.sql.QueryRowContext(ctx, sqlTextForCountAds, clientID).Scan(&count); err != nil {
+		return 0, globalerrors.ErrInternal
 	}
-
 	return count, nil
 }

@@ -3,9 +3,11 @@ package budget
 import (
 	modelad "2025_2_404/internal/service/ad/domain/ad"
 	modeluser "2025_2_404/internal/service/ad/domain/user"
+	"2025_2_404/pkg/globalerrors"
 	"context"
 	"database/sql"
-	"fmt"
+	"errors"
+	"github.com/jackc/pgconn"
 )
 
 const(
@@ -23,21 +25,29 @@ func New(sql *sql.DB) *DB {
 	}
 }
 
-func (r *DB) UpdateBudget(ctx context.Context, adID modelad.ID, clientID modeluser.ID, newBudget uint32) (error) {
+func (r *DB) UpdateBudget(ctx context.Context, adID modelad.ID, clientID modeluser.ID, newBudget uint32) error {
 	res, err := r.sql.ExecContext(ctx, sqlTextForUpdateBudget, newBudget, adID, clientID)
-    if err != nil {
-        return fmt.Errorf("failed to execute update budget query: %w", err)
-    }
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			switch pgErr.Code {
+			case "23514":
+				return globalerrors.ErrInvalidQuery
+			case "23503": 
+				return globalerrors.ErrAdNotFound
+			}
+		}
+		return globalerrors.ErrInternal
+	}
 
-    rowsAffected, err := res.RowsAffected()
-    if err != nil {
-        return fmt.Errorf("failed to get rows affected: %w", err)
-    }
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		return globalerrors.ErrInternal
+	}
 
-    if rowsAffected == 0 {
-        return fmt.Errorf("ad not found or access denied")
-    }
+	if rowsAffected == 0 {
+		return globalerrors.ErrAccessDenied
+	}
 
-    return nil
+	return nil
 }
-

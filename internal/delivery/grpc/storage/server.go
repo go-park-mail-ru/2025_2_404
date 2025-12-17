@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"2025_2_404/pkg/utils"
 	storagev1 "2025_2_404/protos/gen/go/storage"
 	"context"
 	"log/slog"
@@ -28,7 +29,7 @@ func (s *storageService) Create(ctx context.Context, req *storagev1.CreateReques
     err := s.storageUsecase.Create(ctx, req.ImageData, req.ImagePath)
     if err != nil {
         slog.Error("❌ Create failed", "image_path", req.ImagePath, "error", err)
-        return nil, err
+        return nil, utils.ToGRPCError(err)
     }
 
     slog.Info("✅ Create succeeded", "image_path", req.ImagePath)
@@ -37,9 +38,10 @@ func (s *storageService) Create(ctx context.Context, req *storagev1.CreateReques
 
 func (s *storageService) Delete(ctx context.Context, req *storagev1.DeleteRequest) (*storagev1.DeleteResponse, error) {
     slog.Debug("🗑️ Delete: received request", "image_path", req.ImagePath)
-    if err := s.storageUsecase.Delete(ctx, req.ImagePath); err != nil {
+    err := s.storageUsecase.Delete(ctx, req.ImagePath)
+    if err != nil {
         slog.Error("❌ Delete failed", "image_path", req.ImagePath, "error", err)
-        return nil, err
+        return nil, utils.ToGRPCError(err)
     }
 
     slog.Info("✅ Delete succeeded", "image_path", req.ImagePath)
@@ -53,7 +55,7 @@ func (s *storageService) Get(ctx context.Context, req *storagev1.GetRequest) (*s
     imageData, contentType, err := s.storageUsecase.Get(ctx, req.ImagePath)
     if err != nil {
         slog.Error("❌ Get failed", "image_path", req.ImagePath, "error", err)
-        return nil, err
+        return nil, utils.ToGRPCError(err)
     }
 
     slog.Info("✅ Get succeeded", "image_path", req.ImagePath, "size", len(imageData), "content_type", contentType)
