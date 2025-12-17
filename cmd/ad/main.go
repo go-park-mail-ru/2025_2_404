@@ -39,10 +39,9 @@ func main() {
 	}
 	defer connCfg.CloseAll()
 
-	// --- Metrics server (можно тоже логировать через zap)
 	go func() {
 		log.Info("starting metrics server", zap.String("addr", ":9090"))
-		http.Handle("/metrics", promhttp.Handler())
+		http.Handle("/api/metrics", promhttp.Handler())
 		if err := http.ListenAndServe(":9090", nil); err != nil {
 			log.Error("metrics server failed", zap.Error(err))
 		}

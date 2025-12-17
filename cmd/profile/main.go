@@ -66,10 +66,8 @@ func main() {
 		log.Fatalf("failed to listen on :%s: %v", cfg.AppConfig.Port, err)
 	}
 
-	go func() {
-		log.Printf("gRPC Profile Service running on :%s", cfg.AppConfig.Port)
-		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatalf("gRPC server failed: %v", err)
-		}
-	}()
+	log.Printf("gRPC Profile Service starting on :%s", cfg.AppConfig.Port)
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("gRPC server failed: %v", err)
+	}
 }

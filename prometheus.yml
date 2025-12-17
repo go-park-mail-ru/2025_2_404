@@ -1,0 +1,28 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  - job_name: "authGRPC"
+    static_configs:
+      - targets: ["auth:9090"]  # имя сервиса из docker-compose
+
+  - job_name: "adGRPC"
+    static_configs:
+      - targets: ["ad:9090"]
+
+  - job_name: "profileGRPC"
+    static_configs:
+      - targets: ["profile:9090"]
+
+  - job_name: "storageGRPC"
+    static_configs:
+      - targets: ["storage:9090"]
+
+  - job_name: "slotGRPC"
+    static_configs:
+      - targets: ["slot:9090"]

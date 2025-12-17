@@ -58,10 +58,8 @@ func main() {
 		log.Fatal("failed to listen on port", zap.String("port", cfg.AppConfig.Port), zap.Error(err))
 	}
 
-	go func() {
-		log.Info("gRPC Auth Service starting", zap.String("port", cfg.AppConfig.Port))
-		if err := grpcServer.Serve(lis); err != nil {
-			log.Fatal("gRPC server failed", zap.Error(err))
-		}
-	}()
+	log.Info("gRPC Auth Service starting", zap.String("port", cfg.AppConfig.Port))
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatal("gRPC server failed", zap.Error(err))
+	}
 }
