@@ -1,3 +1,4 @@
+// Package http provides HTTP client implementations for external services related to user profiles.
 package http
 
 import (
@@ -13,19 +14,19 @@ import (
 
 const YooKassaAPI = "https://api.yookassa.ru/v3/payments"
 
-type YooKassaHttp struct{
-	secretKey	string
-	shopID		string
+type YooKassaHTTP struct {
+	secretKey string
+	shopID    string
 }
 
-func New(cfg *config.Config) *YooKassaHttp{
-	return &YooKassaHttp{
+func New(cfg *config.Config) *YooKassaHTTP {
+	return &YooKassaHTTP{
 		secretKey: cfg.PaymentConfig.SecretKey,
-		shopID: cfg.PaymentConfig.ShopID,
+		shopID:    cfg.PaymentConfig.ShopID,
 	}
 }
 
-func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(user.PaymentResponse, error){
+func (y *YooKassaHTTP) CreatePayment(ctx context.Context, payment user.Payment) (user.PaymentResponse, error) {
 	paymentReq := user.PaymentRequest{}
 	paymentReq.Amount.Value = fmt.Sprintf("%d.00", payment.AmountRub)
 	paymentReq.Amount.Currency = "RUB"
@@ -46,7 +47,9 @@ func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(
 	if err != nil {
 		return user.PaymentResponse{}, fmt.Errorf("Bad Request to YooKassa")
 	}
-	defer resp.Body.Close()
+	defer func() {
+		_ = resp.Body.Close()
+	}()
 
 	respBody, _ := io.ReadAll(resp.Body)
 
@@ -61,7 +64,9 @@ func (y *YooKassaHttp) CreatePayment(ctx context.Context, payment user.Payment)(
 	}
 
 	var paymentResp user.PaymentResponse
-	json.Unmarshal(respBody, &paymentResp)
+	if err := json.Unmarshal(respBody, &paymentResp); err != nil {
+		return user.PaymentResponse{}, fmt.Errorf("failed to unmarshal YooKassa response: %w", err)
+	}
 
 	return paymentResp, nil
 }

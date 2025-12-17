@@ -1,3 +1,4 @@
+// Package postgres provides a PostgreSQL database connection for the slot service.
 package postgres
 
 import (
@@ -6,6 +7,7 @@ import (
 	"fmt"
 	"time"
 
+	// Register pgx as a driver for database/sql.
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -34,4 +36,3 @@ func ConnectDB(config *config.PostgresConfig) (*sql.DB, error) {
 func CloseDB(db *sql.DB) error {
 	return db.Close()
 }
-

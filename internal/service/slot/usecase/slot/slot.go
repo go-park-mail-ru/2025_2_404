@@ -1,11 +1,13 @@
+// Package slot provides use case implementations for managing slots.
 package slot
+
 import (
-	"context"
 	"2025_2_404/internal/service/slot/domain/slot"
+	"context"
 )
 
 type slotRepository interface {
-	Create(ctx context.Context, s slot.Slot) (slot.ID, error) 
+	Create(ctx context.Context, s slot.Slot) (slot.ID, error)
 	GetByID(ctx context.Context, id slot.ID) (slot.Slot, error)
 	ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error)
 	Update(ctx context.Context, s slot.Slot) error

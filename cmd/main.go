@@ -1,3 +1,4 @@
+// Package main implements the API Gateway for the advertisement service platform.
 package main
 
 import (
@@ -11,6 +12,7 @@ import (
 	"2025_2_404/internal/delivery/http/middleware"
 
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 
@@ -68,35 +70,45 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to Auth: %v", err)
 	}
-	defer connAuth.Close()
+	defer func() {
+		_ = connAuth.Close()
+	}()
 	authClient := pbAuth.NewAuthClient(connAuth)
 
 	connProfile, err := grpc.NewClient(profileAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Profile: %v", err)
 	}
-	defer connProfile.Close()
+	defer func() {
+		_ = connProfile.Close()
+	}()
 	profileClient := pbProfile.NewProfileClient(connProfile)
 
 	connAd, err := grpc.NewClient(adAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Ad: %v", err)
 	}
-	defer connAd.Close()
+	defer func() {
+		_ = connAd.Close()
+	}()
 	adClient := pbAd.NewAdServClient(connAd)
 
 	connStorage, err := grpc.NewClient(storageAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Storage: %v", err)
 	}
-	defer connStorage.Close()
+	defer func() {
+		_ = connStorage.Close()
+	}()
 	storageClient := pbStorage.NewStorageClient(connStorage)
 
 	connSlot, err := grpc.NewClient(slotAddr, dialOpts)
 	if err != nil {
 		log.Fatalf("Failed to connect to Slot: %v", err)
 	}
-	defer connSlot.Close()
+	defer func() {
+		_ = connSlot.Close()
+	}()
 	slotClient := slotpb.NewSlotServClient(connSlot)
 
 	r := mux.NewRouter()
@@ -149,6 +161,7 @@ func main() {
 
 	//Metric
 	metricRouter.HandleFunc("", slotHandler.CreateMetric).Methods("GET")
+	r.Handle("/metrics", promhttp.Handler())
 
 	handler := middleware.CorsMiddleware(r)
 	handler = middleware.AccessLogMiddleware(handler)

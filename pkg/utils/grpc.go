@@ -1,3 +1,4 @@
+// Package utils provides utility functions for gRPC error handling.
 package utils
 
 import (

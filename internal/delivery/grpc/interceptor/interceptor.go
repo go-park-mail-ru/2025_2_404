@@ -1,3 +1,4 @@
+// Package interceptor provides gRPC interceptors for authentication and authorization.
 package interceptor
 
 import (
@@ -19,22 +20,23 @@ import (
 )
 
 type ctxKey string
+
 const UserIDKey ctxKey = "userID"
 
 var publicMethods = map[string]bool{
-	"/slot.SlotServ/GetSlot": true,
-	"/slot.SlotServ/CreateMetric": true,
-	"/ad.AdServ/GetAdDetailForSlot": true,
-	"/ad.AdServ/GetAdSlot": true,
+	"/slot.SlotServ/GetSlot":               true,
+	"/slot.SlotServ/CreateMetric":          true,
+	"/ad.AdServ/GetAdDetailForSlot":        true,
+	"/ad.AdServ/GetAdSlot":                 true,
 	"/profile.Profile/UpdatePaymentStatus": true,
-	"/profile.Profile/AddBalance": true,   
+	"/profile.Profile/AddBalance":          true,
 }
 
 func AuthInterceptor(authClient authProto.AuthClient) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		if publicMethods[info.FullMethod] {
-		return handler(ctx, req)
-	}
+			return handler(ctx, req)
+		}
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, status.Error(codes.Unauthenticated, "no metadata")
@@ -51,18 +53,18 @@ func AuthInterceptor(authClient authProto.AuthClient) grpc.UnaryServerIntercepto
 		}
 
 		resp, err := authClient.ValidateToken(ctx, &authProto.TokenRequest{
-            Token: token,
-        })
-        
+			Token: token,
+		})
+
 		if err != nil {
 			return nil, status.Errorf(codes.Unauthenticated, "token validation failed: %v", err)
 		}
 		fmt.Printf("DEBUG INTERCEPTOR: Auth returned UserID string: '%s'\n", resp.GetUserId())
-        userID, err := uuid.Parse(resp.GetUserId())
+		userID, err := uuid.Parse(resp.GetUserId())
 		fmt.Printf("DEBUG INTERCEPTOR: Auth returned UserID string: '%s'\n", userID)
-        if err != nil {
-            return nil, status.Errorf(codes.Internal, "invalid user id from auth service")
-        }
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "invalid user id from auth service")
+		}
 
 		newCtx := context.WithValue(ctx, UserIDKey, userID)
 		fmt.Printf("DEBUG INTERCEPTOR: Auth returned UserID string: '%s'\n", newCtx)
@@ -72,16 +74,16 @@ func AuthInterceptor(authClient authProto.AuthClient) grpc.UnaryServerIntercepto
 }
 
 func GetUserID(ctx context.Context) (uuid.UUID, error) {
-    val := ctx.Value(UserIDKey)
-    if val == nil {
-        return uuid.Nil, status.Error(codes.Unauthenticated, "user id not found in context")
-    }
-    
-    id, ok := val.(uuid.UUID)
-    if !ok {
-        return uuid.Nil, status.Error(codes.Internal, "user id is of wrong type")
-    }
-    return id, nil
+	val := ctx.Value(UserIDKey)
+	if val == nil {
+		return uuid.Nil, status.Error(codes.Unauthenticated, "user id not found in context")
+	}
+
+	id, ok := val.(uuid.UUID)
+	if !ok {
+		return uuid.Nil, status.Error(codes.Internal, "user id is of wrong type")
+	}
+	return id, nil
 }
 
 func InitAuthInterceptor() (grpc.UnaryServerInterceptor, *grpc.ClientConn) {

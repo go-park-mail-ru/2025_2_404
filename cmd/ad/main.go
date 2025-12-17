@@ -1,3 +1,4 @@
+// Package main initializes and starts the Advertisement gRPC server.
 package main
 
 import (
@@ -13,10 +14,12 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -29,13 +32,23 @@ func main() {
 	}
 	defer connCfg.CloseAll()
 
-	authServiceAddr := "auth:8077" 
+	go func() {
+		log.Println("Starting metrics server on :9090")
+		http.Handle("/metrics", promhttp.Handler())
+		if err := http.ListenAndServe(":9090", nil); err != nil {
+			log.Printf("Metrics server failed: %v", err)
+		}
+	}()
+
+	authServiceAddr := "auth:8077"
 
 	authConn, err := grpc.NewClient(authServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("failed to connect to Auth Service: %v", err)
 	}
-	defer authConn.Close()
+	defer func() {
+		_ = authConn.Close()
+	}()
 
 	// authClient := authProto.NewAuthClient(authConn)
 
@@ -44,7 +57,6 @@ func main() {
 	adUC := usecase.New(repoCfgAd)
 	budgetUC := budget.New(repoCfgBudget)
 	authInterceptor, authConn := interceptor.InitAuthInterceptor()
-    defer authConn.Close()
 	adHandler := adhandler.New(adUC, budgetUC)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortAD))

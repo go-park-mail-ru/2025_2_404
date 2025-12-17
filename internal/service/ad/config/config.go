@@ -1,3 +1,4 @@
+// Package config provides configuration management for the ad service.
 package config
 
 import (
@@ -20,11 +21,11 @@ type PostgresConfig struct {
 }
 
 type AppConfig struct {
-	Host			  string
-	Port              string
-	PortAD			  string
-	PortStorage       string
-	ImgPath			  string
+	Host        string
+	Port        string
+	PortAD      string
+	PortStorage string
+	ImgPath     string
 }
 
 func GetConfig() *Config {
@@ -53,10 +54,10 @@ func GetPostgresConfig() *PostgresConfig {
 
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
-		Host: os.Getenv("APP_HOST"),
-		Port: os.Getenv("APP_PORT"),
-		PortAD: os.Getenv("GRPC_AD_PORT"),
+		Host:        os.Getenv("APP_HOST"),
+		Port:        os.Getenv("APP_PORT"),
+		PortAD:      os.Getenv("GRPC_AD_PORT"),
 		PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
-		ImgPath: os.Getenv("IMG_PATH"),
+		ImgPath:     os.Getenv("IMG_PATH"),
 	}
 }

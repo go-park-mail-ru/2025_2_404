@@ -1,3 +1,4 @@
+// Package config provides configuration management for the auth service.
 package config
 
 import (
@@ -26,11 +27,11 @@ type PostgresConfig struct {
 }
 
 type AppConfig struct {
-	Host			  string
+	Host              string
 	Port              string
-	PortAD			  string
+	PortAD            string
 	PortStorage       string
-	Timeout time.Duration
+	Timeout           time.Duration
 	JwtPrivateKeyPath string
 	JwtPublicKeyPath  string
 	JwtPrivateKey     *ecdsa.PrivateKey
@@ -45,10 +46,10 @@ func GetConfig() *Config {
 
 	appCfg := GetAppConfig()
 	if err := LoadJwtPrivateKey(appCfg); err != nil {
-		log.Println(fmt.Errorf("ошибка загрузки JWT приватного ключа: %v", err))
+		log.Println(fmt.Errorf("ошибка загрузки JWT приватного ключа: %w", err))
 	}
 	if err := LoadJwtPublicKey(appCfg); err != nil {
-		log.Println(fmt.Errorf("ошибка загрузки JWT публичного ключа: %v", err))
+		log.Println(fmt.Errorf("ошибка загрузки JWT публичного ключа: %w", err))
 	}
 
 	return &Config{
@@ -69,20 +70,20 @@ func GetPostgresConfig() *PostgresConfig {
 
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
-		Host: os.Getenv("APP_HOST"),
-		Port: os.Getenv("APP_PORT"),
-		PortAD: os.Getenv("GRPC_AD_PORT"),
+		Host:        os.Getenv("APP_HOST"),
+		Port:        os.Getenv("APP_PORT"),
+		PortAD:      os.Getenv("GRPC_AD_PORT"),
 		PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
 		// Port: os.Getenv("GRPC_PORT_AUTH"),
 		JwtPrivateKeyPath: os.Getenv("JWT_PRIVATE_KEY_PATH"),
-		JwtPublicKeyPath: os.Getenv("JWT_PUBLIC_KEY_PATH"),
+		JwtPublicKeyPath:  os.Getenv("JWT_PUBLIC_KEY_PATH"),
 	}
 }
 
 func LoadJwtPrivateKey(cfg *AppConfig) error {
 	privKey, err := os.ReadFile(cfg.JwtPrivateKeyPath)
 	if err != nil {
-		return fmt.Errorf("ошибка чтения приватного ключа: %v", err)
+		return fmt.Errorf("ошибка чтения приватного ключа: %w", err)
 	}
 
 	block, _ := pem.Decode(privKey)
@@ -92,7 +93,7 @@ func LoadJwtPrivateKey(cfg *AppConfig) error {
 
 	key, err := x509.ParseECPrivateKey(block.Bytes)
 	if err != nil {
-		return fmt.Errorf("ошибка парсинга приватного ключа: %v", err)
+		return fmt.Errorf("ошибка парсинга приватного ключа: %w", err)
 	}
 
 	cfg.JwtPrivateKey = key
@@ -103,7 +104,7 @@ func LoadJwtPrivateKey(cfg *AppConfig) error {
 func LoadJwtPublicKey(cfg *AppConfig) error {
 	pubKey, err := os.ReadFile(cfg.JwtPublicKeyPath)
 	if err != nil {
-		return fmt.Errorf("ошибка чтения публичного ключа: %v", err)
+		return fmt.Errorf("ошибка чтения публичного ключа: %w", err)
 	}
 
 	block, _ := pem.Decode(pubKey)
@@ -113,7 +114,7 @@ func LoadJwtPublicKey(cfg *AppConfig) error {
 
 	key, err := x509.ParsePKIXPublicKey(block.Bytes)
 	if err != nil {
-		return fmt.Errorf("ошибка парсинга публичного ключа: %v", err)
+		return fmt.Errorf("ошибка парсинга публичного ключа: %w", err)
 	}
 
 	cfg.JwtPublicKey = key.(*ecdsa.PublicKey)

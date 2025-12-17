@@ -1,3 +1,4 @@
+// Package readerfile provides utilities for reading files from HTTP requests.
 package readerfile
 
 import (
@@ -27,7 +28,9 @@ func ExtractImage(r *http.Request, basePath string, formFieldName string) ([]byt
 	if err != nil {
 		return nil, "", fmt.Errorf("cannot open image: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		_ = file.Close()
+	}()
 
 	fileBytes, err := io.ReadAll(file)
 	if err != nil {

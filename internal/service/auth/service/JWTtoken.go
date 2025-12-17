@@ -1,3 +1,4 @@
+// Package service provides JWT token generation and validation services.
 package service
 
 import (
@@ -12,8 +13,8 @@ import (
 )
 
 type UseCaseJWT struct {
-	privateKey	*ecdsa.PrivateKey
-	publicKey	*ecdsa.PublicKey
+	privateKey *ecdsa.PrivateKey
+	publicKey  *ecdsa.PublicKey
 }
 
 func NewJWT(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey) *UseCaseJWT {
@@ -26,7 +27,7 @@ func NewJWT(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey) *UseCaseJW
 type Claims struct {
 	UserID modeluser.ID `json:"user_id"`
 	jwt.RegisteredClaims
-} 
+}
 
 func (u *UseCaseJWT) GenerateToken(userID modeluser.ID) (string, error) {
 	expTime := time.Now().Add(24 * time.Hour)
@@ -75,6 +76,6 @@ func (u *UseCaseJWT) ValidateToken(ctx context.Context, tokenString string) (mod
 // 		return u.publicKey, nil
 // 	})
 // 	if err != nil || !token.Valid{
-		
+
 // 	}
 // }

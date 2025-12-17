@@ -1,3 +1,4 @@
+// Package readyookassaip provides functionality to check if an IP address belongs to YooKassa's known IP ranges.
 package readyookassaip
 
 import (

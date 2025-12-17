@@ -1,3 +1,4 @@
+// Package handler provides gRPC delivery handlers for authentication-related operations.
 package handler
 
 import (
@@ -10,12 +11,12 @@ import (
 )
 
 var (
-    ErrAlreadyExists = errors.New("user already exists")
-    ErrNotFound      = errors.New("user not found")
+	ErrAlreadyExists = errors.New("user already exists")
+	ErrNotFound      = errors.New("user not found")
 )
 
 type UseCase interface {
-	Register(ctx context.Context, email, password, userName string) (string, modeluser.ID, error)	
+	Register(ctx context.Context, email, password, userName string) (string, modeluser.ID, error)
 	Login(ctx context.Context, email string, password string) (string, modeluser.ID, error)
 	// ValidateToken(ctx context.Context, tokenString string) (modeluser.ID, error)
 }
@@ -25,14 +26,14 @@ type UseCaseJWT interface {
 }
 
 type AuthServer struct {
-	auth.UnimplementedAuthServer 
-	useCase UseCase
+	auth.UnimplementedAuthServer
+	useCase    UseCase
 	useCaseJWT UseCaseJWT
 }
 
 func NewAuthServer(useCase UseCase, useCaseJWT UseCaseJWT) *AuthServer {
 	return &AuthServer{
-		useCase: useCase,
+		useCase:    useCase,
 		useCaseJWT: useCaseJWT,
 	}
 }

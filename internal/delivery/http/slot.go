@@ -16,7 +16,7 @@ import (
 	"2025_2_404/internal/service/slot/domain/metric"
 	"2025_2_404/internal/service/slot/domain/slot"
 	"2025_2_404/pkg"
-	"2025_2_404/pkg/convertImage"
+	convertimage "2025_2_404/pkg/convertImage"
 	"2025_2_404/pkg/utils"
 	adpb "2025_2_404/protos/gen/go/ad"
 	slotpb "2025_2_404/protos/gen/go/slot"
@@ -81,7 +81,7 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var imageSrc string
-	if len(imgData.ImageData) != 0{
+	if len(imgData.ImageData) != 0 {
 
 		imageSrc = convertimage.ConvertImageToBase64(imgData.ImageData, imgData.ContentType)
 		log.Printf("Изображение успешно конвертировано в Base64: %s", imageSrc[:30]+"...")
@@ -99,8 +99,8 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		Link:        resp.AdSlot.Link,
 		Background:  resp.Slot.BackColor,
 		Color:       resp.Slot.TextColor,
-		Banner: 	 resp.AdSlot.Id,
-		Slot: 		 slotID,		 
+		Banner:      resp.AdSlot.Id,
+		Slot:        slotID,
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -230,13 +230,13 @@ func (h *SlotHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	req := &slotpb.UpdateSlotRequest{
 		Slot: &slotpb.Slot{
-			Id:              id,
-			SlotName:        dto.SlotName,
-			MinCostAdv:      dto.MinCostAdv,
-			FormatOfBanner:  dto.FormatOfBanner,
-			Status:          dto.Status,
-			BackColor:       dto.BackColor,
-			TextColor:       dto.TextColor,
+			Id:             id,
+			SlotName:       dto.SlotName,
+			MinCostAdv:     dto.MinCostAdv,
+			FormatOfBanner: dto.FormatOfBanner,
+			Status:         dto.Status,
+			BackColor:      dto.BackColor,
+			TextColor:      dto.TextColor,
 		},
 	}
 
@@ -275,34 +275,34 @@ func (h *SlotHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *SlotHandler) CreateMetric(w http.ResponseWriter, r *http.Request){
+func (h *SlotHandler) CreateMetric(w http.ResponseWriter, r *http.Request) {
 	bannerID := r.URL.Query().Get("banner")
-    slotID := r.URL.Query().Get("slot")
-    action := r.URL.Query().Get("action")
+	slotID := r.URL.Query().Get("slot")
+	action := r.URL.Query().Get("action")
 
 	log.Printf("Получен запрос на запись метрики: banner=%q, slot=%q, action=%q", bannerID, slotID, action)
 
 	if bannerID == "" || slotID == "" || action == "" {
-        http.Error(w, "missing required params: banner, slot, action", http.StatusBadRequest)
-        return
-    }
+		http.Error(w, "missing required params: banner, slot, action", http.StatusBadRequest)
+		return
+	}
 
-	if action == "shown"{
+	if action == "shown" {
 		action = "impression"
 	}
-    ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
-    defer cancel()
+	ctx, cancel := context.WithTimeout(r.Context(), 5*time.Second)
+	defer cancel()
 
-    _, err := h.client.CreateMetric(ctx, &slotpb.CreateMetricRequest{
-        AdId:      bannerID,
-        SlotId:    slotID,
-        EventType: action,
-    })
-    if err != nil {
-        log.Printf("Failed to record metric: %v", err)
-        http.Error(w, "Metrics not created", http.StatusBadRequest)
-        return
-    }
+	_, err := h.client.CreateMetric(ctx, &slotpb.CreateMetricRequest{
+		AdId:      bannerID,
+		SlotId:    slotID,
+		EventType: action,
+	})
+	if err != nil {
+		log.Printf("Failed to record metric: %v", err)
+		http.Error(w, "Metrics not created", http.StatusBadRequest)
+		return
+	}
 
 	w.WriteHeader(http.StatusNoContent)
 }
@@ -320,26 +320,26 @@ func (h *SlotHandler) GetMetrics(w http.ResponseWriter, r *http.Request) {
 	res, err := h.client.GetMetrics(ctx, &slotpb.GetMetricsRequest{SlotId: id})
 	if err != nil {
 		log.Printf("Failed to get metric: %v", err)
-        http.Error(w, "Not found metrics", http.StatusNotFound)
-        return
+		http.Error(w, "Not found metrics", http.StatusNotFound)
+		return
 	}
 
 	var metricsForDay []metric.MetricsForDay
 
 	for _, m := range res.GetMetrics() {
 		metricForDay := metric.MetricsForDay{
-			Clicks: m.Clicks,
+			Clicks:      m.Clicks,
 			Impressions: m.Impressions,
-			EventDate: m.EventData,
+			EventDate:   m.EventData,
 		}
 		metricsForDay = append(metricsForDay, metricForDay)
 	}
 
 	metricRes := metric.GetMetricsResponse{
-		SlotID: res.GetSlotId(),
+		SlotID:           res.GetSlotId(),
 		TotalImpressions: res.GetTotalImpressions(),
-		TotalClicks: res.GetTotalClicks(),
-		Metrics: metricsForDay,
+		TotalClicks:      res.GetTotalClicks(),
+		Metrics:          metricsForDay,
 	}
 
 	log.Printf("Статистика слота с ID=%s успешно получен", id)

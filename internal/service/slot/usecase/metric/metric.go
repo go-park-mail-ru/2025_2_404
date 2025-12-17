@@ -1,3 +1,4 @@
+// Package metric provides use case implementations for managing slot metrics.
 package metric
 
 import (
@@ -6,16 +7,16 @@ import (
 	"context"
 )
 
-type metricRepositiryI interface{
-	CreateMetric(ctx context.Context, metric metric.Metric) (user.ID ,error)
-	GetMetricForDay(ctx context.Context, slotID metric.SlotID)  ([]metric.GetMetric, error)
+type metricRepositiryI interface {
+	CreateMetric(ctx context.Context, metric metric.Metric) (user.ID, error)
+	GetMetricForDay(ctx context.Context, slotID metric.SlotID) ([]metric.GetMetric, error)
 }
 
-type MetricUsecase struct{
-	repo 	metricRepositiryI
+type MetricUsecase struct {
+	repo metricRepositiryI
 }
 
-func New(repo metricRepositiryI) *MetricUsecase{
+func New(repo metricRepositiryI) *MetricUsecase {
 	return &MetricUsecase{
 		repo: repo,
 	}

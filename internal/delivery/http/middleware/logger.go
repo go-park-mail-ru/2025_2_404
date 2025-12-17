@@ -9,6 +9,10 @@ import (
 	"github.com/google/uuid"
 )
 
+type contextKey string
+
+const requestIDKey contextKey = "request_id"
+
 // responseWriterWithStatus — перехватывает статус и размер ответа
 type responseWriterWithStatus struct {
 	http.ResponseWriter
@@ -72,7 +76,7 @@ func AccessLogMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Добавляем request_id в контекст (если понадобится в handler'ах)
-		ctx := context.WithValue(r.Context(), "request_id", requestID)
+		ctx := context.WithValue(r.Context(), requestIDKey, requestID)
 		newReq := r.WithContext(ctx)
 
 		// Выполняем обработчик

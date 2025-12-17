@@ -1,3 +1,4 @@
+// Package ad provides use case implementations for advertisement management.
 package ad
 
 import (
@@ -9,12 +10,12 @@ import (
 
 type adRepositoryI interface {
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error)
-	Create(ctx context.Context, ad modelad.Ads) (error)
+	Create(ctx context.Context, ad modelad.Ads) error
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 	GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error)
-	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
+	GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error)
 	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
 }
 
@@ -72,20 +73,20 @@ func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modelu
 	return adInfo, conversion, nil
 }
 
-func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID, event_type string) (modelfullad.DetailID, error) {
+func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID, eventType string) (modelfullad.DetailID, error) {
 	click := 0
 	impression := 0
-	if event_type == "impression" {
+	if eventType == "impression" {
 		impression = 1
-	} else if event_type == "click" {
+	} else if eventType == "click" {
 		click = 1
 	}
 
 	return u.adRepo.GetAdDetailForSlot(ctx, id, click, impression)
 }
 
-func (u *UseCase) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error) {
-	return u.adRepo.GetAdSlot(ctx, min_cost)
+func (u *UseCase) GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error) {
+	return u.adRepo.GetAdSlot(ctx, minCost)
 }
 
 func (u *UseCase) GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error) {

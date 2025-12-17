@@ -1,3 +1,4 @@
+// Package profile provides a PostgreSQL implementation of the profile repository.
 package profile
 
 import (
@@ -5,8 +6,8 @@ import (
 	"context"
 )
 
-const(
-	sqlTextForShowBalance = "SELECT balance FROM client_wallet WHERE client_id = $1"
+const (
+	sqlTextForShowBalance   = "SELECT balance FROM client_wallet WHERE client_id = $1"
 	sqlTextForUpdateBalance = "UPDATE client_wallet SET balance = $1 WHERE client_id = $2"
 )
 
@@ -48,6 +49,3 @@ func (r *DB) SubtractBalance(ctx context.Context, clientID modelclient.ID, subAm
 
 	return nil
 }
-
-
-

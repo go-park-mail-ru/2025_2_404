@@ -1,16 +1,19 @@
+// Package budget provides a PostgreSQL implementation of the budget repository.
 package budget
 
 import (
-	modelad "2025_2_404/internal/service/ad/domain/ad"
-	modeluser "2025_2_404/internal/service/ad/domain/user"
-	"2025_2_404/pkg/globalerrors"
 	"context"
 	"database/sql"
 	"errors"
+
 	"github.com/jackc/pgconn"
+
+	modelad "2025_2_404/internal/service/ad/domain/ad"
+	modeluser "2025_2_404/internal/service/ad/domain/user"
+	"2025_2_404/pkg/globalerrors"
 )
 
-const(
+const (
 	// 	sqlTextForSelectBudget = "SELECT COALESCE(ad_detail.budget, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id WHERE ad.id = $1 AND ad.client_id = $2"
 	sqlTextForUpdateBudget = "UPDATE ad_detail SET budget = ad_detail.budget + $1 FROM ad WHERE ad_detail.ad_id = ad.id AND ad.id = $2 AND ad.client_id = $3"
 )
@@ -33,7 +36,7 @@ func (r *DB) UpdateBudget(ctx context.Context, adID modelad.ID, clientID modelus
 			switch pgErr.Code {
 			case "23514":
 				return globalerrors.ErrInvalidQuery
-			case "23503": 
+			case "23503":
 				return globalerrors.ErrAdNotFound
 			}
 		}

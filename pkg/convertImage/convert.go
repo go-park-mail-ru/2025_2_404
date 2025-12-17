@@ -1,3 +1,4 @@
+// Package convertimage provides utilities for converting images to different formats.
 package convertimage
 
 import (

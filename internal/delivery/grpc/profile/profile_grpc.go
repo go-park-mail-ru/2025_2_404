@@ -1,3 +1,4 @@
+// Package handler provides gRPC delivery handlers for profile-related operations.
 package handler
 
 import (
@@ -14,7 +15,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type ProfileUsecaseI interface{
+type ProfileUsecaseI interface {
 	Update(ctx context.Context, client modeluser.User) error
 	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
 	Delete(ctx context.Context, clientID modeluser.ID) error
@@ -27,18 +28,18 @@ type ProfileUsecaseI interface{
 }
 
 type ProfileServer struct {
-	profile.UnimplementedProfileServer 
+	profile.UnimplementedProfileServer
 	profileUsecase ProfileUsecaseI
 }
 
-func NewProfileServer(profileUsecase ProfileUsecaseI) *ProfileServer{
+func NewProfileServer(profileUsecase ProfileUsecaseI) *ProfileServer {
 	return &ProfileServer{
 		profileUsecase: profileUsecase,
-	}	
+	}
 }
 
-func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) (*profile.UpdateResponse, error){
-	clientID, err := interceptor.GetUserID(ctx) 
+func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) (*profile.UpdateResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -51,9 +52,9 @@ func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) 
 		UserLastName:  req.GetLastName(),
 		Company:       req.GetCompany(),
 		Phone:         req.GetPhone(),
-		ImagePath: req.GetAvatarPath(),
+		ImagePath:     req.GetAvatarPath(),
 	}
-	
+
 	err = h.profileUsecase.Update(ctx, client)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update profile: %v", err)
@@ -63,15 +64,15 @@ func (h *ProfileServer) Update(ctx context.Context, req *profile.UpdateRequest) 
 		UserName:   client.UserName,
 		Email:      client.Email,
 		FirstName:  client.UserFirstName,
-		LastName: client.UserLastName,
+		LastName:   client.UserLastName,
 		Company:    client.Company,
 		Phone:      client.Phone,
 		AvatarPath: client.ImagePath,
 	}, nil
 }
 
-func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*profile.ShowResponse, error){
-	clientID, err := interceptor.GetUserID(ctx) 
+func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*profile.ShowResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -82,19 +83,19 @@ func (h *ProfileServer) Show(ctx context.Context, req *profile.ShowRequest) (*pr
 	}
 
 	return &profile.ShowResponse{
-		UserName:      user.UserName,
-		Email:         user.Email,
-		FirstName:     user.UserFirstName,
-		LastName:    user.UserLastName,
-		Company:       user.Company,
-		Phone:         user.Phone,
-		AvatarPath:    user.ImagePath,
-		CreatedAt: user.CreatedAt,
+		UserName:   user.UserName,
+		Email:      user.Email,
+		FirstName:  user.UserFirstName,
+		LastName:   user.UserLastName,
+		Company:    user.Company,
+		Phone:      user.Phone,
+		AvatarPath: user.ImagePath,
+		CreatedAt:  user.CreatedAt,
 	}, nil
 }
 
 func (h *ProfileServer) Delete(ctx context.Context, req *profile.DeleteRequest) (*profile.DeleteResponse, error) {
-	clientID, err := interceptor.GetUserID(ctx) 
+	clientID, err := interceptor.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -107,8 +108,8 @@ func (h *ProfileServer) Delete(ctx context.Context, req *profile.DeleteRequest) 
 	return &profile.DeleteResponse{}, nil
 }
 
-func (h *ProfileServer) ShowBalance(ctx context.Context, req *profile.ShowBalanceRequest) (*profile.ShowBalanceResponse, error){
-	clientID, err := interceptor.GetUserID(ctx) 
+func (h *ProfileServer) ShowBalance(ctx context.Context, req *profile.ShowBalanceRequest) (*profile.ShowBalanceResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -123,7 +124,7 @@ func (h *ProfileServer) ShowBalance(ctx context.Context, req *profile.ShowBalanc
 	}, nil
 }
 
-func (h *ProfileServer) AddBalance(ctx context.Context, req *profile.AddBalanceRequest) (*profile.AddBalanceResponse, error){
+func (h *ProfileServer) AddBalance(ctx context.Context, req *profile.AddBalanceRequest) (*profile.AddBalanceResponse, error) {
 
 	clientID, err := uuid.Parse(req.GetClientId())
 	if err != nil {
@@ -138,8 +139,8 @@ func (h *ProfileServer) AddBalance(ctx context.Context, req *profile.AddBalanceR
 	return &profile.AddBalanceResponse{}, nil
 }
 
-func (h *ProfileServer) SubtractBalance(ctx context.Context, req *profile.SubtractBalanceRequest) (*profile.SubtractBalanceResponse, error){
-	clientID, err := interceptor.GetUserID(ctx) 
+func (h *ProfileServer) SubtractBalance(ctx context.Context, req *profile.SubtractBalanceRequest) (*profile.SubtractBalanceResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -152,8 +153,8 @@ func (h *ProfileServer) SubtractBalance(ctx context.Context, req *profile.Subtra
 	return &profile.SubtractBalanceResponse{}, nil
 }
 
-func (h *ProfileServer) GetPaymentsByClientID(ctx context.Context, req *profile.PaymentsByClientIDRequest) (*profile.PaymentsByClientIDResponse, error){
-	clientID, err := interceptor.GetUserID(ctx) 
+func (h *ProfileServer) GetPaymentsByClientID(ctx context.Context, req *profile.PaymentsByClientIDRequest) (*profile.PaymentsByClientIDResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
@@ -166,12 +167,12 @@ func (h *ProfileServer) GetPaymentsByClientID(ctx context.Context, req *profile.
 	var pbPayments []*profile.Payment
 	for _, payment := range payments {
 		pbPayment := &profile.Payment{
-			Id:      	  payment.ID.String(),
-			Amount:       uint32(payment.AmountRub),
-			Status:       string(payment.Status),
-			YooPaymentId: payment.YooPaymentID,
+			Id:            payment.ID.String(),
+			Amount:        uint32(payment.AmountRub),
+			Status:        string(payment.Status),
+			YooPaymentId:  payment.YooPaymentID,
 			MethodPayment: payment.PaymentMethod,
-			CreatedAt: payment.CreatedTime,
+			CreatedAt:     payment.CreatedTime,
 		}
 		pbPayments = append(pbPayments, pbPayment)
 	}
@@ -181,16 +182,16 @@ func (h *ProfileServer) GetPaymentsByClientID(ctx context.Context, req *profile.
 	}, nil
 }
 
-func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentCreateRequest) (*profile.PaymentCreateResponse, error){
-	clientID, err := interceptor.GetUserID(ctx) 
+func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentCreateRequest) (*profile.PaymentCreateResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
 	payment := modeluser.Payment{
-		ClientID:     clientID,
+		ClientID:      clientID,
 		PaymentMethod: req.GetPaymentMethod(),
-		AmountRub:       req.GetAmount(),
+		AmountRub:     req.GetAmount(),
 	}
 
 	yooKassaLink, err := h.profileUsecase.CreatePayment(ctx, payment)
@@ -239,10 +240,10 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 		"client_id", clientID.String(),
 		"add_amount_rub", amount,
 	)
-	if req.Status == string(modeluser.PaymentSucceeded){
+	if req.Status == string(modeluser.PaymentSucceeded) {
 		_, err = h.AddBalance(ctx, &profile.AddBalanceRequest{
-			ClientId:   clientID.String(),
-			AddAmount:  uint32(amount),
+			ClientId:  clientID.String(),
+			AddAmount: uint32(amount),
 		})
 		if err != nil {
 			slog.Error("💸 Failed to add balance",
@@ -250,7 +251,7 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 				"amount", amount,
 				"error", err,
 			)
-		}	
+		}
 	}
 
 	slog.Info("UpdatePaymentStatus completed successfully",

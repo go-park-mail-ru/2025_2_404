@@ -1,3 +1,4 @@
+// Package budget provides use case implementations for managing advertisement budgets.
 package budget
 
 import (

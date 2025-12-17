@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-type repositoryI interface{
+type repositoryI interface {
 	Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
 	Update(ctx context.Context, client modeluser.User) error
 	Delete(ctx context.Context, clientID modeluser.ID) error
@@ -18,19 +18,19 @@ type repositoryI interface{
 	GetPaymentsByClientID(ctx context.Context, clientID modeluser.ID) ([]modeluser.Payment, error)
 }
 
-type externalYooKassaHttpI interface{
-	CreatePayment(ctx context.Context, payment modeluser.Payment)(modeluser.PaymentResponse, error)
+type externalYooKassaHTTPI interface {
+	CreatePayment(ctx context.Context, payment modeluser.Payment) (modeluser.PaymentResponse, error)
 }
 
-type UseCase struct{
+type UseCase struct {
 	repo repositoryI
-	ext externalYooKassaHttpI
+	ext  externalYooKassaHTTPI
 }
 
-func New(repo repositoryI, ext externalYooKassaHttpI) *UseCase{
+func New(repo repositoryI, ext externalYooKassaHTTPI) *UseCase {
 	return &UseCase{
 		repo: repo,
-		ext: ext,
+		ext:  ext,
 	}
 }
 
@@ -38,7 +38,7 @@ func (u *UseCase) Update(ctx context.Context, client modeluser.User) error {
 	return u.repo.Update(ctx, client)
 }
 
-func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error){
+func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error) {
 	return u.repo.Show(ctx, clientID)
 }
 

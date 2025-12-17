@@ -1,3 +1,4 @@
+// Package main initializes and starts the gRPC slot service.
 package main
 
 import (
@@ -9,16 +10,18 @@ import (
 	repo "2025_2_404/internal/service/slot/repository/postgres/slot"
 	metricusecase "2025_2_404/internal/service/slot/usecase/metric"
 	usecase "2025_2_404/internal/service/slot/usecase/slot"
-	slotpb "2025_2_404/protos/gen/go/slot"
 	adpb "2025_2_404/protos/gen/go/ad"
 	profilepb "2025_2_404/protos/gen/go/profile"
+	slotpb "2025_2_404/protos/gen/go/slot"
 	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -36,14 +39,26 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to connect to Ad Service: %v", err)
 	}
-	defer adConn.Close()
+	defer func() {
+		_ = adConn.Close()
+	}()
+
+	go func() {
+		log.Println("Starting metrics server on :9090")
+		http.Handle("/metrics", promhttp.Handler())
+		if err := http.ListenAndServe(":9090", nil); err != nil {
+			log.Printf("Metrics server failed: %v", err)
+		}
+	}()
 
 	profileServiceAddr := fmt.Sprintf("profile_service:%s", config.AppConfig.PortProfile)
 	profileConn, err := grpc.NewClient(profileServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("failed to connect to Ad Service: %v", err)
 	}
-	defer profileConn.Close()
+	defer func() {
+		_ = profileConn.Close()
+	}()
 
 	adClient := adpb.NewAdServClient(adConn)
 	profileClient := profilepb.NewProfileClient(profileConn)
@@ -53,9 +68,11 @@ func main() {
 	useCaseCfg := usecase.New(repoCfg)
 	metricUsecase := metricusecase.New(metricRepo)
 	slotHandler := slot.New(useCaseCfg, metricUsecase, adClient, profileClient)
-	
+
 	authInterceptor, authConn := interceptor.InitAuthInterceptor()
-    defer authConn.Close()
+	defer func() {
+		_ = authConn.Close()
+	}()
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortSlot))
 	if err != nil {
@@ -63,8 +80,8 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer(
-        grpc.UnaryInterceptor(authInterceptor),
-    )
+		grpc.UnaryInterceptor(authInterceptor),
+	)
 
 	slotpb.RegisterSlotServServer(grpcServer, slotHandler)
 

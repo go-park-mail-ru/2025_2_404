@@ -33,3 +33,9 @@ up-service-ad:
 
 db-docker:
 	docker compose up db --build -d
+
+lint:
+	golangci-lint run ./...
+
+lint-fix:
+	golangci-lint run --fix ./...

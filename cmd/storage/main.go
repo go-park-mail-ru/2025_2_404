@@ -1,21 +1,24 @@
+// Package main initializes and starts the gRPC storage service.
 package main
 
 import (
-	"log/slog"
-	"os"
 	"2025_2_404/internal/delivery/grpc/interceptor"
-	"2025_2_404/internal/service/storage/config"
-	storagepb "2025_2_404/protos/gen/go/storage"
 	storagehandler "2025_2_404/internal/delivery/grpc/storage"
+	"2025_2_404/internal/service/storage/config"
 	usecase "2025_2_404/internal/service/storage/usecase/filestorage"
+	storagepb "2025_2_404/protos/gen/go/storage"
 	"fmt"
+	"log"
+	"log/slog"
 	"net"
+	"net/http"
+	"os"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 )
 
 func main() {
-	// === Настройка логгера для разработки ===
 	logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
 		Level: slog.LevelDebug,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
@@ -27,12 +30,18 @@ func main() {
 	}))
 	slog.SetDefault(logger)
 
-	// === Инициализация сервиса ===
+	go func() {
+		log.Println("Starting metrics server on :9090")
+		http.Handle("/metrics", promhttp.Handler())
+		if err := http.ListenAndServe(":9090", nil); err != nil {
+			log.Printf("Metrics server failed: %v", err)
+		}
+	}()
+
 	cfg := config.GetConfig()
 	useCase := usecase.New(cfg)
 	storageHandler := storagehandler.New(useCase)
 
-	// === gRPC сервер с interceptor'ом ===
 	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(interceptor.GrpcLoggerInterceptor),
 	)

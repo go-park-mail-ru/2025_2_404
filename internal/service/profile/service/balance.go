@@ -1,3 +1,4 @@
+// Package profile provides use case implementations for managing user profiles.
 package profile
 
 import (
@@ -5,8 +6,6 @@ import (
 	"context"
 	"fmt"
 )
-
-
 
 func (u *UseCase) ShowBalance(ctx context.Context, clientID modelclient.ID) (uint32, error) {
 	return u.repo.ShowBalance(ctx, clientID)
@@ -17,7 +16,7 @@ func (u *UseCase) AddBalance(ctx context.Context, clientID modelclient.ID, addAm
 }
 
 func (u *UseCase) SubtractBalance(ctx context.Context, clientID modelclient.ID, subAmount uint32) error {
-	balanc , err := u.repo.ShowBalance(ctx, clientID)
+	balanc, err := u.repo.ShowBalance(ctx, clientID)
 	if err != nil {
 		return err
 	}

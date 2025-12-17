@@ -33,114 +33,116 @@ const (
 )
 
 func (r *DB) CreatePayment(ctx context.Context, payment modelpayment.Payment) error {
-    slog.Info("🗄️ Creating payment record",
-        "client_id", payment.ClientID,
-        "amount_rub", payment.AmountRub,
-        "status", payment.Status,
-        "yoo_payment_id", payment.YooPaymentID,
-        "payment_method", payment.PaymentMethod,
-    )
+	slog.Info("Creating payment record",
+		"client_id", payment.ClientID,
+		"amount_rub", payment.AmountRub,
+		"status", payment.Status,
+		"yoo_payment_id", payment.YooPaymentID,
+		"payment_method", payment.PaymentMethod,
+	)
 
-    _, err := r.sql.ExecContext(
-        ctx,
-        sqlTextForCreatePayment,
-        payment.ClientID,
-        payment.AmountRub,
-        payment.Status,
-        payment.YooPaymentID,
-        payment.PaymentMethod,
-    )
-    if err != nil {
-        slog.Error("❌ Failed to create payment",
-            "yoo_payment_id", payment.YooPaymentID,
-            "error", err,
-        )
-        return err
-    }
+	_, err := r.sql.ExecContext(
+		ctx,
+		sqlTextForCreatePayment,
+		payment.ClientID,
+		payment.AmountRub,
+		payment.Status,
+		payment.YooPaymentID,
+		payment.PaymentMethod,
+	)
+	if err != nil {
+		slog.Error(" Failed to create payment",
+			"yoo_payment_id", payment.YooPaymentID,
+			"error", err,
+		)
+		return err
+	}
 
-    slog.Info("✅ Payment record created",
-        "yoo_payment_id", payment.YooPaymentID,
-        "client_id", payment.ClientID,
-    )
-    return nil
+	slog.Info(" Payment record created",
+		"yoo_payment_id", payment.YooPaymentID,
+		"client_id", payment.ClientID,
+	)
+	return nil
 }
 
 func (r *DB) UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modelpayment.PaymentStatus) (modelpayment.ID, error) {
-    slog.Info("🔄 Updating payment status",
-        "yoo_payment_id", yooPaymentID,
-        "new_status", status,
-    )
+	slog.Info(" Updating payment status",
+		"yoo_payment_id", yooPaymentID,
+		"new_status", status,
+	)
 
-    var clientID modelpayment.ID
-    err := r.sql.QueryRowContext(
-        ctx,
-        sqlTextForUpdatePaymentStatus,
-        status,
-        yooPaymentID,
-    ).Scan(&clientID) // ⚠️ важное исправление: &clientID, а не clientID
-    if err != nil {
-        slog.Error("❌ Failed to update payment status or get client_id",
-            "yoo_payment_id", yooPaymentID,
-            "status", status,
-            "error", err,
-        )
-        return modelpayment.ID{}, err
-    }
+	var clientID modelpayment.ID
+	err := r.sql.QueryRowContext(
+		ctx,
+		sqlTextForUpdatePaymentStatus,
+		status,
+		yooPaymentID,
+	).Scan(&clientID)
+	if err != nil {
+		slog.Error(" Failed to update payment status or get client_id",
+			"yoo_payment_id", yooPaymentID,
+			"status", status,
+			"error", err,
+		)
+		return modelpayment.ID{}, err
+	}
 
-    slog.Info("✅ Payment status updated",
-        "yoo_payment_id", yooPaymentID,
-        "client_id", clientID,
-        "status", status,
-    )
-    return clientID, nil
+	slog.Info(" Payment status updated",
+		"yoo_payment_id", yooPaymentID,
+		"client_id", clientID,
+		"status", status,
+	)
+	return clientID, nil
 }
 
 func (r *DB) GetPaymentsByClientID(ctx context.Context, clientID modelpayment.ID) ([]modelpayment.Payment, error) {
-    slog.Info("🔍 Fetching payments by client_id", "client_id", clientID)
+	slog.Info(" Fetching payments by client_id", "client_id", clientID)
 
-    rows, err := r.sql.QueryContext(ctx, sqlTextForGetPaymentByClientID, clientID)
-    if err != nil {
-        slog.Error("❌ Failed to query payments by client_id",
-            "client_id", clientID,
-            "error", err,
-        )
-        return nil, fmt.Errorf("failed to query payments: %w", err)
-    }
-    defer rows.Close()
+	rows, err := r.sql.QueryContext(ctx, sqlTextForGetPaymentByClientID, clientID)
+	if err != nil {
+		slog.Error(" Failed to query payments by client_id",
+			"client_id", clientID,
+			"error", err,
+		)
+		return nil, fmt.Errorf("failed to query payments: %w", err)
+	}
+	defer func() {
+		_ = rows.Close()
+	}()
 
-    var payments []modelpayment.Payment
-    for rows.Next() {
-        var p modelpayment.Payment
-        var createdTime time.Time
-        err := rows.Scan(
-            &p.ID,
-            &p.AmountRub,
-            &p.Status,
-            &p.PaymentMethod,
-            &createdTime,
-        )
-        if err != nil {
-            slog.Error("❌ Failed to scan payment row",
-                "client_id", clientID,
-                "error", err,
-            )
-            return nil, fmt.Errorf("failed to scan payment row: %w", err)
-        }
-        p.CreatedTime = createdTime.Format(time.RFC3339)
-        payments = append(payments, p)
-    }
+	var payments []modelpayment.Payment
+	for rows.Next() {
+		var p modelpayment.Payment
+		var createdTime time.Time
+		err := rows.Scan(
+			&p.ID,
+			&p.AmountRub,
+			&p.Status,
+			&p.PaymentMethod,
+			&createdTime,
+		)
+		if err != nil {
+			slog.Error(" Failed to scan payment row",
+				"client_id", clientID,
+				"error", err,
+			)
+			return nil, fmt.Errorf("failed to scan payment row: %w", err)
+		}
+		p.CreatedTime = createdTime.Format(time.RFC3339)
+		payments = append(payments, p)
+	}
 
-    if err = rows.Err(); err != nil {
-        slog.Error("❌ Rows iteration error",
-            "client_id", clientID,
-            "error", err,
-        )
-        return nil, fmt.Errorf("rows iteration error: %w", err)
-    }
+	if err = rows.Err(); err != nil {
+		slog.Error(" Rows iteration error",
+			"client_id", clientID,
+			"error", err,
+		)
+		return nil, fmt.Errorf("rows iteration error: %w", err)
+	}
 
-    slog.Info("✅ Retrieved payments",
-        "client_id", clientID,
-        "count", len(payments),
-    )
-    return payments, nil
+	slog.Info(" Retrieved payments",
+		"client_id", clientID,
+		"count", len(payments),
+	)
+	return payments, nil
 }

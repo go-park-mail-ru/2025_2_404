@@ -1,3 +1,4 @@
+// Package postgres provides PostgreSQL storage implementation for user authentication.
 package postgres
 
 import (
@@ -11,7 +12,7 @@ import (
 	"github.com/jackc/pgconn"
 )
 
-const(
+const (
 	sqlTextForSelectUsers = "SELECT id, password_hash FROM client WHERE email = $1"
 	// sqlTextForInsertBalance = "INSERT INTO client_wallet (client_id, balance) VALUES ($1, $2)"
 	sqlTextForInsertUsers = "INSERT INTO client (email, password_hash, name) VALUES ($1, $2, $3) RETURNING id"
@@ -36,7 +37,7 @@ func (r *DB) Create(ctx context.Context, user *modeluser.User) (modeluser.ID, er
 	if err == nil {
 		return user.ID, nil
 	}
-	var pgErr *pgconn.PgError 
+	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
 		case "23505":
@@ -74,4 +75,4 @@ func (r *DB) FindByEmail(ctx context.Context, email string) (modeluser.User, err
 		return modeluser.User{}, globalerrors.ErrInternal
 	}
 	return user, nil
-}	
+}

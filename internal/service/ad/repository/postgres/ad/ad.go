@@ -1,3 +1,4 @@
+// Package postgres provides a PostgreSQL implementation of the advertisement repository.
 package postgres
 
 import (
@@ -13,7 +14,7 @@ import (
 	"github.com/jackc/pgconn"
 )
 
-const(
+const (
 	sqlTextForSelectAds = `
 		SELECT 
 			ad.id, 
@@ -23,13 +24,13 @@ const(
 		FROM ad 
 		JOIN ad_detail ON ad_detail.ad_id = ad.id 
 		WHERE ad.client_id = $1`
-	sqlTextForInsertAds = "INSERT INTO ad (client_id, title, content, img_path, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
-	sqlTextForUpdateAds = `UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4 WHERE id = $5 AND client_id = $6`
-	sqlTextForSaveBudget = "INSERT INTO ad_detail (ad_id, budget, status, start_at, end_at) VALUES ($1, $2, $3, $4, $5)"
-	sqlTextForDeleteAds = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
-	sqlTextForFullAdInfo = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
+	sqlTextForInsertAds     = "INSERT INTO ad (client_id, title, content, img_path, target_url) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+	sqlTextForUpdateAds     = `UPDATE ad SET title = $1, content = $2, img_path = $3, target_url = $4 WHERE id = $5 AND client_id = $6`
+	sqlTextForSaveBudget    = "INSERT INTO ad_detail (ad_id, budget, status, start_at, end_at) VALUES ($1, $2, $3, $4, $5)"
+	sqlTextForDeleteAds     = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
+	sqlTextForFullAdInfo    = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
 	sqlTextForGetAdDetailID = "UPDATE ad_detail SET budget = ad_detail.budget - 3 WHERE ad_id = $1 RETURNING id "
-	sqlTextForGetAdSlot = `
+	sqlTextForGetAdSlot     = `
 	SELECT id, title, content, img_path, target_url 
 	FROM ad 
 	WHERE id = (
@@ -40,10 +41,10 @@ const(
 	ORDER BY RANDOM()
 	LIMIT 1
 	)`
-	sqlTextForUpdateAdDetail = `UPDATE ad_detail SET status = $1, start_at = $2, end_at = $3 WHERE ad_id = $4`
-	sqlTextForCountAds = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
+	sqlTextForUpdateAdDetail  = `UPDATE ad_detail SET status = $1, start_at = $2, end_at = $3 WHERE ad_id = $4`
+	sqlTextForCountAds        = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 	sqlTextForUpdateStatistic = "UPDATE statistic SET clicks = statistic.clicks + $1, impressions = statistic.impressions + $2 WHERE ad_detail_id = $3"
-	sqlTextForGetPathImage = "SELECT img_path FROM ad WHERE id = $1"
+	sqlTextForGetPathImage    = "SELECT img_path FROM ad WHERE id = $1"
 )
 
 type DB struct {
@@ -70,7 +71,9 @@ func (r *DB) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfull
 		}
 		return nil, globalerrors.ErrInternal
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var ads []modelfullad.AdFullInfo
 	for rows.Next() {
@@ -100,7 +103,7 @@ func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.I
 		&adInfo.Title,
 		&adInfo.Content,
 		&adInfo.ImgPath,
-		&adInfo.TargetUrl,
+		&adInfo.TargetURL,
 		&adInfo.Budget,
 		&adInfo.Status,
 		&adInfo.StartAt,
@@ -142,7 +145,7 @@ func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID)
 
 func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 	var newAdID modelad.ID
-	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl).Scan(&newAdID)
+	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImagePath, ad.TargetURL).Scan(&newAdID)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -186,7 +189,9 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 	if err != nil {
 		return globalerrors.ErrInternal
 	}
-	defer tx.Rollback()
+	defer func() {
+		_ = tx.Rollback()
+	}()
 
 	if ad.ImagePath == "" {
 		if err := tx.QueryRowContext(ctx, sqlTextForGetPathImage, ad.ID).Scan(&ad.ImagePath); err != nil {
@@ -197,7 +202,7 @@ func (r *DB) Update(ctx context.Context, ad modelad.Ads) error {
 		}
 	}
 
-	res, err := tx.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetUrl, ad.ID, ad.ClientID)
+	res, err := tx.ExecContext(ctx, sqlTextForUpdateAds, ad.Title, ad.Content, ad.ImagePath, ad.TargetURL, ad.ID, ad.ClientID)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
@@ -265,14 +270,14 @@ func (r *DB) GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impre
 	return detailID, nil
 }
 
-func (r *DB) GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error) {
+func (r *DB) GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error) {
 	var adSlot modelad.Ads
-	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdSlot, min_cost).Scan(
+	err := r.sql.QueryRowContext(ctx, sqlTextForGetAdSlot, minCost).Scan(
 		&adSlot.ID,
 		&adSlot.Title,
 		&adSlot.Content,
 		&adSlot.ImagePath,
-		&adSlot.TargetUrl,
+		&adSlot.TargetURL,
 	)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

@@ -1,3 +1,4 @@
+// Package config provides configuration management for the storage service.
 package config
 
 import (
@@ -22,15 +23,15 @@ type PostgresConfig struct {
 }
 
 type AppConfig struct {
-	Host			  string
-	Port              string
-	PortAD			  string
-	PortStorage       string
-	ImgPath			  string
+	Host        string
+	Port        string
+	PortAD      string
+	PortStorage string
+	ImgPath     string
 }
 
 func GetConfig() *Config {
-	err := godotenv.Load(os.Getenv("ENV_FILE"))	
+	err := godotenv.Load(os.Getenv("ENV_FILE"))
 	if err != nil {
 		log.Println("Error loading .env file")
 	}
@@ -55,10 +56,10 @@ func GetPostgresConfig() *PostgresConfig {
 
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
-		Host: os.Getenv("APP_HOST"),
-		Port: os.Getenv("APP_PORT"),
-		PortAD: os.Getenv("GRPC_AD_PORT"),
+		Host:        os.Getenv("APP_HOST"),
+		Port:        os.Getenv("APP_PORT"),
+		PortAD:      os.Getenv("GRPC_AD_PORT"),
 		PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
-		ImgPath: os.Getenv("IMG_PATH"),
+		ImgPath:     os.Getenv("IMG_PATH"),
 	}
 }

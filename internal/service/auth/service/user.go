@@ -24,13 +24,13 @@ type tokenUsecaseI interface {
 }
 
 type UseCase struct {
-	repo repositoryI
+	repo         repositoryI
 	tokenUsecase tokenUsecaseI
 }
 
 func New(repo repositoryI, tokenUsecase tokenUsecaseI) *UseCase {
 	return &UseCase{
-		repo: repo,
+		repo:         repo,
 		tokenUsecase: tokenUsecase,
 	}
 }
@@ -78,22 +78,21 @@ func (u *UseCase) Login(ctx context.Context, email string, password string) (str
 		log.Println("Валидация пароля или emaik не прошла, ошибка валидейт логин  %w", err)
 		return "", uuid.Nil, globalerrors.ErrInvalidCredentials
 	}
-	
+
 	userID, err := u.Check(ctx, email, password)
 	if err != nil {
 		log.Println("Валидация пароля или emaik не прошла, ошибка чек %w", err)
-		return "",uuid.Nil, globalerrors.ErrWrongEmailOrPassword
+		return "", uuid.Nil, globalerrors.ErrWrongEmailOrPassword
 	}
 
 	token, err := u.tokenUsecase.GenerateToken(userID)
 	if err != nil {
 		log.Println("Токен не сгенерировался, %w", err)
-		return  "",uuid.Nil, err
+		return "", uuid.Nil, err
 	}
 
 	return token, userID, nil
 }
-
 
 // func (u *UseCase) Logout(ctx context.Context, token string) (error) {
 

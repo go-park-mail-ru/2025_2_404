@@ -1,3 +1,4 @@
+// Package postgres provides a PostgreSQL implementation of the metric repository.
 package postgres
 
 import (
@@ -11,7 +12,7 @@ import (
 	"github.com/jackc/pgconn"
 )
 
-const(
+const (
 	sqlTextForCreateMetric = `
 		INSERT INTO slot_event (slot_id, ad_detail_id, event_type)
 		VALUES ($1, $2, $3)
@@ -86,7 +87,9 @@ func (r *DB) GetMetricForDay(ctx context.Context, slotID metric.SlotID) ([]metri
 		}
 		return nil, globalerrors.ErrInternal
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var metrics []metric.GetMetric
 	for rows.Next() {

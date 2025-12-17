@@ -1,3 +1,4 @@
+// Package middleware provides HTTP middleware functions for request handling.
 package middleware
 
 import "net/http"
@@ -6,10 +7,10 @@ func CorsMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		origin := r.Header.Get("Origin")
 		allowedOrigins := map[string]bool{
-			"https://localhost:8000":     true,
-			"https://adnet.website":      true,
-			"http://adnet.website":       true,
-			"http://localhost:8000":      true,
+			"https://localhost:8000": true,
+			"https://adnet.website":  true,
+			"http://adnet.website":   true,
+			"http://localhost:8000":  true,
 		}
 		if allowedOrigins[origin] {
 			w.Header().Set("Access-Control-Allow-Origin", origin)

@@ -1,3 +1,4 @@
+// Package http provides HTTP delivery handlers for advertisement-related operations.
 package http
 
 import (
@@ -25,7 +26,7 @@ import (
 type AdHandler struct {
 	client        pbAd.AdServClient
 	storageClient pbStorage.StorageClient
-	profileClient  pbProfile.ProfileClient
+	profileClient pbProfile.ProfileClient
 }
 
 func NewAdHandler(client pbAd.AdServClient, storageClient pbStorage.StorageClient, profileClient pbProfile.ProfileClient) *AdHandler {
@@ -91,7 +92,6 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 			log.Printf("INFO: image uploaded successfully: %s", imageFilename)
 		}
 	}
-			
 
 	resp, err := h.client.Create(ctx, req)
 	if err != nil {
@@ -99,8 +99,8 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
 		return
 	}
-	
-pkg.JSONResponse(w, http.StatusCreated, "Ad created successfully", resp)
+
+	pkg.JSONResponse(w, http.StatusCreated, "Ad created successfully", resp)
 }
 
 func (h *AdHandler) GetAll(w http.ResponseWriter, r *http.Request) {
@@ -158,17 +158,17 @@ func (h *AdHandler) GetOne(w http.ResponseWriter, r *http.Request) {
 	}
 
 	adFullResp := adfullinfo.AdFullInfo{
-		ID:              adID,
-		Title:           adProto.Ad.GetTitle(),
-		Content:         adProto.Ad.GetContent(),
-		ImgPath:         adProto.Ad.GetImgPath(),
-		TargetUrl:       adProto.Ad.GetTargeturl(),
-		Budget:          adProto.Ad.GetBudget(),
-		Status:          adProto.Ad.GetStatus(),
-		StartAt:         startAt,
-		EndAt:           endAt,
-		Clicks:          int(adProto.Ad.GetClicks()),
-		Impressions:     int(adProto.Ad.GetImpressions()),       
+		ID:          adID,
+		Title:       adProto.Ad.GetTitle(),
+		Content:     adProto.Ad.GetContent(),
+		ImgPath:     adProto.Ad.GetImgPath(),
+		TargetURL:   adProto.Ad.GetTargeturl(),
+		Budget:      adProto.Ad.GetBudget(),
+		Status:      adProto.Ad.GetStatus(),
+		StartAt:     startAt,
+		EndAt:       endAt,
+		Clicks:      int(adProto.Ad.GetClicks()),
+		Impressions: int(adProto.Ad.GetImpressions()),
 	}
 
 	imgPath := adProto.Ad.ImgPath
@@ -194,7 +194,7 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	
+
 	if auth := r.Header.Get("Authorization"); auth != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
@@ -208,25 +208,22 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 	targetURL := r.FormValue("target_url")
 	statusAd := r.FormValue("status")
 
-
 	if title == "" || content == "" || targetURL == "" || statusAd == "" {
 		http.Error(w, `{"error":"title, content, target_url and budget are required"}`, http.StatusBadRequest)
 		return
 	}
 
-
 	var fileBytes []byte
-	var newImageFilename string 
+	var newImageFilename string
 	var err error
 
-	if r.FormValue("image") != ""{
+	if r.FormValue("image") != "" {
 		fileBytes, newImageFilename, err = pkgfile.ExtractImage(r, "ad/", "image")
 		if err != nil {
 			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
 			return
 		}
 	}
-
 
 	// ———— ШАГ 2: Загружаем изображение (если есть) ————
 	if len(fileBytes) > 0 {
@@ -252,7 +249,7 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 			Content:   content,
 			Targeturl: targetURL,
 			ImgPath:   newImageFilename,
-			Status: statusAd,
+			Status:    statusAd,
 		},
 	}
 

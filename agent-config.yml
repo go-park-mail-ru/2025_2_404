@@ -1,0 +1,50 @@
+server:
+  log_level: info
+
+metrics:
+  global:
+    scrape_interval: 15s
+  wal_directory: /tmp/agent
+  configs:
+    - name: grafanacloud
+      remote_write:
+        - url: https://prometheus-prod-01-eu-west-0.grafana.net/api/prom/push
+          basic_auth:
+            username: '123456'          # ← ЗАМЕНИ НА СВОЙ Stack ID
+            password: 'glc_...'         # ← ЗАМЕНИ НА СВОЙ API Key
+      scrape_configs:
+        # --- Микросервисы ---
+        - job_name: 'auth'
+          static_configs:
+            - targets: ['host.docker.internal:9092']  # auth → 9092
+
+        - job_name: 'ad'
+          static_configs:
+            - targets: ['host.docker.internal:9091']  # ad → 9091
+
+        - job_name: 'profile'
+          static_configs:
+            - targets: ['host.docker.internal:9093']  # profile → 9093
+
+        - job_name: 'storage'
+          static_configs:
+            - targets: ['host.docker.internal:9094']  # storage → 9094
+
+        - job_name: 'slot'
+          static_configs:
+            - targets: ['host.docker.internal:9095']  # slot → 9095
+
+        - job_name: 'gateway'
+          static_configs:
+            - targets: ['host.docker.internal:9096']  # gateway → 9096
+
+        # --- Системные метрики (Node Exporter) ---
+        # Если хочешь собирать CPU/RAM с хоста — раскомментируй:
+        # - job_name: 'node'
+        #   static_configs:
+        #     - targets: ['host.docker.internal:9100']
+
+        # --- Метрики самого Grafana Agent ---
+        - job_name: 'agent'
+          static_configs:
+            - targets: ['127.0.0.1:12345']

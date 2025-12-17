@@ -1,3 +1,4 @@
+// Package domain defines the User domain model and related types.
 package domain
 
 import (
@@ -11,9 +12,9 @@ import (
 type ID = uuid.UUID
 
 type User struct {
-	ID ID 
-	UserName string
-	Email string
+	ID             ID
+	UserName       string
+	Email          string
 	HashedPassword string
 }
 
@@ -23,7 +24,6 @@ var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z
 var constUpperCase = regexp.MustCompile(`[A-Z]`)
 var constLowerCase = regexp.MustCompile(`[a-z]`)
 var constSpecialChar = regexp.MustCompile(`[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]`)
-
 
 func ValidateRegisterUser(userName, email, password string) (*User, error) {
 	if len(userName) < 4 {

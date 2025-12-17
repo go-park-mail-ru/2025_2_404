@@ -1,3 +1,4 @@
+// Package ad implements the gRPC server for advertisement-related operations.
 package ad
 
 import (
@@ -15,30 +16,30 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type adUsecaseI interface{
+type adUsecaseI interface {
 	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error)
-	Create(ctx context.Context, ad modelad.Ads) (error)
+	Create(ctx context.Context, ad modelad.Ads) error
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
-	GetAdDetailForSlot(ctx context.Context, id modelad.ID, event_type string) (modelfullad.DetailID, error)
-	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
+	GetAdDetailForSlot(ctx context.Context, id modelad.ID, eventType string) (modelfullad.DetailID, error)
+	GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error)
 	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
 }
 
-type budgetI interface{
+type budgetI interface {
 	UpdateBudget(ctx context.Context, adID modelad.ID, clientID modeluser.ID, budget uint32) error
 }
 
-type adService struct{
-	adUsecase	adUsecaseI
+type adService struct {
+	adUsecase     adUsecaseI
 	budgetUsecase budgetI
 	adv1.UnimplementedAdServServer
 }
 
-func New(adUsecase adUsecaseI, budgetUsecase budgetI) *adService{
+func New(adUsecase adUsecaseI, budgetUsecase budgetI) *adService {
 	return &adService{
-		adUsecase: adUsecase,
+		adUsecase:     adUsecase,
 		budgetUsecase: budgetUsecase,
 	}
 }
@@ -51,12 +52,12 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 
 	protoAd := req.GetAd()
 	ad := modelad.Ads{
-		Title:      protoAd.Title,
-		ClientID:   clientID,
-		Content:    protoAd.Content,
-		Budget:     protoAd.Budget,
-		ImagePath:  protoAd.ImgPath,
-		TargetUrl:  protoAd.Targeturl,
+		Title:     protoAd.Title,
+		ClientID:  clientID,
+		Content:   protoAd.Content,
+		Budget:    protoAd.Budget,
+		ImagePath: protoAd.ImgPath,
+		TargetURL: protoAd.Targeturl,
 	}
 
 	if err := s.adUsecase.Create(ctx, ad); err != nil {
@@ -108,7 +109,7 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 		Title:     protoAd.Title,
 		Content:   protoAd.Content,
 		ImagePath: protoAd.ImgPath,
-		TargetUrl: protoAd.Targeturl,
+		TargetURL: protoAd.Targeturl,
 		Status:    protoAd.Status,
 	}
 
@@ -156,17 +157,17 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 	}
 
 	ad := &adv1.Ad{
-		Id:           uuid.UUID(adFull.ID).String(),
-		Title:        adFull.Title,
-		Content:      adFull.Content,
-		Targeturl:    adFull.TargetUrl,
-		ImgPath:      adFull.ImgPath,
-		Budget:       adFull.Budget,
-		Status:       adFull.Status,
-		StartAt:      adFull.StartAt.Format(time.RFC3339),
-		EndAt:        adFull.EndAt.Format(time.RFC3339),
-		Clicks:       int64(adFull.Clicks),
-		Impressions:  int64(adFull.Impressions),
+		Id:          uuid.UUID(adFull.ID).String(),
+		Title:       adFull.Title,
+		Content:     adFull.Content,
+		Targeturl:   adFull.TargetURL,
+		ImgPath:     adFull.ImgPath,
+		Budget:      adFull.Budget,
+		Status:      adFull.Status,
+		StartAt:     adFull.StartAt.Format(time.RFC3339),
+		EndAt:       adFull.EndAt.Format(time.RFC3339),
+		Clicks:      int64(adFull.Clicks),
+		Impressions: int64(adFull.Impressions),
 	}
 
 	return &adv1.GetAdResponse{Ad: ad}, nil
@@ -178,13 +179,13 @@ func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetai
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
 	}
 
-	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelad.ID(id), req.GetEventType())
+	detailID, err := s.adUsecase.GetAdDetailForSlot(ctx, modelad.ID(id), req.GetEventType())
 	if err != nil {
 		return nil, utils.ToGRPCError(err)
 	}
 
 	return &adv1.GetAdDetailIDResponse{
-		AdDetailId: detailId.String(),
+		AdDetailId: detailID.String(),
 	}, nil
 }
 
@@ -201,7 +202,7 @@ func (s *adService) GetAdSlot(ctx context.Context, req *adv1.GetAdSlotRequest) (
 		Title:       adSlot.Title,
 		Description: adSlot.Content,
 		ImageSrc:    adSlot.ImagePath,
-		Link:        adSlot.TargetUrl,
+		Link:        adSlot.TargetURL,
 	}
 
 	return &adv1.GetAdSlotResponse{Ad: adRes}, nil
@@ -225,7 +226,7 @@ func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRe
 
 	newBudget := req.GetBudget()
 	if err := s.budgetUsecase.UpdateBudget(ctx, modelad.ID(id), clientID, newBudget); err != nil {
-		return nil, utils.ToGRPCError(err) 
+		return nil, utils.ToGRPCError(err)
 	}
 
 	return &adv1.UpdateBudgetResponse{

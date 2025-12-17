@@ -1,3 +1,4 @@
+// Package postgres provides a PostgreSQL implementation of the slot repository.
 package postgres
 
 import (
@@ -96,11 +97,11 @@ func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
 	}
 
 	var s slot.Slot
-	var idUuid, userUuid uuid.UUID
+	var userUUID uuid.UUID
 	row := r.sql.QueryRowContext(ctx, sqlTextForSelectSlotByID, idUUID)
 	err = row.Scan(
-		&idUuid,
-		&userUuid,
+		&idUUID,
+		&userUUID,
 		&s.SlotName,
 		&s.MinCostAdv,
 		&s.FormatOfBanner,
@@ -115,8 +116,8 @@ func (r *DB) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) {
 		return slot.Slot{}, globalerrors.ErrInternal
 	}
 
-	s.ID = slot.ID(idUuid.String())
-	s.UserID = slot.UserID(userUuid.String())
+	s.ID = slot.ID(idUUID.String())
+	s.UserID = slot.UserID(userUUID.String())
 	return s, nil
 }
 
@@ -130,15 +131,17 @@ func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot,
 	if err != nil {
 		return nil, globalerrors.ErrInternal
 	}
-	defer rows.Close()
+	defer func() {
+		_ = rows.Close()
+	}()
 
 	var slots []slot.Slot
 	for rows.Next() {
 		var s slot.Slot
-		var idUuid, userUuid uuid.UUID
+		var idUUID, userUUID uuid.UUID
 		if err := rows.Scan(
-			&idUuid,
-			&userUuid,
+			&idUUID,
+			&userUUID,
 			&s.SlotName,
 			&s.MinCostAdv,
 			&s.FormatOfBanner,
@@ -148,8 +151,8 @@ func (r *DB) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot,
 		); err != nil {
 			return nil, globalerrors.ErrInternal
 		}
-		s.ID = slot.ID(idUuid.String())
-		s.UserID = slot.UserID(userUuid.String())
+		s.ID = slot.ID(idUUID.String())
+		s.UserID = slot.UserID(userUUID.String())
 		slots = append(slots, s)
 	}
 

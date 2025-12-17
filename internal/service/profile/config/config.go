@@ -1,3 +1,4 @@
+// Package config provides configuration settings for the profile service.
 package config
 
 import (
@@ -8,8 +9,8 @@ import (
 )
 
 type Config struct {
-	DBConfig  *PostgresConfig
-	AppConfig *AppConfig
+	DBConfig      *PostgresConfig
+	AppConfig     *AppConfig
 	PaymentConfig *PaymentConfig
 }
 
@@ -22,13 +23,13 @@ type PostgresConfig struct {
 }
 
 type AppConfig struct {
-	Port              string
-	ImgPath			  string
+	Port    string
+	ImgPath string
 }
 
 type PaymentConfig struct {
-	ShopID     string
-	SecretKey  string
+	ShopID    string
+	SecretKey string
 }
 
 func GetConfig() *Config {
@@ -42,8 +43,8 @@ func GetConfig() *Config {
 		log.Println("Error get App configuration")
 	}
 	return &Config{
-		DBConfig:  GetPostgresConfig(),
-		AppConfig: appCfg,
+		DBConfig:      GetPostgresConfig(),
+		AppConfig:     appCfg,
 		PaymentConfig: GetPaymentConfig(),
 	}
 }
@@ -60,7 +61,7 @@ func GetPostgresConfig() *PostgresConfig {
 
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
-		Port: os.Getenv("GRPC_PORT_PROFILE"),
+		Port:    os.Getenv("GRPC_PORT_PROFILE"),
 		ImgPath: os.Getenv("IMG_PATH"),
 	}
 }

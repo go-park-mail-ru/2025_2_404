@@ -1,3 +1,4 @@
+// Package connections manages database connections for the profile service.
 package connections
 
 import (
@@ -7,7 +8,7 @@ import (
 )
 
 type Config struct {
-	PostgresSQL	*sql.DB
+	PostgresSQL *sql.DB
 }
 
 func New(cfg *config.Config) (*Config, error) {
@@ -15,11 +16,11 @@ func New(cfg *config.Config) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-	return  &Config{
+	return &Config{
 		PostgresSQL: postgresSQL,
 	}, nil
 }
 
 func (c *Config) CloseAll() {
-	c.PostgresSQL.Close()
+	_ = c.PostgresSQL.Close()
 }
