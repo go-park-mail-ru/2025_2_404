@@ -34,6 +34,8 @@ func ToGRPCError(err error) error {
 		errors.Is(err, globalerrors.ErrFileRead),
 		errors.Is(err, globalerrors.ErrFileDelete):
 		return status.Error(codes.Unknown, err.Error())
+	case errors.Is(err, globalerrors.ErrInvalidCredentials):
+		return status.Error(codes.Unauthenticated, err.Error())
 	default:
 		return status.Error(codes.Unknown, "I'm a teapot")
 	}

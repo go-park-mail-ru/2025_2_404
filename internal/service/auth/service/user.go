@@ -76,13 +76,13 @@ func (u *UseCase) Login(ctx context.Context, email string, password string) (str
 	err := modeluser.ValidateLoginUser(email, password)
 	if err != nil {
 		log.Println("Валидация пароля или emaik не прошла, ошибка валидейт логин  %w", err)
-		return "", uuid.Nil, err
+		return "", uuid.Nil, globalerrors.ErrInvalidCredentials
 	}
 	
 	userID, err := u.Check(ctx, email, password)
 	if err != nil {
 		log.Println("Валидация пароля или emaik не прошла, ошибка чек %w", err)
-		return "",uuid.Nil, err
+		return "",uuid.Nil, globalerrors.ErrWrongEmailOrPassword
 	}
 
 	token, err := u.tokenUsecase.GenerateToken(userID)

@@ -36,27 +36,23 @@ func (r *DB) Create(ctx context.Context, user *modeluser.User) (modeluser.ID, er
 	if err == nil {
 		return user.ID, nil
 	}
-	var pgErr *pgconn.PgError // или pgconn.PgError для pgx
+	var pgErr *pgconn.PgError 
 	if errors.As(err, &pgErr) {
 		switch pgErr.Code {
-		case "23505": // unique_violation
-			// Уникальность нарушена — скорее всего, email уже существует
+		case "23505":
 			return modeluser.ID{}, globalerrors.ErrUserAlreadyExists
 
-		case "23514": // check_violation
-			// CHECK ограничение (длина email, name, password_hash)
+		case "23514":
 			if strings.Contains(strings.ToLower(pgErr.Message), "email") ||
 				strings.Contains(strings.ToLower(pgErr.ConstraintName), "email") {
 				return modeluser.ID{}, globalerrors.ErrNonValidEmail
 			}
-			// Если не email — считаем общей ошибкой валидации
 			return modeluser.ID{}, globalerrors.ErrInvalidQuery
 
-		case "23502": // not_null_violation
+		case "23502":
 			return modeluser.ID{}, globalerrors.ErrInvalidQuery
 
 		default:
-			// Любая другая ошибка от PostgreSQL — внутренняя
 			return modeluser.ID{}, globalerrors.ErrInternal
 		}
 	}
@@ -73,7 +69,7 @@ func (r *DB) FindByEmail(ctx context.Context, email string) (modeluser.User, err
 	err := r.sql.QueryRowContext(ctx, sqlTextForSelectUsers, email).Scan(&user.ID, &user.HashedPassword)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return modeluser.User{}, globalerrors.ErrUserNotFound
+			return modeluser.User{}, globalerrors.ErrWrongEmailOrPassword
 		}
 		return modeluser.User{}, globalerrors.ErrInternal
 	}
