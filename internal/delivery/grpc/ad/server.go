@@ -403,7 +403,7 @@ func (s *adService) GetAdCount(ctx context.Context, req *adv1.GetAdCountRequest)
 	}
 
 	s.logger.Debug("ad count retrieved successfully",
-		zap.String("client_id", clientID.String()),
+		zap.String("clientid", clientID.String()),
 		zap.Int64("count", count),
 	)
 
