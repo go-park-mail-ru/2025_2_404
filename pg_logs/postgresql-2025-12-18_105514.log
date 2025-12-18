@@ -1,0 +1,21 @@
+2025-12-18 10:55:14 GMT [47]: [3-1] user=,db=,app=,client= LOG:  starting PostgreSQL 15.15 (Debian 15.15-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+2025-12-18 10:55:14 GMT [47]: [4-1] user=,db=,app=,client= LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2025-12-18 10:55:14 GMT [51]: [1-1] user=,db=,app=,client= LOG:  database system was shut down at 2025-12-18 10:55:14 GMT
+2025-12-18 10:55:14 GMT [47]: [5-1] user=,db=,app=,client= LOG:  database system is ready to accept connections
+2025-12-18 10:55:15 GMT [57]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 10:55:15 GMT [57]: [2-1] user=Secret,db=postgres,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=postgres application_name=psql
+2025-12-18 10:55:15 GMT [57]: [3-1] user=Secret,db=postgres,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.028 user=Secret database=postgres host=[local]
+2025-12-18 10:55:15 GMT [59]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 10:55:15 GMT [59]: [2-1] user=Secret,db=postgres,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=postgres application_name=psql
+2025-12-18 10:55:15 GMT [59]: [3-1] user=Secret,db=postgres,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.080 user=Secret database=postgres host=[local]
+2025-12-18 10:55:15 GMT [61]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 10:55:15 GMT [61]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=psql
+2025-12-18 10:55:15 GMT [61]: [3-1] user=Secret,db=databasesecret,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.025 user=Secret database=databasesecret host=[local]
+2025-12-18 10:55:15 GMT [63]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 10:55:15 GMT [63]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=psql
+2025-12-18 10:55:15 GMT [63]: [3-1] user=Secret,db=databasesecret,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.111 user=Secret database=databasesecret host=[local]
+2025-12-18 10:55:15 GMT [65]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 10:55:15 GMT [65]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=psql
+2025-12-18 10:55:15 GMT [65]: [3-1] user=Secret,db=databasesecret,app=psql,client=[local] ERROR:  database "${POSTGRES_DB}" does not exist
+2025-12-18 10:55:15 GMT [65]: [4-1] user=Secret,db=databasesecret,app=psql,client=[local] STATEMENT:  GRANT CONNECT ON DATABASE "${POSTGRES_DB}" TO app_user;
+2025-12-18 10:55:15 GMT [65]: [5-1] user=Secret,db=databasesecret,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.095 user=Secret database=databasesecret host=[local]

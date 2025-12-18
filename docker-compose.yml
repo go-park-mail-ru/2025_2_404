@@ -1,9 +1,9 @@
 services:
   db:
-    image: postgres:latest
+    image: postgres:15
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_USER: ${POSTGRES_USER}      # Суперпользователь (создает БД)
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_HOST: ${POSTGRES_HOST}
@@ -13,25 +13,54 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d
+      - ./configs/postgresql.conf:/etc/postgresql/postgresql.conf # Подключаем конфиг
+      - ./pg_logs:/var/log/postgresql # Папка для логов (для PGBadger)
+    command: postgres -c 'config_file=/etc/postgresql/postgresql.conf' # Запуск с конфигом
     networks:
       - main
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
-      interval: 1m30s
-      timeout: 30s
+      interval: 10s
+      timeout: 5s
       retries: 5
-      start_period: 30s
-    
+      start_period: 10s
 
-  # app:
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   ports:
-  #     - "${APP_PORT}:${APP_PORT}"
-  #   depends_on:
-  #     - db
+  # --- МОНИТОРИНГ ---
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter
+    environment:
+      # Экспортер подключается как суперюзер, чтобы видеть всю статистику
+      DATA_SOURCE_NAME: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:${POSTGRES_PORT}/${POSTGRES_DB}?sslmode=disable"
+    ports:
+      - "9187:9187"
+    networks:
+      - main
+    depends_on:
+      db:
+        condition: service_healthy
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./configs/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - main
+    depends_on:
+      - postgres-exporter
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - main
+    depends_on:
+      - prometheus
+
+  # --- МИКРОСЕРВИСЫ ---
+  
   ad-service:
     build:
       context: .
@@ -43,8 +72,9 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # ВАЖНО: Используем сервисного пользователя, а не root (из задания)
+      POSTGRES_USER: app_user 
+      POSTGRES_PASSWORD: strong_password_123 
       POSTGRES_DB: ${POSTGRES_DB}
       APP_PORT: ${GRPC_AD_PORT}
     networks:
@@ -52,6 +82,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
   auth:
     build:
       context: .
@@ -63,8 +94,9 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # ВАЖНО: Используем сервисного пользователя
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: strong_password_123
       POSTGRES_DB: ${POSTGRES_DB}
       APP_PORT: ${GRPC_PORT_AUTH}
     networks:
@@ -84,10 +116,11 @@ services:
     ports:
       - "${GRPC_PORT_PROFILE}:${GRPC_PORT_PROFILE}"
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # ВАЖНО: Используем сервисного пользователя
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: strong_password_123
       POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
       APP_PORT: ${GRPC_PORT_PROFILE}
       AUTH_ADDR: auth_service:${GRPC_PORT_AUTH} 
@@ -122,8 +155,9 @@ services:
     environment:
       POSTGRES_HOST: db
       POSTGRES_PORT: ${POSTGRES_PORT}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # ВАЖНО: Используем сервисного пользователя
+      POSTGRES_USER: app_user
+      POSTGRES_PASSWORD: strong_password_123
       POSTGRES_DB: ${POSTGRES_DB}
       PORT_SLOT: ${GRPC_PORT_SLOT}
     networks:
@@ -131,6 +165,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
+
   gateway:
     build:
       context: .

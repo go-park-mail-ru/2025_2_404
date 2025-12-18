@@ -20,6 +20,9 @@ func ConnectDB(config *config.PostgresConfig) (*sql.DB, error) {
 	if err != nil {
 		return nil, err
 	}
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
 	i := 0
 	for err := db.Ping(); err != nil; err = db.Ping() {
 		i++
@@ -34,4 +37,3 @@ func ConnectDB(config *config.PostgresConfig) (*sql.DB, error) {
 func CloseDB(db *sql.DB) error {
 	return db.Close()
 }
-

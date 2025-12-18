@@ -1,0 +1,29 @@
+2025-12-18 12:21:27 GMT [48]: [3-1] user=,db=,app=,client= LOG:  starting PostgreSQL 15.15 (Debian 15.15-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+2025-12-18 12:21:27 GMT [48]: [4-1] user=,db=,app=,client= LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2025-12-18 12:21:27 GMT [52]: [1-1] user=,db=,app=,client= LOG:  database system was shut down at 2025-12-18 12:21:26 GMT
+2025-12-18 12:21:27 GMT [48]: [5-1] user=,db=,app=,client= LOG:  database system is ready to accept connections
+2025-12-18 12:21:27 GMT [58]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 12:21:27 GMT [58]: [2-1] user=Secret,db=postgres,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=postgres application_name=psql
+2025-12-18 12:21:27 GMT [58]: [3-1] user=Secret,db=postgres,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.013 user=Secret database=postgres host=[local]
+2025-12-18 12:21:27 GMT [60]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 12:21:27 GMT [60]: [2-1] user=Secret,db=postgres,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=postgres application_name=psql
+2025-12-18 12:21:27 GMT [60]: [3-1] user=Secret,db=postgres,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.083 user=Secret database=postgres host=[local]
+2025-12-18 12:21:27 GMT [62]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 12:21:27 GMT [62]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=psql
+2025-12-18 12:21:27 GMT [62]: [3-1] user=Secret,db=databasesecret,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.018 user=Secret database=databasesecret host=[local]
+2025-12-18 12:21:27 GMT [64]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 12:21:27 GMT [64]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=psql
+2025-12-18 12:21:27 GMT [64]: [3-1] user=Secret,db=databasesecret,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.196 user=Secret database=databasesecret host=[local]
+2025-12-18 12:21:27 GMT [66]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 12:21:27 GMT [66]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=psql
+2025-12-18 12:21:27 GMT [66]: [3-1] user=Secret,db=databasesecret,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.053 user=Secret database=databasesecret host=[local]
+2025-12-18 12:21:28 GMT [68]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-18 12:21:28 GMT [68]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=psql
+2025-12-18 12:21:28 GMT [68]: [3-1] user=Secret,db=databasesecret,app=psql,client=[local] LOG:  disconnection: session time: 0:00:00.076 user=Secret database=databasesecret host=[local]
+2025-12-18 12:21:28 GMT [48]: [6-1] user=,db=,app=,client= LOG:  received fast shutdown request
+2025-12-18 12:21:28 GMT [48]: [7-1] user=,db=,app=,client= LOG:  aborting any active transactions
+2025-12-18 12:21:28 GMT [48]: [8-1] user=,db=,app=,client= LOG:  background worker "logical replication launcher" (PID 55) exited with exit code 1
+2025-12-18 12:21:28 GMT [50]: [1-1] user=,db=,app=,client= LOG:  shutting down
+2025-12-18 12:21:28 GMT [50]: [2-1] user=,db=,app=,client= LOG:  checkpoint starting: shutdown immediate
+2025-12-18 12:21:28 GMT [50]: [3-1] user=,db=,app=,client= LOG:  checkpoint complete: wrote 967 buffers (5.9%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.037 s, sync=0.087 s, total=0.131 s; sync files=345, longest=0.004 s, average=0.001 s; distance=4626 kB, estimate=4626 kB
+2025-12-18 12:21:28 GMT [48]: [9-1] user=,db=,app=,client= LOG:  database system is shut down
