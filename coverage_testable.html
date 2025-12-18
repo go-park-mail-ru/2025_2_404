@@ -1,0 +1,1594 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>config: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">2025_2_404/internal/service/ad/config/config.go (28.6%)</option>
+				
+				<option value="file1">2025_2_404/internal/service/ad/domain/user/model.go (87.5%)</option>
+				
+				<option value="file2">2025_2_404/internal/service/ad/usecase/ad/ad.go (87.8%)</option>
+				
+				<option value="file3">2025_2_404/internal/service/ad/usecase/budget/budget_usecase.go (100.0%)</option>
+				
+				<option value="file4">2025_2_404/internal/service/auth/domain/user.go (93.6%)</option>
+				
+				<option value="file5">2025_2_404/internal/service/auth/service/JWTtoken.go (88.9%)</option>
+				
+				<option value="file6">2025_2_404/internal/service/auth/service/user.go (97.1%)</option>
+				
+				<option value="file7">2025_2_404/internal/service/profile/config/config.go (30.0%)</option>
+				
+				<option value="file8">2025_2_404/internal/service/profile/service/balance.go (100.0%)</option>
+				
+				<option value="file9">2025_2_404/internal/service/profile/service/payment.go (0.0%)</option>
+				
+				<option value="file10">2025_2_404/internal/service/profile/service/profile.go (100.0%)</option>
+				
+				<option value="file11">2025_2_404/internal/service/slot/config/config.go (28.6%)</option>
+				
+				<option value="file12">2025_2_404/internal/service/slot/usecase/metric/metric.go (100.0%)</option>
+				
+				<option value="file13">2025_2_404/internal/service/slot/usecase/slot/slot.go (100.0%)</option>
+				
+				<option value="file14">2025_2_404/internal/service/storage/config/config.go (28.6%)</option>
+				
+				<option value="file15">2025_2_404/internal/service/storage/usecase/filestorage/filestorage.go (84.6%)</option>
+				
+				<option value="file16">2025_2_404/pkg/ReadYooKassaIP/readIP.go (92.9%)</option>
+				
+				<option value="file17">2025_2_404/pkg/convertImage/convert.go (100.0%)</option>
+				
+				<option value="file18">2025_2_404/pkg/logger/logger.go (100.0%)</option>
+				
+				<option value="file19">2025_2_404/pkg/utils/grpc.go (100.0%)</option>
+				
+				<option value="file20">2025_2_404/pkg/utils/http.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// Package config provides configuration management for the ad service.
+package config
+
+import (
+        "os"
+
+        "github.com/joho/godotenv"
+)
+
+type Config struct {
+        DBConfig  *PostgresConfig
+        AppConfig *AppConfig
+}
+
+type PostgresConfig struct {
+        User     string
+        Password string
+        Host     string
+        Port     string
+        DB       string
+}
+
+type AppConfig struct {
+        Host        string
+        Port        string
+        PortAD      string
+        PortStorage string
+        ImgPath     string
+}
+
+func GetConfig() *Config <span class="cov0" title="0">{
+        err := godotenv.Load()
+        if err != nil </span><span class="cov0" title="0">{
+                panic("Error loading .env file")</span>
+        }
+
+        <span class="cov0" title="0">appCfg := GetAppConfig()
+
+        return &amp;Config{
+                DBConfig:  GetPostgresConfig(),
+                AppConfig: appCfg,
+        }</span>
+}
+
+func GetPostgresConfig() *PostgresConfig <span class="cov8" title="1">{
+        return &amp;PostgresConfig{
+                User:     os.Getenv("POSTGRES_USER"),
+                Password: os.Getenv("POSTGRES_PASSWORD"),
+                Host:     os.Getenv("POSTGRES_HOST"),
+                Port:     os.Getenv("POSTGRES_PORT"),
+                DB:       os.Getenv("POSTGRES_DB"),
+        }
+}</span>
+
+func GetAppConfig() *AppConfig <span class="cov8" title="1">{
+        return &amp;AppConfig{
+                Host:        os.Getenv("APP_HOST"),
+                Port:        os.Getenv("APP_PORT"),
+                PortAD:      os.Getenv("GRPC_AD_PORT"),
+                PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
+                ImgPath:     os.Getenv("IMG_PATH"),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">// Package user defines the User domain model and related types.
+package user
+
+import (
+        "errors"
+        "regexp"
+
+        "github.com/google/uuid"
+        "golang.org/x/crypto/bcrypt"
+)
+
+type ID = uuid.UUID
+
+type User struct {
+        ID             ID     `json:"id"`
+        UserName       string `json:"user_name"`
+        Email          string `json:"email"`
+        HashedPassword string `json:"password"`
+        ImagePath      string `json:"img_path"`
+        UserFirstName  string `json:"user_first_name"`
+        UserLastName   string `json:"user_second_name"`
+        Company        string `json:"company"`
+        Phone          string `json:"phone_number"`
+}
+
+var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9._@#$%&amp;+!* =]+$`)
+var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9.+-_]+@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$`)
+var constUpperCase = regexp.MustCompile(`[A-Z]`)
+var constLowerCase = regexp.MustCompile(`[a-z]`)
+var constSpecialChar = regexp.MustCompile(`[!@#$%^&amp;*()_+\-=\[\]{};':"\\|,.&lt;&gt;\/?]`)
+
+func NewUser(userName, email, password string) (*User, error) <span class="cov8" title="1">{
+        if len(userName) &lt; 4 || len(userName) &gt; 20 </span><span class="cov8" title="1">{
+                return nil, errors.New("username must be at least 4 and no more than 20 characters")
+        }</span>
+
+        <span class="cov8" title="1">if !allowedSymbols.MatchString(userName) </span><span class="cov8" title="1">{
+                return nil, errors.New("username contains invalid values")
+        }</span>
+
+        <span class="cov8" title="1">if !constLowerCase.MatchString(userName) &amp;&amp; !constUpperCase.MatchString(userName) </span><span class="cov0" title="0">{
+                return nil, errors.New("username must contain at least one symbol")
+        }</span>
+
+        <span class="cov8" title="1">if !allowedEmail.MatchString(email) </span><span class="cov8" title="1">{
+                return nil, errors.New("invalid email format")
+        }</span>
+
+        <span class="cov8" title="1">if len(email) &gt;= 100 </span><span class="cov0" title="0">{
+                return nil, errors.New("email must be between 5 and 100 characters")
+        }</span>
+
+        <span class="cov8" title="1">if len(password) &lt; 8 || len(password) &gt; 50 </span><span class="cov8" title="1">{
+                return nil, errors.New("password must be between 8 and 50 characters")
+        }</span>
+
+        <span class="cov8" title="1">if !allowedPassword.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, errors.New("invalid values")
+        }</span>
+
+        <span class="cov8" title="1">if !constLowerCase.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, errors.New("password must contain at least one lower case symbol")
+        }</span>
+
+        <span class="cov8" title="1">if !constUpperCase.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, errors.New("password must contain at least one upper case symbol")
+        }</span>
+
+        <span class="cov8" title="1">if !constSpecialChar.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, errors.New("password must contain at least one secial symbol")
+        }</span>
+
+        <span class="cov8" title="1">hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, err
+        }</span>
+
+        <span class="cov8" title="1">return &amp;User{
+                UserName:       userName,
+                Email:          email,
+                HashedPassword: string(hashedPassword),
+        }, nil</span>
+}
+
+// func LoginUser(email, password string) (*User, error){
+//         if !allowedEmail.MatchString(email){
+//                 return nil, errors.New("invalid email name")
+//         }
+
+//         if len(password) &lt; 8{
+//                 return nil, errors.New("password less than 8 characters")
+//         }
+
+//         if len(password) &gt; 50 {
+//                 return nil, errors.New("password more than 50 characters")
+//         }
+
+//         if !allowedPassword.MatchString(password){
+//                 return nil, errors.New("invalid values")
+//         }
+
+//         return &amp;User{
+//                 Email:      email,
+//                 HashedPassword: password,
+//         }, nil
+// }
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">// Package ad provides use case implementations for advertisement management.
+package ad
+
+import (
+        modelad "2025_2_404/internal/service/ad/domain/ad"
+        modelfullad "2025_2_404/internal/service/ad/domain/ad_full_info"
+        modeluser "2025_2_404/internal/service/ad/domain/user"
+        "context"
+
+        "go.uber.org/zap"
+)
+
+type adRepositoryI interface {
+        FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error)
+        Create(ctx context.Context, ad modelad.Ads) error
+        GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, error)
+        Update(ctx context.Context, ad modelad.Ads) error
+        Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
+        GetAdDetailForSlot(ctx context.Context, id modelad.ID, click, impression int) (modelfullad.DetailID, error)
+        GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error)
+        GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
+}
+
+type UseCase struct {
+        adRepo adRepositoryI
+        logger *zap.Logger
+}
+
+func New(adRepo adRepositoryI, logger *zap.Logger) *UseCase <span class="cov8" title="1">{
+        return &amp;UseCase{
+                adRepo: adRepo,
+                logger: logger,
+        }
+}</span>
+
+func (u *UseCase) FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error) <span class="cov8" title="1">{
+        return u.adRepo.FindByUserID(ctx, userID)
+}</span>
+
+func (u *UseCase) Create(ctx context.Context, ad modelad.Ads) error <span class="cov8" title="1">{
+        // Если бюджет меньше 100 делаем неактивной
+        if ad.Budget &lt; 100 </span><span class="cov8" title="1">{
+                ad.Status = "non-active"
+        }</span> else<span class="cov8" title="1"> {
+                ad.Status = "active"
+        }</span>
+
+        <span class="cov8" title="1">u.logger.Info("creating ad",
+                zap.String("ad_id", ad.ID.String()),
+                zap.String("client_id", ad.ClientID.String()),
+                zap.String("title", ad.Title),
+                zap.Uint32("budget", ad.Budget),
+                zap.String("status", ad.Status),
+        )
+
+        if err := u.adRepo.Create(ctx, ad); err != nil </span><span class="cov8" title="1">{
+                u.logger.Error("failed to create ad in repo",
+                        zap.String("client_id", ad.ClientID.String()),
+                        zap.Error(err),
+                )
+                return err
+        }</span>
+
+        <span class="cov8" title="1">u.logger.Info("ad created successfully",
+                zap.String("ad_id", ad.ID.String()),
+                zap.String("client_id", ad.ClientID.String()),
+        )
+
+        return nil</span>
+}
+
+func (u *UseCase) Update(ctx context.Context, ad modelad.Ads) error <span class="cov8" title="1">{
+        u.logger.Info("updating ad",
+                zap.String("ad_id", ad.ID.String()),
+                zap.String("client_id", ad.ClientID.String()),
+        )
+
+        if err := u.adRepo.Update(ctx, ad); err != nil </span><span class="cov0" title="0">{
+                u.logger.Error("failed to update ad", zap.Error(err))
+                return err
+        }</span>
+
+        <span class="cov8" title="1">u.logger.Info("ad updated successfully",
+                zap.String("ad_id", ad.ID.String()),
+                zap.String("client_id", ad.ClientID.String()),
+        )
+        return nil</span>
+}
+
+func (u *UseCase) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error <span class="cov8" title="1">{
+        u.logger.Info("deleting ad",
+                zap.String("ad_id", adID.String()),
+                zap.String("client_id", clientID.String()),
+        )
+
+        if err := u.adRepo.Delete(ctx, adID, clientID); err != nil </span><span class="cov0" title="0">{
+                u.logger.Error("failed to delete ad", zap.Error(err))
+                return err
+        }</span>
+
+        <span class="cov8" title="1">u.logger.Info("ad deleted successfully",
+                zap.String("ad_id", adID.String()),
+                zap.String("client_id", clientID.String()),
+        )
+        return nil</span>
+}
+
+func (u *UseCase) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error) <span class="cov8" title="1">{
+        adInfo, err := u.adRepo.GetOneAd(ctx, adID, clientID)
+        if err != nil </span><span class="cov0" title="0">{
+                // Репозиторий уже возвращает globalerrors — просто прокидываем
+                return modelfullad.AdFullInfo{}, -1, err
+        }</span>
+
+        // Вычисляем конверсию (целочисленное деление → может быть 0!)
+        <span class="cov8" title="1">conversion := -1
+        if adInfo.Impressions &gt; 0 </span><span class="cov8" title="1">{
+                conversion = adInfo.Clicks * 100 / adInfo.Impressions // ← проценты? или оставить как есть?
+                // Если нужен float — возвращать float64, но в твоём случае int — ок.
+        }</span>
+
+        // Обновляем статус на лету, если бюджет &lt; 100
+        <span class="cov8" title="1">if adInfo.Budget &lt; 100 </span><span class="cov8" title="1">{
+                adInfo.Status = "non-active"
+        }</span>
+
+        <span class="cov8" title="1">return adInfo, conversion, nil</span>
+}
+
+func (u *UseCase) GetAdDetailForSlot(ctx context.Context, id modelad.ID, eventType string) (modelfullad.DetailID, error) <span class="cov8" title="1">{
+        click := 0
+        impression := 0
+        if eventType == "impression" </span><span class="cov8" title="1">{
+                impression = 1
+        }</span> else<span class="cov8" title="1"> if eventType == "click" </span><span class="cov8" title="1">{
+                click = 1
+        }</span>
+
+        <span class="cov8" title="1">return u.adRepo.GetAdDetailForSlot(ctx, id, click, impression)</span>
+}
+
+func (u *UseCase) GetAdSlot(ctx context.Context, minCost uint32) (modelad.Ads, error) <span class="cov8" title="1">{
+        return u.adRepo.GetAdSlot(ctx, minCost)
+}</span>
+
+func (u *UseCase) GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error) <span class="cov8" title="1">{
+        return u.adRepo.GetAdCount(ctx, clientID)
+}</span>
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// Package budget provides use case implementations for managing advertisement budgets.
+package budget
+
+import (
+        modelad "2025_2_404/internal/service/ad/domain/ad"
+        modeluser "2025_2_404/internal/service/ad/domain/user"
+        "context"
+
+        "go.uber.org/zap"
+)
+
+type budgetRepositoryI interface {
+        UpdateBudget(ctx context.Context, adID modelad.ID, clientID modeluser.ID, newBudget uint32) error
+}
+
+type UseCase struct {
+        budgetRepo budgetRepositoryI
+        logger     *zap.Logger
+}
+
+func New(budgetRepo budgetRepositoryI, logger *zap.Logger) *UseCase <span class="cov8" title="1">{
+        return &amp;UseCase{
+                budgetRepo: budgetRepo,
+                logger:     logger,
+        }
+}</span>
+
+func (u *UseCase) UpdateBudget(ctx context.Context, adID modelad.ID, clientID modeluser.ID, newBudget uint32) error <span class="cov8" title="1">{
+        return u.budgetRepo.UpdateBudget(ctx, adID, clientID, newBudget)
+}</span>
+</pre>
+		
+		<pre class="file" id="file4" style="display: none">// Package domain defines the User domain model and related types.
+package domain
+
+import (
+        "2025_2_404/pkg/globalerrors"
+        "regexp"
+
+        "github.com/google/uuid"
+        "golang.org/x/crypto/bcrypt"
+)
+
+type ID = uuid.UUID
+
+type User struct {
+        ID             ID
+        UserName       string
+        Email          string
+        HashedPassword string
+}
+
+var allowedSymbols = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+var allowedPassword = regexp.MustCompile(`^[a-zA-Z0-9!@#$%^&amp;*()_+=\[\]{};':"\\|,.&lt;&gt;?/-]+$`)
+var allowedEmail = regexp.MustCompile(`^[a-zA-Z0-9._+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
+var constUpperCase = regexp.MustCompile(`[A-Z]`)
+var constLowerCase = regexp.MustCompile(`[a-z]`)
+var constSpecialChar = regexp.MustCompile(`[!@#$%^&amp;*()_+\-=\[\]{};':"\\|,.&lt;&gt;\/?]`)
+
+func ValidateRegisterUser(userName, email, password string) (*User, error) <span class="cov8" title="1">{
+        if len(userName) &lt; 4 </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrUsernameTooShort
+        }</span>
+        <span class="cov8" title="1">if len(userName) &gt; 20 </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrUsernameTooLong
+        }</span>
+
+        <span class="cov8" title="1">if !allowedSymbols.MatchString(userName) </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrUsernameInvalidChars
+        }</span>
+
+        <span class="cov8" title="1">if !constLowerCase.MatchString(userName) &amp;&amp; !constUpperCase.MatchString(userName) </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrUsernameNoLetters
+        }</span>
+
+        <span class="cov8" title="1">if !allowedEmail.MatchString(email) </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrNonValidEmail
+        }</span>
+
+        <span class="cov8" title="1">if len(email) &gt;= 100 </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrNonValidEmail // или отдельная ошибка, но обычно длина покрывается email-валидацией
+        }</span>
+
+        <span class="cov8" title="1">if len(password) &lt; 8 </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrPasswordTooShort
+        }</span>
+        <span class="cov8" title="1">if len(password) &gt; 50 </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrPasswordTooLong
+        }</span>
+
+        <span class="cov8" title="1">if !allowedPassword.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrPasswordInvalidChars
+        }</span>
+
+        <span class="cov8" title="1">if !constLowerCase.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrPasswordNoLower
+        }</span>
+
+        <span class="cov8" title="1">if !constUpperCase.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrPasswordNoUpper
+        }</span>
+
+        <span class="cov8" title="1">if !constSpecialChar.MatchString(password) </span><span class="cov8" title="1">{
+                return nil, globalerrors.ErrPasswordNoSpecial
+        }</span>
+
+        <span class="cov8" title="1">hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+        if err != nil </span><span class="cov0" title="0">{
+                return nil, globalerrors.ErrInternal
+        }</span>
+
+        <span class="cov8" title="1">return &amp;User{
+                ID:             uuid.New(),
+                UserName:       userName,
+                Email:          email,
+                HashedPassword: string(hashedPassword),
+        }, nil</span>
+}
+
+func ValidateLoginUser(email, password string) error <span class="cov8" title="1">{
+        if email == "" </span><span class="cov8" title="1">{
+                return globalerrors.ErrEmailRequired
+        }</span>
+
+        <span class="cov8" title="1">if !allowedEmail.MatchString(email) </span><span class="cov8" title="1">{
+                return globalerrors.ErrNonValidEmail
+        }</span>
+
+        <span class="cov8" title="1">if password == "" </span><span class="cov8" title="1">{
+                return globalerrors.ErrPasswordRequired
+        }</span>
+
+        <span class="cov8" title="1">if len(password) &lt; 8 </span><span class="cov8" title="1">{
+                return globalerrors.ErrPasswordTooShort
+        }</span>
+        <span class="cov8" title="1">if len(password) &gt; 50 </span><span class="cov0" title="0">{
+                return globalerrors.ErrPasswordTooLong
+        }</span>
+
+        <span class="cov8" title="1">if !allowedPassword.MatchString(password) </span><span class="cov0" title="0">{
+                return globalerrors.ErrPasswordInvalidChars
+        }</span>
+
+        <span class="cov8" title="1">if !constLowerCase.MatchString(password) </span><span class="cov8" title="1">{
+                return globalerrors.ErrPasswordNoLower
+        }</span>
+
+        <span class="cov8" title="1">if !constUpperCase.MatchString(password) </span><span class="cov8" title="1">{
+                return globalerrors.ErrPasswordNoUpper
+        }</span>
+
+        <span class="cov8" title="1">if !constSpecialChar.MatchString(password) </span><span class="cov8" title="1">{
+                return globalerrors.ErrPasswordNoSpecial
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">// Package service provides JWT token generation and validation services.
+package service
+
+import (
+        modeluser "2025_2_404/internal/service/auth/domain"
+        "2025_2_404/pkg/globalerrors"
+        "context"
+        "crypto/ecdsa"
+        "fmt"
+        "time"
+
+        "github.com/golang-jwt/jwt/v5"
+        "go.uber.org/zap"
+)
+
+type UseCaseJWT struct {
+        privateKey *ecdsa.PrivateKey
+        publicKey  *ecdsa.PublicKey
+        logger     *zap.Logger
+}
+
+func NewJWT(privateKey *ecdsa.PrivateKey, publicKey *ecdsa.PublicKey, logger *zap.Logger) *UseCaseJWT <span class="cov8" title="1">{
+        return &amp;UseCaseJWT{
+                privateKey: privateKey,
+                publicKey:  publicKey,
+                logger:     logger,
+        }
+}</span>
+
+type Claims struct {
+        UserID modeluser.ID `json:"user_id"`
+        jwt.RegisteredClaims
+}
+
+func (u *UseCaseJWT) GenerateToken(userID modeluser.ID) (string, error) <span class="cov8" title="1">{
+        expTime := time.Now().Add(24 * time.Hour)
+        claims := &amp;Claims{
+                UserID: userID,
+                RegisteredClaims: jwt.RegisteredClaims{
+                        ExpiresAt: jwt.NewNumericDate(expTime),
+                        IssuedAt:  jwt.NewNumericDate(time.Now()),
+                },
+        }
+
+        token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+        ss, err := token.SignedString(u.privateKey)
+        if err != nil </span><span class="cov0" title="0">{
+                return "", globalerrors.ErrInternal
+        }</span>
+        <span class="cov8" title="1">return ss, nil</span>
+}
+
+func (u *UseCaseJWT) ValidateToken(ctx context.Context, tokenString string) (modeluser.ID, error) <span class="cov8" title="1">{
+        claims := &amp;Claims{}
+        token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) </span><span class="cov8" title="1">{
+                if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok </span><span class="cov8" title="1">{
+                        return nil, fmt.Errorf("unexpected signature method: %v", token.Header["alg"])
+                }</span>
+                <span class="cov8" title="1">return u.publicKey, nil</span>
+        })
+
+        <span class="cov8" title="1">if err != nil </span><span class="cov8" title="1">{
+                return modeluser.ID{}, globalerrors.ErrNoAuth
+        }</span>
+
+        <span class="cov8" title="1">if claims, ok := token.Claims.(*Claims); ok &amp;&amp; token.Valid </span><span class="cov8" title="1">{
+                return claims.UserID, nil
+        }</span>
+
+        <span class="cov0" title="0">return modeluser.ID{}, globalerrors.ErrNoAuth</span>
+}
+
+// func (u *UseCase) InvalidateToken(tokenString string) (string, error) {
+//         claims := &amp;Claims{}
+//         token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (any, error) {
+//                 if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
+//                         return nil, fmt.Errorf("unexpected signature method: %v", token.Header["alg"])
+//                 }
+//                 return u.publicKey, nil
+//         })
+//         if err != nil || !token.Valid{
+
+//         }
+// }
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package service
+
+import (
+        modeluser "2025_2_404/internal/service/auth/domain"
+        "2025_2_404/pkg/globalerrors"
+        "context"
+        "errors"
+        "log"
+
+        // "log"
+
+        "github.com/google/uuid"
+        "go.uber.org/zap"
+        "golang.org/x/crypto/bcrypt"
+)
+
+type repositoryI interface {
+        Create(ctx context.Context, user *modeluser.User) (modeluser.ID, error)
+        FindByEmail(ctx context.Context, email string) (modeluser.User, error)
+}
+
+type tokenUsecaseI interface {
+        GenerateToken(userID modeluser.ID) (string, error)
+        // InvalidateToken(tokenString string) (string, error)
+}
+
+type UseCase struct {
+        repo         repositoryI
+        tokenUsecase tokenUsecaseI
+        logger       *zap.Logger
+}
+
+func New(repo repositoryI, tokenUsecase tokenUsecaseI, logger *zap.Logger) *UseCase <span class="cov8" title="1">{
+        return &amp;UseCase{
+                repo:         repo,
+                tokenUsecase: tokenUsecase,
+                logger:       logger,
+        }
+}</span>
+
+func (r *UseCase) Register(ctx context.Context, email, password, userName string) (string, modeluser.ID, error) <span class="cov8" title="1">{
+        user, err := modeluser.ValidateRegisterUser(userName, email, password)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println("Не валидированный пользователь %w", err)
+                return "", uuid.Nil, err
+        }</span>
+
+        <span class="cov8" title="1">userID, err := r.repo.Create(ctx, user)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println("Траблы с созданием пользвоателя %w", err)
+                return "", uuid.Nil, err
+        }</span>
+
+        <span class="cov8" title="1">token, err := r.tokenUsecase.GenerateToken(userID)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println("Не получилось создать токен, ошибка %w", err)
+                return "", uuid.Nil, err
+        }</span>
+        <span class="cov8" title="1">return token, userID, nil</span>
+}
+
+func (u *UseCase) Check(ctx context.Context, email, password string) (modeluser.ID, error) <span class="cov8" title="1">{
+        user, err := u.repo.FindByEmail(ctx, email)
+        if err != nil </span><span class="cov8" title="1">{
+                if errors.Is(err, globalerrors.ErrUserNotFound) </span><span class="cov8" title="1">{
+                        return uuid.Nil, globalerrors.ErrWrongEmailOrPassword
+                }</span>
+                <span class="cov0" title="0">return uuid.Nil, globalerrors.ErrInternal</span>
+        }
+
+        <span class="cov8" title="1">if err := bcrypt.CompareHashAndPassword([]byte(user.HashedPassword), []byte(password)); err != nil </span><span class="cov8" title="1">{
+                return uuid.Nil, globalerrors.ErrWrongEmailOrPassword
+        }</span>
+
+        <span class="cov8" title="1">return user.ID, nil</span>
+}
+
+func (u *UseCase) Login(ctx context.Context, email string, password string) (string, modeluser.ID, error) <span class="cov8" title="1">{
+        err := modeluser.ValidateLoginUser(email, password)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println("Валидация пароля или emaik не прошла, ошибка валидейт логин  %w", err)
+                return "", uuid.Nil, globalerrors.ErrInvalidCredentials
+        }</span>
+
+        <span class="cov8" title="1">userID, err := u.Check(ctx, email, password)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println("Валидация пароля или emaik не прошла, ошибка чек %w", err)
+                return "", uuid.Nil, globalerrors.ErrWrongEmailOrPassword
+        }</span>
+
+        <span class="cov8" title="1">token, err := u.tokenUsecase.GenerateToken(userID)
+        if err != nil </span><span class="cov8" title="1">{
+                log.Println("Токен не сгенерировался, %w", err)
+                return "", uuid.Nil, err
+        }</span>
+
+        <span class="cov8" title="1">return token, userID, nil</span>
+}
+
+// func (u *UseCase) Logout(ctx context.Context, token string) (error) {
+
+// }
+</pre>
+		
+		<pre class="file" id="file7" style="display: none">// Package config provides configuration settings for the profile service.
+package config
+
+import (
+        "log"
+        "os"
+
+        "github.com/joho/godotenv"
+)
+
+type Config struct {
+        DBConfig      *PostgresConfig
+        AppConfig     *AppConfig
+        PaymentConfig *PaymentConfig
+}
+
+type PostgresConfig struct {
+        User     string
+        Password string
+        Host     string
+        Port     string
+        DB       string
+}
+
+type AppConfig struct {
+        Port    string
+        ImgPath string
+}
+
+type PaymentConfig struct {
+        ShopID    string
+        SecretKey string
+}
+
+func GetConfig() *Config <span class="cov0" title="0">{
+        err := godotenv.Load(os.Getenv("ENV_FILE"))
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println("Error loading .env file")
+        }</span>
+
+        <span class="cov0" title="0">appCfg := GetAppConfig()
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println("Error get App configuration")
+        }</span>
+        <span class="cov0" title="0">return &amp;Config{
+                DBConfig:      GetPostgresConfig(),
+                AppConfig:     appCfg,
+                PaymentConfig: GetPaymentConfig(),
+        }</span>
+}
+
+func GetPostgresConfig() *PostgresConfig <span class="cov8" title="1">{
+        return &amp;PostgresConfig{
+                User:     os.Getenv("POSTGRES_USER"),
+                Password: os.Getenv("POSTGRES_PASSWORD"),
+                Host:     os.Getenv("POSTGRES_HOST"),
+                Port:     os.Getenv("POSTGRES_PORT"),
+                DB:       os.Getenv("POSTGRES_DB"),
+        }
+}</span>
+
+func GetAppConfig() *AppConfig <span class="cov8" title="1">{
+        return &amp;AppConfig{
+                Port:    os.Getenv("GRPC_PORT_PROFILE"),
+                ImgPath: os.Getenv("IMG_PATH"),
+        }
+}</span>
+
+func GetPaymentConfig() *PaymentConfig <span class="cov8" title="1">{
+        return &amp;PaymentConfig{
+                ShopID:    os.Getenv("YOOKASSA_SHOP_ID"),
+                SecretKey: os.Getenv("YOOKASSA_SECRET_KEY"),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file8" style="display: none">// Package profile provides use case implementations for managing user profiles.
+package profile
+
+import (
+        modelclient "2025_2_404/internal/service/profile/domain"
+        "context"
+        "fmt"
+)
+
+func (u *UseCase) ShowBalance(ctx context.Context, clientID modelclient.ID) (uint32, error) <span class="cov8" title="1">{
+        return u.repo.ShowBalance(ctx, clientID)
+}</span>
+
+func (u *UseCase) AddBalance(ctx context.Context, clientID modelclient.ID, addAmount uint32) error <span class="cov8" title="1">{
+        return u.repo.AddBalance(ctx, clientID, addAmount)
+}</span>
+
+func (u *UseCase) SubtractBalance(ctx context.Context, clientID modelclient.ID, subAmount uint32) error <span class="cov8" title="1">{
+        balanc, err := u.repo.ShowBalance(ctx, clientID)
+        if err != nil </span><span class="cov8" title="1">{
+                return err
+        }</span>
+        <span class="cov8" title="1">if balanc &lt; subAmount </span><span class="cov8" title="1">{
+                return fmt.Errorf("Subtract more balance")
+        }</span>
+        <span class="cov8" title="1">return u.repo.SubtractBalance(ctx, clientID, subAmount)</span>
+}
+</pre>
+		
+		<pre class="file" id="file9" style="display: none">package profile
+
+import (
+        modelpayment "2025_2_404/internal/service/profile/domain"
+        "context"
+        "fmt"
+        "log/slog"
+
+        "github.com/google/uuid"
+)
+
+func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Payment) (string, error) <span class="cov0" title="0">{
+        // Генерация ID платежа
+        yooKassaID := uuid.New().String()
+        payment.YooPaymentID = yooKassaID
+
+        slog.Debug("Создание платежа: начало",
+                "user_id", payment.ClientID,
+                "amount", payment.AmountRub,
+                "yoo_payment_id", yooKassaID,
+        )
+
+        // Вызов внешнего платежного сервиса (YooKassa)
+        yooKassaResp, err := u.ext.CreatePayment(ctx, payment)
+        if err != nil </span><span class="cov0" title="0">{
+                slog.Error("Ошибка при создании платежа во внешнем сервисе",
+                        "yoo_payment_id", yooKassaID,
+                        "user_id", payment.ClientID,
+                        "amount", payment.AmountRub,
+                        "error", err,
+                )
+                return "", fmt.Errorf("failed to create payment in external service: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">slog.Debug("Платеж успешно создан во внешнем сервисе",
+                "yoo_payment_id", yooKassaResp.ID,
+                "payment_link", yooKassaResp.Confirmation.URL,
+        )
+
+        payment.YooPaymentID = yooKassaResp.ID
+        payment.Status = modelpayment.PaymentPending
+        yooKassaLink := yooKassaResp.Confirmation.URL
+
+        // Сохраняем в репозиторий
+        if err := u.repo.CreatePayment(ctx, payment); err != nil </span><span class="cov0" title="0">{
+                slog.Error("Ошибка при сохранении платежа в БД",
+                        "yoo_payment_id", yooKassaID,
+                        "user_id", payment.ClientID,
+                        "error", err,
+                )
+                return "", fmt.Errorf("failed to store payment in repository: %w", err)
+        }</span>
+
+        <span class="cov0" title="0">slog.Info("Платёж успешно создан и сохранён",
+                "yoo_payment_id", yooKassaID,
+                "user_id", payment.ClientID,
+                "amount", payment.AmountRub,
+                "status", payment.Status,
+        )
+
+        return yooKassaLink, nil</span>
+}
+
+func (u *UseCase) UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modelpayment.PaymentStatus) (modelpayment.ID, error) <span class="cov0" title="0">{
+        return u.repo.UpdatePaymentStatus(ctx, yooPaymentID, status)
+}</span>
+
+func (u *UseCase) GetPaymentsByClientID(ctx context.Context, clientID modelpayment.ID) ([]modelpayment.Payment, error) <span class="cov0" title="0">{
+        return u.repo.GetPaymentsByClientID(ctx, clientID)
+}</span>
+</pre>
+		
+		<pre class="file" id="file10" style="display: none">package profile
+
+import (
+        modeluser "2025_2_404/internal/service/profile/domain"
+        "context"
+        "fmt"
+)
+
+type repositoryI interface {
+        Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error)
+        Update(ctx context.Context, client modeluser.User) error
+        Delete(ctx context.Context, clientID modeluser.ID) error
+        ShowBalance(ctx context.Context, clientID modeluser.ID) (uint32, error)
+        AddBalance(ctx context.Context, clientID modeluser.ID, addAmount uint32) error
+        SubtractBalance(ctx context.Context, clientID modeluser.ID, subAmount uint32) error
+        CreatePayment(ctx context.Context, payment modeluser.Payment) error
+        UpdatePaymentStatus(ctx context.Context, yooPaymentID string, status modeluser.PaymentStatus) (modeluser.ID, error)
+        GetPaymentsByClientID(ctx context.Context, clientID modeluser.ID) ([]modeluser.Payment, error)
+}
+
+type externalYooKassaHTTPI interface {
+        CreatePayment(ctx context.Context, payment modeluser.Payment) (modeluser.PaymentResponse, error)
+}
+
+type UseCase struct {
+        repo repositoryI
+        ext  externalYooKassaHTTPI
+}
+
+func New(repo repositoryI, ext externalYooKassaHTTPI) *UseCase <span class="cov8" title="1">{
+        return &amp;UseCase{
+                repo: repo,
+                ext:  ext,
+        }
+}</span>
+
+func (u *UseCase) Update(ctx context.Context, client modeluser.User) error <span class="cov8" title="1">{
+        return u.repo.Update(ctx, client)
+}</span>
+
+func (u *UseCase) Show(ctx context.Context, clientID modeluser.ID) (modeluser.User, error) <span class="cov8" title="1">{
+        return u.repo.Show(ctx, clientID)
+}</span>
+
+func (u *UseCase) Delete(ctx context.Context, clientID modeluser.ID) error <span class="cov8" title="1">{
+
+        if err := u.repo.Delete(ctx, clientID); err != nil </span><span class="cov8" title="1">{
+                return fmt.Errorf("failed to delete user from repository: %w", err)
+        }</span>
+
+        <span class="cov8" title="1">return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file11" style="display: none">// Package config provides configuration management for the slot service.
+package config
+
+import (
+        "os"
+
+        "github.com/joho/godotenv"
+)
+
+type Config struct {
+        DBConfig  *PostgresConfig
+        AppConfig *AppConfig
+}
+
+type PostgresConfig struct {
+        User     string
+        Password string
+        Host     string
+        Port     string
+        DB       string
+}
+
+type AppConfig struct {
+        Host        string
+        Port        string
+        PortAD      string
+        PortProfile string
+        PortStorage string
+        PortSlot    string
+        ImgPath     string
+}
+
+func GetConfig() *Config <span class="cov0" title="0">{
+        err := godotenv.Load()
+        if err != nil </span><span class="cov0" title="0">{
+                panic("Error loading .env file")</span>
+        }
+
+        <span class="cov0" title="0">appCfg := GetAppConfig()
+
+        return &amp;Config{
+                DBConfig:  GetPostgresConfig(),
+                AppConfig: appCfg,
+        }</span>
+}
+
+func GetPostgresConfig() *PostgresConfig <span class="cov8" title="1">{
+        return &amp;PostgresConfig{
+                User:     os.Getenv("POSTGRES_USER"),
+                Password: os.Getenv("POSTGRES_PASSWORD"),
+                Host:     os.Getenv("POSTGRES_HOST"),
+                Port:     os.Getenv("POSTGRES_PORT"),
+                DB:       os.Getenv("POSTGRES_DB"),
+        }
+}</span>
+
+func GetAppConfig() *AppConfig <span class="cov8" title="1">{
+        return &amp;AppConfig{
+                Host:        os.Getenv("APP_HOST"),
+                Port:        os.Getenv("APP_PORT"),
+                PortAD:      os.Getenv("GRPC_AD_PORT"),
+                PortProfile: os.Getenv("GRPC_PORT_PROFILE"),
+                PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
+                PortSlot:    os.Getenv("GRPC_PORT_SLOT"),
+                ImgPath:     os.Getenv("IMG_PATH"),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file12" style="display: none">// Package metric provides use case implementations for managing slot metrics.
+package metric
+
+import (
+        user "2025_2_404/internal/service/profile/domain"
+        "2025_2_404/internal/service/slot/domain/metric"
+        "context"
+)
+
+type metricRepositiryI interface {
+        CreateMetric(ctx context.Context, metric metric.Metric) (user.ID, error)
+        GetMetricForDay(ctx context.Context, slotID metric.SlotID) ([]metric.GetMetric, error)
+}
+
+type MetricUsecase struct {
+        repo metricRepositiryI
+}
+
+func New(repo metricRepositiryI) *MetricUsecase <span class="cov8" title="1">{
+        return &amp;MetricUsecase{
+                repo: repo,
+        }
+}</span>
+
+func (u *MetricUsecase) CreateMetric(ctx context.Context, metric metric.Metric) (user.ID, error) <span class="cov8" title="1">{
+        return u.repo.CreateMetric(ctx, metric)
+}</span>
+
+func (u *MetricUsecase) GetMetricForSlot(ctx context.Context, slotID metric.SlotID) (int, int, []metric.GetMetric, error) <span class="cov8" title="1">{
+        metrics, err := u.repo.GetMetricForDay(ctx, slotID)
+        if err != nil </span><span class="cov8" title="1">{
+                return 0, 0, nil, err
+        }</span>
+
+        <span class="cov8" title="1">totalClicks := 0
+        totalImpressions := 0
+        for _, m := range metrics </span><span class="cov8" title="1">{
+                totalClicks += m.Clicks
+                totalImpressions += m.Impressions
+        }</span>
+
+        <span class="cov8" title="1">return totalClicks, totalImpressions, metrics, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file13" style="display: none">// Package slot provides use case implementations for managing slots.
+package slot
+
+import (
+        "2025_2_404/internal/service/slot/domain/slot"
+        "context"
+)
+
+type slotRepository interface {
+        Create(ctx context.Context, s slot.Slot) (slot.ID, error)
+        GetByID(ctx context.Context, id slot.ID) (slot.Slot, error)
+        ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error)
+        Update(ctx context.Context, s slot.Slot) error
+        Delete(ctx context.Context, id slot.ID, userID slot.UserID) error
+}
+
+type UseCase struct {
+        repo slotRepository
+}
+
+func New(repo slotRepository) *UseCase <span class="cov8" title="1">{
+        return &amp;UseCase{repo: repo}
+}</span>
+
+func (u *UseCase) Create(ctx context.Context, s slot.Slot) (slot.ID, error) <span class="cov8" title="1">{
+        return u.repo.Create(ctx, s)
+}</span>
+
+func (u *UseCase) GetByID(ctx context.Context, id slot.ID) (slot.Slot, error) <span class="cov8" title="1">{
+        return u.repo.GetByID(ctx, id)
+}</span>
+
+func (u *UseCase) ListByUserID(ctx context.Context, userID slot.UserID) ([]slot.Slot, error) <span class="cov8" title="1">{
+        return u.repo.ListByUserID(ctx, userID)
+}</span>
+
+func (u *UseCase) Update(ctx context.Context, s slot.Slot) error <span class="cov8" title="1">{
+        return u.repo.Update(ctx, s)
+}</span>
+
+func (u *UseCase) Delete(ctx context.Context, id slot.ID, userID slot.UserID) error <span class="cov8" title="1">{
+        return u.repo.Delete(ctx, id, userID)
+}</span>
+</pre>
+		
+		<pre class="file" id="file14" style="display: none">// Package config provides configuration management for the storage service.
+package config
+
+import (
+        "log"
+        "os"
+
+        // "github.com/enfein/mieru/v3/pkg/log"
+        "github.com/joho/godotenv"
+)
+
+type Config struct {
+        DBConfig  *PostgresConfig
+        AppConfig *AppConfig
+}
+
+type PostgresConfig struct {
+        User     string
+        Password string
+        Host     string
+        Port     string
+        DB       string
+}
+
+type AppConfig struct {
+        Host        string
+        Port        string
+        PortAD      string
+        PortStorage string
+        ImgPath     string
+}
+
+func GetConfig() *Config <span class="cov0" title="0">{
+        err := godotenv.Load(os.Getenv("ENV_FILE"))
+        if err != nil </span><span class="cov0" title="0">{
+                log.Println("Error loading .env file")
+        }</span>
+
+        <span class="cov0" title="0">appCfg := GetAppConfig()
+
+        return &amp;Config{
+                DBConfig:  GetPostgresConfig(),
+                AppConfig: appCfg,
+        }</span>
+}
+
+func GetPostgresConfig() *PostgresConfig <span class="cov8" title="1">{
+        return &amp;PostgresConfig{
+                User:     os.Getenv("POSTGRES_USER"),
+                Password: os.Getenv("POSTGRES_PASSWORD"),
+                Host:     os.Getenv("POSTGRES_HOST"),
+                Port:     os.Getenv("POSTGRES_PORT"),
+                DB:       os.Getenv("POSTGRES_DB"),
+        }
+}</span>
+
+func GetAppConfig() *AppConfig <span class="cov8" title="1">{
+        return &amp;AppConfig{
+                Host:        os.Getenv("APP_HOST"),
+                Port:        os.Getenv("APP_PORT"),
+                PortAD:      os.Getenv("GRPC_AD_PORT"),
+                PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
+                ImgPath:     os.Getenv("IMG_PATH"),
+        }
+}</span>
+</pre>
+		
+		<pre class="file" id="file15" style="display: none">// Package filestorage provides use case implementations for file storage operations.
+package filestorage
+
+import (
+        "2025_2_404/internal/service/storage/config"
+        "2025_2_404/pkg/globalerrors"
+        "context"
+        "log/slog"
+        "os"
+        "path/filepath"
+        "strings"
+)
+
+type UseCase struct {
+        baseDir string
+}
+
+// containsPathTraversal checks if path contains .. segments
+func containsPathTraversal(path string) bool <span class="cov8" title="1">{
+        return strings.Contains(path, "..")
+}</span>
+
+func New(cfg *config.Config) *UseCase <span class="cov8" title="1">{
+        uc := &amp;UseCase{
+                baseDir: cfg.AppConfig.ImgPath,
+        }
+        slog.Debug(" FileStorage UseCase created", "base_dir", uc.baseDir)
+        return uc
+}</span>
+
+func (u *UseCase) BaseDir() string <span class="cov8" title="1">{
+        return u.baseDir
+}</span>
+
+func (u *UseCase) Create(ctx context.Context, imageData []byte, imagePath string) error <span class="cov8" title="1">{
+        if imagePath == "" </span><span class="cov8" title="1">{
+                slog.Warn(" Create called with empty path")
+                return globalerrors.ErrInvalidPath
+        }</span>
+
+        <span class="cov8" title="1">if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath || containsPathTraversal(imagePath) </span><span class="cov8" title="1">{
+                slog.Warn(" Suspicious image path (possible traversal)", "path", imagePath)
+                return globalerrors.ErrInvalidPath
+        }</span>
+
+        <span class="cov8" title="1">fullPath := filepath.Join(u.baseDir, imagePath)
+        slog.Debug(" Creating file", "full_path", fullPath, "size", len(imageData))
+
+        dir := filepath.Dir(fullPath)
+        if err := os.MkdirAll(dir, os.ModePerm); err != nil </span><span class="cov0" title="0">{
+                slog.Error(" Failed to create directory", "dir", dir, "error", err)
+                return globalerrors.ErrInternal
+        }</span>
+
+        <span class="cov8" title="1">file, err := os.Create(fullPath)
+        if err != nil </span><span class="cov0" title="0">{
+                slog.Error(" Failed to create file", "path", fullPath, "error", err)
+                return globalerrors.ErrFileWrite
+        }</span>
+        <span class="cov8" title="1">defer func() </span><span class="cov8" title="1">{
+                _ = file.Close()
+        }</span>()
+
+        <span class="cov8" title="1">if _, err = file.Write(imageData); err != nil </span><span class="cov0" title="0">{
+                slog.Error(" Failed to write file", "path", fullPath, "error", err)
+                return globalerrors.ErrFileWrite
+        }</span>
+
+        <span class="cov8" title="1">slog.Debug(" File written successfully", "path", fullPath)
+        return nil</span>
+}
+
+func (u *UseCase) Get(ctx context.Context, imagePath string) ([]byte, string, error) <span class="cov8" title="1">{
+        if imagePath == "" </span><span class="cov8" title="1">{
+                slog.Warn(" Get called with empty path")
+                return nil, "", globalerrors.ErrInvalidPath
+        }</span>
+
+        // Защита от path traversal
+        <span class="cov8" title="1">if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath || containsPathTraversal(imagePath) </span><span class="cov8" title="1">{
+                slog.Warn(" Suspicious image path in Get", "path", imagePath)
+                return nil, "", globalerrors.ErrInvalidPath
+        }</span>
+
+        <span class="cov8" title="1">fullPath := filepath.Join(u.baseDir, imagePath)
+        slog.Debug("🔍 Reading file", "full_path", fullPath)
+
+        data, err := os.ReadFile(fullPath)
+        if err != nil </span><span class="cov8" title="1">{
+                if os.IsNotExist(err) </span><span class="cov8" title="1">{
+                        slog.Warn(" File not found", "path", fullPath)
+                        return nil, "", globalerrors.ErrFileNotFound
+                }</span>
+                <span class="cov0" title="0">slog.Error(" Failed to read file", "path", fullPath, "error", err)
+                return nil, "", globalerrors.ErrFileRead</span>
+        }
+
+        // Упрощённое определение типа (можно улучшить позже)
+        <span class="cov8" title="1">ext := filepath.Ext(fullPath)
+        contentType := "application/octet-stream"
+        if len(ext) &gt; 1 </span><span class="cov8" title="1">{
+                contentType = "image/" + ext[1:]
+        }</span>
+
+        <span class="cov8" title="1">slog.Debug(" File read successfully", "path", fullPath, "size", len(data))
+        return data, contentType, nil</span>
+}
+
+func (u *UseCase) Delete(ctx context.Context, imagePath string) error <span class="cov8" title="1">{
+        if imagePath == "" </span><span class="cov8" title="1">{
+                slog.Warn(" Delete called with empty path")
+                return globalerrors.ErrInvalidPath
+        }</span>
+
+        // Защита от path traversal
+        <span class="cov8" title="1">if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath || containsPathTraversal(imagePath) </span><span class="cov8" title="1">{
+                slog.Warn(" Suspicious image path in Delete", "path", imagePath)
+                return globalerrors.ErrInvalidPath
+        }</span>
+
+        <span class="cov8" title="1">fullPath := filepath.Join(u.baseDir, imagePath)
+        slog.Debug("🗑️ Deleting file", "full_path", fullPath)
+
+        if _, err := os.Stat(fullPath); os.IsNotExist(err) </span><span class="cov8" title="1">{
+                slog.Warn(" File does not exist, skip delete", "path", fullPath)
+                return nil // Успешное "ничего не делать"
+        }</span>
+
+        <span class="cov8" title="1">if err := os.Remove(fullPath); err != nil </span><span class="cov0" title="0">{
+                slog.Error(" Failed to delete file", "path", fullPath, "error", err)
+                return globalerrors.ErrFileDelete
+        }</span>
+
+        <span class="cov8" title="1">slog.Debug(" File deleted successfully", "path", fullPath)
+        return nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file16" style="display: none">// Package readyookassaip provides functionality to check if an IP address belongs to YooKassa's known IP ranges.
+package readyookassaip
+
+import (
+        "net"
+        "strings"
+)
+
+var yookassaIPRanges = []string{
+        "185.71.76.0/27",
+        "185.71.77.0/27",
+        "77.75.153.0/25",
+        "77.75.156.11/32",
+        "77.75.156.35/32",
+        "77.75.154.128/25",
+        "2a02:5180::/32",
+}
+
+var yookassaNetworks []*net.IPNet
+
+func init() <span class="cov8" title="1">{
+        for _, cidr := range yookassaIPRanges </span><span class="cov8" title="1">{
+                _, ipNet, err := net.ParseCIDR(cidr)
+                if err != nil </span><span class="cov0" title="0">{
+                        panic("invalid CIDR in yookassaIPRanges: " + cidr)</span>
+                }
+                <span class="cov8" title="1">yookassaNetworks = append(yookassaNetworks, ipNet)</span>
+        }
+}
+
+func IsYooKassaIP(ipStr string) bool <span class="cov8" title="1">{
+        if strings.Contains(ipStr, ":") &amp;&amp; !strings.Contains(ipStr, "]") </span><span class="cov8" title="1">{
+                ipStr = strings.Split(ipStr, ":")[0]
+        }</span>
+
+        <span class="cov8" title="1">ip := net.ParseIP(ipStr)
+        if ip == nil </span><span class="cov8" title="1">{
+                return false
+        }</span>
+
+        <span class="cov8" title="1">for _, net := range yookassaNetworks </span><span class="cov8" title="1">{
+                if net.Contains(ip) </span><span class="cov8" title="1">{
+                        return true
+                }</span>
+        }
+        <span class="cov8" title="1">return false</span>
+}
+</pre>
+		
+		<pre class="file" id="file17" style="display: none">// Package convertimage provides utilities for converting images to different formats.
+package convertimage
+
+import (
+        "encoding/base64"
+        "fmt"
+        "log"
+)
+
+func ConvertImageToBase64(imageData []byte, imageType string) string <span class="cov8" title="1">{
+        base64Encoding := base64.StdEncoding.EncodeToString(imageData)
+        log.Printf("Converted image to base64: %s", base64Encoding)
+        if imageType == "jpg" </span><span class="cov8" title="1">{
+                return fmt.Sprintf("data:image/jpeg;base64,%s", base64Encoding)
+        }</span>
+        <span class="cov8" title="1">return fmt.Sprintf("data:%s;base64,%s", imageType, base64Encoding)</span>
+}
+</pre>
+		
+		<pre class="file" id="file18" style="display: none">// Package logger provides a zap-based structured logger.
+package logger
+
+import (
+        "os"
+
+        "go.uber.org/zap"
+        "go.uber.org/zap/zapcore"
+)
+
+func New() (*zap.Logger, error) <span class="cov8" title="1">{
+        env := os.Getenv("ENV")
+        if env == "development" || env == "dev" </span><span class="cov8" title="1">{
+                return zap.NewDevelopment()
+        }</span>
+
+        <span class="cov8" title="1">return zap.NewProduction(
+                zap.AddStacktrace(zapcore.FatalLevel),
+        )</span>
+}
+</pre>
+		
+		<pre class="file" id="file19" style="display: none">// Package utils provides utility functions for gRPC error handling.
+package utils
+
+import (
+        "2025_2_404/pkg/globalerrors"
+        "errors"
+
+        "google.golang.org/grpc/codes"
+        "google.golang.org/grpc/status"
+)
+
+func ToGRPCError(err error) error <span class="cov8" title="1">{
+        if err == nil </span><span class="cov8" title="1">{
+                return nil
+        }</span>
+
+        <span class="cov8" title="1">switch </span>{
+        case errors.Is(err, globalerrors.ErrUserAlreadyExists):<span class="cov8" title="1">
+                return status.Error(codes.AlreadyExists, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrUserNotFound):<span class="cov8" title="1">
+                return status.Error(codes.NotFound, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrWrongEmailOrPassword):<span class="cov8" title="1">
+                return status.Error(codes.Unauthenticated, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrNonValidEmail):<span class="cov8" title="1">
+                return status.Error(codes.InvalidArgument, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrInvalidQuery):<span class="cov8" title="1">
+                return status.Error(codes.InvalidArgument, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrNoAuth):<span class="cov8" title="1">
+                return status.Error(codes.Unauthenticated, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrFileNotFound):<span class="cov8" title="1">
+                return status.Error(codes.NotFound, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrInvalidPath):<span class="cov8" title="1">
+                return status.Error(codes.InvalidArgument, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrFileWrite),
+                errors.Is(err, globalerrors.ErrFileRead),
+                errors.Is(err, globalerrors.ErrFileDelete):<span class="cov8" title="1">
+                return status.Error(codes.Unknown, err.Error())</span>
+        case errors.Is(err, globalerrors.ErrInvalidCredentials):<span class="cov8" title="1">
+                return status.Error(codes.Unauthenticated, err.Error())</span>
+        default:<span class="cov8" title="1">
+                return status.Error(codes.Unknown, "I'm a teapot")</span>
+        }
+}
+</pre>
+		
+		<pre class="file" id="file20" style="display: none">package utils
+
+import (
+        "net/http"
+
+        "google.golang.org/grpc/codes"
+)
+
+func HTTPStatusFromCode(code codes.Code) int <span class="cov8" title="1">{
+        switch code </span>{
+        case codes.OK:<span class="cov8" title="1">
+                return http.StatusOK</span>
+        case codes.Canceled:<span class="cov8" title="1">
+                return http.StatusRequestTimeout</span>
+        case codes.Unknown:<span class="cov8" title="1">
+                return http.StatusBadRequest</span>
+        case codes.InvalidArgument:<span class="cov8" title="1">
+                return http.StatusBadRequest</span>
+        case codes.DeadlineExceeded:<span class="cov8" title="1">
+                return http.StatusRequestTimeout</span>
+        case codes.NotFound:<span class="cov8" title="1">
+                return http.StatusNotFound</span>
+        case codes.AlreadyExists:<span class="cov8" title="1">
+                return http.StatusConflict</span>
+        case codes.PermissionDenied:<span class="cov8" title="1">
+                return http.StatusForbidden</span>
+        case codes.Unauthenticated:<span class="cov8" title="1">
+                return http.StatusUnauthorized</span>
+        case codes.ResourceExhausted:<span class="cov8" title="1">
+                return http.StatusTooManyRequests</span>
+        case codes.FailedPrecondition:<span class="cov8" title="1">
+                return http.StatusPreconditionFailed</span>
+        case codes.Aborted:<span class="cov8" title="1">
+                return http.StatusConflict</span>
+        case codes.OutOfRange:<span class="cov8" title="1">
+                return http.StatusBadRequest</span>
+        case codes.Unimplemented:<span class="cov8" title="1">
+                return http.StatusBadRequest</span>
+        case codes.Internal:<span class="cov8" title="1">
+                return http.StatusTeapot</span>
+        case codes.Unavailable:<span class="cov8" title="1">
+                return http.StatusBadRequest</span>
+        case codes.DataLoss:<span class="cov8" title="1">
+                return http.StatusNotFound</span>
+        default:<span class="cov8" title="1">
+                return http.StatusTeapot</span>
+        }
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

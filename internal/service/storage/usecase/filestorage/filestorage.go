@@ -8,10 +8,16 @@ import (
 	"log/slog"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type UseCase struct {
 	baseDir string
+}
+
+// containsPathTraversal checks if path contains .. segments
+func containsPathTraversal(path string) bool {
+	return strings.Contains(path, "..")
 }
 
 func New(cfg *config.Config) *UseCase {
@@ -32,7 +38,7 @@ func (u *UseCase) Create(ctx context.Context, imageData []byte, imagePath string
 		return globalerrors.ErrInvalidPath
 	}
 
-	if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath {
+	if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath || containsPathTraversal(imagePath) {
 		slog.Warn(" Suspicious image path (possible traversal)", "path", imagePath)
 		return globalerrors.ErrInvalidPath
 	}
@@ -71,7 +77,7 @@ func (u *UseCase) Get(ctx context.Context, imagePath string) ([]byte, string, er
 	}
 
 	// Защита от path traversal
-	if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath {
+	if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath || containsPathTraversal(imagePath) {
 		slog.Warn(" Suspicious image path in Get", "path", imagePath)
 		return nil, "", globalerrors.ErrInvalidPath
 	}
@@ -90,9 +96,10 @@ func (u *UseCase) Get(ctx context.Context, imagePath string) ([]byte, string, er
 	}
 
 	// Упрощённое определение типа (можно улучшить позже)
-	contentType := "image/" + filepath.Ext(fullPath)[1:]
-	if contentType == "image/" {
-		contentType = "application/octet-stream"
+	ext := filepath.Ext(fullPath)
+	contentType := "application/octet-stream"
+	if len(ext) > 1 {
+		contentType = "image/" + ext[1:]
 	}
 
 	slog.Debug(" File read successfully", "path", fullPath, "size", len(data))
@@ -106,7 +113,7 @@ func (u *UseCase) Delete(ctx context.Context, imagePath string) error {
 	}
 
 	// Защита от path traversal
-	if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath {
+	if filepath.IsAbs(imagePath) || filepath.Clean(imagePath) != imagePath || containsPathTraversal(imagePath) {
 		slog.Warn(" Suspicious image path in Delete", "path", imagePath)
 		return globalerrors.ErrInvalidPath
 	}

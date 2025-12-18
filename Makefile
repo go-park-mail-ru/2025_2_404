@@ -39,3 +39,23 @@ lint:
 
 lint-fix:
 	golangci-lint run --fix ./...
+
+test:
+	go test ./... -v
+
+test-coverage:
+	go test ./... -coverprofile=coverage.out
+	go tool cover -func=coverage.out
+
+test-coverage-html:
+	go test ./... -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o coverage.html
+
+test-coverage-relevant:
+	./scripts/test_coverage.sh
+
+test-coverage-testable:
+	./scripts/test_coverage_testable.sh
+
+test-coverage-testable-html:
+	./scripts/test_coverage_testable.sh html
