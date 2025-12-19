@@ -78,11 +78,9 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	if len(fileBytes) > 0 {
-		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
+	if len(fileBytes) != 0 {
 
-		_, err := h.storageClient.Create(ctx, &pbStorage.CreateRequest{
+		_, err = h.storageClient.Create(ctx, &pbStorage.CreateRequest{
 			ImagePath: imageFilename,
 			ImageData: fileBytes,
 		})
@@ -91,7 +89,10 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		} else {
 			log.Printf("INFO: image uploaded successfully: %s", imageFilename)
 		}
+	} else {
+		req.Ad.ImgPath = "ad/usualads.jpg"
 	}
+
 
 	resp, err := h.client.Create(ctx, req)
 	if err != nil {
