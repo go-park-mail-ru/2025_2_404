@@ -1,0 +1,124 @@
+syntax="proto3";
+
+package profile;
+
+option go_package = "./protos/profile;";
+
+service Profile {
+    rpc Update(UpdateRequest) returns (UpdateResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse); 
+    rpc Show(ShowRequest) returns (ShowResponse);
+    rpc ShowBalance(ShowBalanceRequest) returns (ShowBalanceResponse);
+    rpc AddBalance(AddBalanceRequest) returns (AddBalanceResponse);
+    rpc SubtractBalance(SubtractBalanceRequest) returns (SubtractBalanceResponse);
+    rpc CreatePayment(PaymentCreateRequest) returns (PaymentCreateResponse);
+    rpc UpdatePaymentStatus(PaymentStatusRequest) returns (PaymentStatusResponse);
+    rpc GetPaymentsByClientID(PaymentsByClientIDRequest) returns (PaymentsByClientIDResponse);
+    // rpc ValidateToken(TokenRequest) returns (TokenResponse); можно прописать метод смены пароля но в авторизации а также методы смены имейла и юзернейма
+}
+
+message Payment {
+    string id = 1;
+    uint32 amount = 2;
+    string status = 3;
+    string yoo_payment_id = 4;
+    string method_payment = 5;
+    string created_at = 6;
+}
+
+message UpdateRequest {
+    string user_name = 1;
+    string email = 2;
+    string password = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string company = 6;
+    string phone = 7;
+    string registered_at = 8;
+    uint32 ads_count = 9;
+    string profile_type = 10;
+    string avatar_path = 11;
+}
+
+message UpdateResponse {
+    string user_name = 1;
+    string email = 2;
+    bytes avatar = 3;
+    string first_name = 4;
+    string first_subname = 5;
+    string last_name = 6;
+    string phone = 7;
+    string registered_at = 8;
+    uint32 ads_count = 9;
+    string profile_type = 10;
+    string company = 11;
+    string avatar_path = 12;
+}
+
+message DeleteRequest {}
+
+message DeleteResponse {}
+
+message ShowRequest {}
+
+message ShowResponse{
+    string user_name = 1;
+    string email = 2;
+    string avatar_path = 3;
+    string first_name = 4;
+    string last_name = 5;
+    string company = 6;
+    string phone = 7;
+    string registered_at = 8;
+    uint32 ads_count = 9;
+    string profile_type = 10; 
+    string created_at = 11;
+}
+
+message ShowBalanceRequest {}
+
+message ShowBalanceResponse {
+    uint32 balance = 1;
+}
+
+message AddBalanceRequest {
+    uint32 add_amount = 1;
+    string client_id = 2;
+}
+
+message AddBalanceResponse {
+}
+
+message SubtractBalanceRequest {
+    uint32 sub_amount = 1;
+}
+
+message SubtractBalanceResponse {
+}
+
+message PaymentCreateRequest {
+    uint32 amount = 1;
+    string payment_method = 2;
+    string status = 3;
+    string yoo_payment_id = 4;
+}
+
+message PaymentCreateResponse {
+    string payment_url = 1;
+}
+
+message PaymentStatusRequest {
+    string yookassa_id = 1;
+    string status = 2;
+    string amount = 3;
+}
+
+message PaymentStatusResponse {
+}
+
+message PaymentsByClientIDRequest {
+}
+
+message PaymentsByClientIDResponse {
+    repeated Payment payments = 1;
+}

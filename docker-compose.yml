@@ -13,6 +13,8 @@ services:
       - "${POSTGRES_PORT}:${POSTGRES_PORT}"
     volumes:
       - ./migrations:/docker-entrypoint-initdb.d
+    networks:
+      - main
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 1m30s
@@ -21,12 +23,169 @@ services:
       start_period: 30s
     
 
-  app:
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   ports:
+  #     - "${APP_PORT}:${APP_PORT}"
+  #   depends_on:
+  #     - db
+  ad-service:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: internal/service/ad/build/Dockerfile
+    container_name: ad_service
     restart: always
     ports:
-      - "${APP_PORT}:${APP_PORT}"
+      - "${GRPC_AD_PORT}:${GRPC_AD_PORT}"
+      - "9091:9090"  
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      APP_PORT: ${GRPC_AD_PORT}
+    networks:
+      - main
+    depends_on:
+      db:
+        condition: service_healthy
+  auth:
+    build:
+      context: .
+      dockerfile: internal/service/auth/build/Dockerfile
+    container_name: auth_service
+    restart: always
+    ports:
+      - "${GRPC_PORT_AUTH}:${GRPC_PORT_AUTH}"
+      - "9092:9090"  
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      APP_PORT: ${GRPC_PORT_AUTH}
+    networks:
+      - main
+    depends_on:
+      db:
+        condition: service_healthy
+
+  profile:
+    build:
+      context: .
+      dockerfile: internal/service/profile/build/Dockerfile
+    container_name: profile_service
+    dns:
+      - 8.8.8.8
+    restart: always
+    ports:
+      - "${GRPC_PORT_PROFILE}:${GRPC_PORT_PROFILE}"
+      - "9093:9090"  
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_HOST: ${POSTGRES_HOST}
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      APP_PORT: ${GRPC_PORT_PROFILE}
+      AUTH_ADDR: auth_service:${GRPC_PORT_AUTH} 
+    networks:
+      - main
     depends_on:
       - db
+      - auth 
+  
+  storage:
+    build:
+      context: .
+      dockerfile: internal/service/storage/build/Dockerfile
+    container_name: storage_service
+    restart: always
+    ports:
+      - "${GRPC_STORAGE_PORT}:${GRPC_STORAGE_PORT}"
+      - "9094:9090"  
+    environment:
+      APP_PORT: ${GRPC_STORAGE_PORT}
+      GRPC_PORT_AUTH: ${GRPC_PORT_AUTH}
+    networks:
+      - main
+
+  slot-service:
+    build:
+      context: .
+      dockerfile: internal/service/slot/build/Dockerfile
+    container_name: slot_service
+    restart: always
+    ports:
+      - "${GRPC_PORT_SLOT}:${GRPC_PORT_SLOT}"
+      - "9095:9090"  
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+      PORT_SLOT: ${GRPC_PORT_SLOT}
+    networks:
+      - main
+    depends_on:
+      db:
+        condition: service_healthy
+  gateway:
+    build:
+      context: .
+      dockerfile: cmd/gateway/Dockerfile
+    ports:
+      - "${APP_PORT}:${APP_PORT}" 
+      - "9096:9090"  
+    environment:
+      AUTH_ADDR: auth_service:${GRPC_PORT_AUTH}
+      PROFILE_ADDR: profile_service:${GRPC_PORT_PROFILE}
+      AD_ADDR: ad_service:${GRPC_AD_PORT}
+      STORAGE_ADDR: storage_service:${GRPC_STORAGE_PORT}
+      SLOT_ADDR: slot-service:${GRPC_PORT_SLOT}
+      APP_PORT: ${APP_PORT}
+    networks:
+      - main
+    depends_on:
+      - auth
+      - profile
+      - ad-service
+      - storage
+      - slot-service
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - main
+    restart: always
+
+  grafana-agent:
+    image: grafana/agent:latest
+    command:
+      - '--config.file=/etc/agent-config.yml'
+    volumes:
+      - ./agent-config.yml:/etc/agent-config.yml
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - main
+
+networks:
+  main:
