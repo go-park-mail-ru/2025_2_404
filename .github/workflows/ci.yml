@@ -2,7 +2,7 @@ name: CI/CD prod pipeline
 
 on:
   push:
-    branches: ["feature/borodin/grpc-Graphan"]
+    branches: ["feature/borodin/grpc-image3"]
 
 jobs:
   lint:
@@ -45,7 +45,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     needs: [lint]
-    if: github.ref == 'refs/heads/feature/borodin/grpc-Graphan' 
+    if: github.ref == 'refs/heads/feature/borodin/grpc-image3' 
     steps:
       - name: Deploy SSH
         uses: appleboy/ssh-action@master
@@ -56,6 +56,6 @@ jobs:
           script: |
             cd ${{ secrets.PROJECT_PATH }}
 
-            git pull origin feature/borodin/grpc-Graphan
+            git pull origin feature/borodin/grpc-image3
 
             sudo docker compose up -d --build
