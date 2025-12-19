@@ -7,6 +7,8 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate go run github.com/mailru/easyjson/easyjson@v0.9.1 -all model.go
+
 type AdDetailID uuid.UUID
 type SlotID uuid.UUID
 

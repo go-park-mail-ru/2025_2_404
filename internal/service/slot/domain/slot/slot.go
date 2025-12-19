@@ -3,6 +3,8 @@ package slot
 
 import "html/template"
 
+//go:generate go run github.com/mailru/easyjson/easyjson@v0.9.1 -all slot.go
+
 type ID string
 
 type UserID string

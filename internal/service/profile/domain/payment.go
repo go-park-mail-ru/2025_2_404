@@ -4,6 +4,8 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate go run github.com/mailru/easyjson/easyjson@v0.9.1 -all payment.go
+
 type PaymentStatus string
 
 const (

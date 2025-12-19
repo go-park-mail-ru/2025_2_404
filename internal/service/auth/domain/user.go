@@ -9,6 +9,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+//go:generate go run github.com/mailru/easyjson/easyjson@v0.9.1 -all user.go
+
 type ID = uuid.UUID
 
 type User struct {
