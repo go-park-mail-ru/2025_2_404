@@ -1,0 +1,55 @@
+Requests      [total, rate, throughput]         45425, 757.13, 25.29
+Duration      [total, attack, wait]             1m12s, 59.996s, 11.562s
+Latencies     [min, mean, 50, 90, 95, 99, max]  1.493ms, 1.329s, 800.443ms, 2.045s, 2.557s, 30.003s, 30.053s
+Bytes In      [total, mean]                     1964682, 43.25
+Bytes Out     [total, mean]                     3754212, 82.65
+Success       [ratio]                           3.98%
+Status Codes  [code:count]                      0:732  200:1810  400:42883  
+Error Set:
+400 Bad Request
+Post "https://adnet.website/api/ads": context deadline exceeded (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:60981->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:60998->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61116->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61148->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61159->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61186->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61267->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61265->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61425->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61431->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61423->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61445->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61451->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61539->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61591->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61775->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61785->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61859->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61955->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61981->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61988->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61983->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:62026->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:62028->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:60981->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:60998->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61116->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61148->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61159->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61186->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61267->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61265->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61425->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61431->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61423->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61445->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61451->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61539->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61591->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61775->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61785->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host.
+Post "https://adnet.website/api/ads": read tcp [::1]:61859->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61955->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61981->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)
+Post "https://adnet.website/api/ads": read tcp [::1]:61988->[::1]:8025: wsarecv: An existing connection was forcibly closed by the remote host. (Ads.Timeout exceeded while awaiting headers)

@@ -1,0 +1,985 @@
+2025-12-19 05:31:59 GMT [9449]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:31:59 GMT [9449]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:31:59 GMT [9449]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.124 user=Secret database=databasesecret host=172.18.0.4 port=42644
+2025-12-19 05:32:56 GMT [9450]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=45704
+2025-12-19 05:32:56 GMT [9450]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:32:56 GMT [9450]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:32:57 GMT [9450]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:01.264 user=Secret database=databasesecret host=172.18.0.4 port=45704
+2025-12-19 05:33:00 GMT [9452]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=45716
+2025-12-19 05:33:00 GMT [9452]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:00 GMT [9452]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:01 GMT [9452]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.279 user=Secret database=databasesecret host=172.18.0.4 port=45716
+2025-12-19 05:33:05 GMT [9453]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=46064
+2025-12-19 05:33:05 GMT [9453]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:05 GMT [9453]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:05 GMT [9453]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.171 user=Secret database=databasesecret host=172.18.0.4 port=46064
+2025-12-19 05:33:09 GMT [9461]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 05:33:09 GMT [9461]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 05:33:09 GMT [9461]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.010 user=Secret database=databasesecret host=[local]
+2025-12-19 05:33:10 GMT [9462]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=46072
+2025-12-19 05:33:10 GMT [9462]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:10 GMT [9462]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:10 GMT [9462]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.037 user=Secret database=databasesecret host=172.18.0.4 port=46072
+2025-12-19 05:33:15 GMT [9463]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42748
+2025-12-19 05:33:15 GMT [9463]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:15 GMT [9463]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:15 GMT [9463]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.063 user=Secret database=databasesecret host=172.18.0.4 port=42748
+2025-12-19 05:33:19 GMT [9471]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 05:33:19 GMT [9471]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 05:33:19 GMT [9471]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 05:33:20 GMT [9473]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42756
+2025-12-19 05:33:20 GMT [9473]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:20 GMT [9473]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:20 GMT [9473]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.025 user=Secret database=databasesecret host=172.18.0.4 port=42756
+2025-12-19 05:33:25 GMT [9474]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39526
+2025-12-19 05:33:25 GMT [9474]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:25 GMT [9474]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:25 GMT [9474]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.033 user=Secret database=databasesecret host=172.18.0.4 port=39526
+2025-12-19 05:33:29 GMT [9482]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 05:33:29 GMT [9482]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 05:33:29 GMT [9482]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 05:33:30 GMT [9483]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39538
+2025-12-19 05:33:30 GMT [9483]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:30 GMT [9483]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:30 GMT [9483]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.043 user=Secret database=databasesecret host=172.18.0.4 port=39538
+2025-12-19 05:33:35 GMT [9484]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=53524
+2025-12-19 05:33:35 GMT [9484]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:35 GMT [9484]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:35 GMT [9484]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.047 user=Secret database=databasesecret host=172.18.0.4 port=53524
+2025-12-19 05:33:39 GMT [9493]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 05:33:39 GMT [9493]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 05:33:39 GMT [9493]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.001 user=Secret database=databasesecret host=[local]
+2025-12-19 05:33:40 GMT [9494]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=53536
+2025-12-19 05:33:40 GMT [9494]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:40 GMT [9494]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:40 GMT [9494]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.041 user=Secret database=databasesecret host=172.18.0.4 port=53536
+2025-12-19 05:33:45 GMT [9495]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=40304
+2025-12-19 05:33:45 GMT [9495]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:45 GMT [9495]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:45 GMT [9495]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.028 user=Secret database=databasesecret host=172.18.0.4 port=40304
+2025-12-19 05:33:50 GMT [9503]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 05:33:50 GMT [9503]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 05:33:50 GMT [9503]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 05:33:50 GMT [9504]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=40310
+2025-12-19 05:33:50 GMT [9504]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:50 GMT [9504]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:50 GMT [9504]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.020 user=Secret database=databasesecret host=172.18.0.4 port=40310
+2025-12-19 05:33:55 GMT [9505]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=45722
+2025-12-19 05:33:55 GMT [9505]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:33:55 GMT [9505]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:33:55 GMT [9505]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.028 user=Secret database=databasesecret host=172.18.0.4 port=45722
+2025-12-19 05:34:00 GMT [9514]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 05:34:00 GMT [9514]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 05:34:00 GMT [9514]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 05:34:00 GMT [9515]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=45734
+2025-12-19 05:34:00 GMT [9515]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:34:00 GMT [9515]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:34:00 GMT [9515]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.022 user=Secret database=databasesecret host=172.18.0.4 port=45734
+2025-12-19 05:34:05 GMT [9516]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50914
+2025-12-19 05:34:05 GMT [9516]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:34:05 GMT [9516]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:34:05 GMT [9516]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.024 user=Secret database=databasesecret host=172.18.0.4 port=50914
+2025-12-19 05:34:10 GMT [9524]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 05:34:10 GMT [9524]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 05:34:10 GMT [9524]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 05:34:10 GMT [9525]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50920
+2025-12-19 05:34:10 GMT [9525]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:34:10 GMT [9525]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:34:10 GMT [9525]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.021 user=Secret database=databasesecret host=172.18.0.4 port=50920
+2025-12-19 05:52:43 GMT [9526]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=49694
+2025-12-19 05:52:43 GMT [9526]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 05:52:43 GMT [9526]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 05:52:43 GMT [9526]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.148 user=Secret database=databasesecret host=172.18.0.4 port=49694
+2025-12-19 07:28:24 GMT [9535]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=49696
+2025-12-19 07:28:24 GMT [9535]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:28:24 GMT [9535]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:28:24 GMT [9535]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.082 user=Secret database=databasesecret host=172.18.0.4 port=49696
+2025-12-19 07:28:24 GMT [9536]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:28:24 GMT [9536]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:28:24 GMT [9536]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.015 user=Secret database=databasesecret host=[local]
+2025-12-19 07:44:17 GMT [9537]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=45256
+2025-12-19 07:44:17 GMT [9537]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:17 GMT [9537]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:18 GMT [9537]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.300 user=Secret database=databasesecret host=172.18.0.4 port=45256
+2025-12-19 07:44:22 GMT [9538]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=45268
+2025-12-19 07:44:22 GMT [9538]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:22 GMT [9538]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:22 GMT [9538]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.157 user=Secret database=databasesecret host=172.18.0.4 port=45268
+2025-12-19 07:44:24 GMT [9547]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:44:24 GMT [9547]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:44:24 GMT [9547]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.012 user=Secret database=databasesecret host=[local]
+2025-12-19 07:44:27 GMT [9548]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=60546
+2025-12-19 07:44:27 GMT [9548]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:27 GMT [9548]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:27 GMT [9548]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.126 user=Secret database=databasesecret host=172.18.0.4 port=60546
+2025-12-19 07:44:32 GMT [9550]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=60550
+2025-12-19 07:44:32 GMT [9550]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:32 GMT [9550]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:32 GMT [9550]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.075 user=Secret database=databasesecret host=172.18.0.4 port=60550
+2025-12-19 07:44:35 GMT [9559]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:44:35 GMT [9559]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:44:35 GMT [9559]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.056 user=Secret database=databasesecret host=[local]
+2025-12-19 07:44:37 GMT [9560]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47002
+2025-12-19 07:44:37 GMT [9560]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:37 GMT [9560]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:37 GMT [9560]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.044 user=Secret database=databasesecret host=172.18.0.4 port=47002
+2025-12-19 07:44:42 GMT [9561]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47006
+2025-12-19 07:44:42 GMT [9561]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:42 GMT [9561]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:42 GMT [9561]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.194 user=Secret database=databasesecret host=172.18.0.4 port=47006
+2025-12-19 07:44:46 GMT [9569]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:44:46 GMT [9569]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:44:46 GMT [9569]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.005 user=Secret database=databasesecret host=[local]
+2025-12-19 07:44:48 GMT [9570]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39948
+2025-12-19 07:44:49 GMT [9570]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:49 GMT [9570]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:49 GMT [9570]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.878 user=Secret database=databasesecret host=172.18.0.4 port=39948
+2025-12-19 07:44:53 GMT [9572]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39960
+2025-12-19 07:44:53 GMT [9572]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:53 GMT [9572]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:53 GMT [9572]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.067 user=Secret database=databasesecret host=172.18.0.4 port=39960
+2025-12-19 07:44:57 GMT [9580]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:44:57 GMT [9580]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:44:57 GMT [9580]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:44:57 GMT [9581]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=41406
+2025-12-19 07:44:57 GMT [9581]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:44:57 GMT [9581]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:44:58 GMT [9581]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.076 user=Secret database=databasesecret host=172.18.0.4 port=41406
+2025-12-19 07:45:03 GMT [9582]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=41412
+2025-12-19 07:45:03 GMT [9582]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:03 GMT [9582]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:03 GMT [9582]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.182 user=Secret database=databasesecret host=172.18.0.4 port=41412
+2025-12-19 07:45:08 GMT [9583]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=41604
+2025-12-19 07:45:08 GMT [9583]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:08 GMT [9583]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:08 GMT [9583]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.495 user=Secret database=databasesecret host=172.18.0.4 port=41604
+2025-12-19 07:45:09 GMT [9591]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:45:09 GMT [9591]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:45:09 GMT [9591]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.052 user=Secret database=databasesecret host=[local]
+2025-12-19 07:45:12 GMT [9593]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=41614
+2025-12-19 07:45:12 GMT [9593]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:12 GMT [9593]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:13 GMT [9593]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  duration: 274.090 ms  statement: SELECT
+			current_database() datname,
+			schemaname,
+			relname,
+			seq_scan,
+			seq_tup_read,
+			idx_scan,
+			idx_tup_fetch,
+			n_tup_ins,
+			n_tup_upd,
+			n_tup_del,
+			n_tup_hot_upd,
+			n_live_tup,
+			n_dead_tup,
+			n_mod_since_analyze,
+			COALESCE(last_vacuum, '1970-01-01Z') as last_vacuum,
+			COALESCE(last_autovacuum, '1970-01-01Z') as last_autovacuum,
+			COALESCE(last_analyze, '1970-01-01Z') as last_analyze,
+			COALESCE(last_autoanalyze, '1970-01-01Z') as last_autoanalyze,
+			vacuum_count,
+			autovacuum_count,
+			analyze_count,
+			autoanalyze_count,
+			pg_indexes_size(relid) as indexes_size,
+			pg_table_size(relid) as table_size
+		FROM
+			pg_stat_user_tables
+2025-12-19 07:45:13 GMT [9593]: [5-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.400 user=Secret database=databasesecret host=172.18.0.4 port=41614
+2025-12-19 07:45:17 GMT [9594]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44962
+2025-12-19 07:45:17 GMT [9594]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:17 GMT [9594]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:18 GMT [9594]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.180 user=Secret database=databasesecret host=172.18.0.4 port=44962
+2025-12-19 07:45:20 GMT [9602]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:45:20 GMT [9602]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:45:20 GMT [9602]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:45:22 GMT [9603]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44972
+2025-12-19 07:45:22 GMT [9603]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:22 GMT [9603]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:23 GMT [9603]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.379 user=Secret database=databasesecret host=172.18.0.4 port=44972
+2025-12-19 07:45:28 GMT [9604]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=33642
+2025-12-19 07:45:28 GMT [9604]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:28 GMT [9604]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:28 GMT [9604]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  duration: 466.960 ms  plan:
+	Query Text: SELECT
+			current_database() datname,
+			schemaname,
+			relname,
+			seq_scan,
+			seq_tup_read,
+			idx_scan,
+			idx_tup_fetch,
+			n_tup_ins,
+			n_tup_upd,
+			n_tup_del,
+			n_tup_hot_upd,
+			n_live_tup,
+			n_dead_tup,
+			n_mod_since_analyze,
+			COALESCE(last_vacuum, '1970-01-01Z') as last_vacuum,
+			COALESCE(last_autovacuum, '1970-01-01Z') as last_autovacuum,
+			COALESCE(last_analyze, '1970-01-01Z') as last_analyze,
+			COALESCE(last_autoanalyze, '1970-01-01Z') as last_autoanalyze,
+			vacuum_count,
+			autovacuum_count,
+			analyze_count,
+			autoanalyze_count,
+			pg_indexes_size(relid) as indexes_size,
+			pg_table_size(relid) as table_size
+		FROM
+			pg_stat_user_tables
+	Subquery Scan on pg_stat_all_tables  (cost=31.35..35.94 rows=54 width=360)
+	  ->  HashAggregate  (cost=31.35..35.00 rows=54 width=292)
+	        Group Key: c.oid, n.nspname
+	        ->  Hash Right Join  (cost=22.49..30.54 rows=54 width=136)
+	              Hash Cond: (i.indrelid = c.oid)
+	              ->  Seq Scan on pg_index i  (cost=0.00..7.02 rows=202 width=8)
+	              ->  Hash  (cost=21.82..21.82 rows=54 width=132)
+	                    ->  Hash Join  (cost=1.08..21.82 rows=54 width=132)
+	                          Hash Cond: (c.relnamespace = n.oid)
+	                          ->  Seq Scan on pg_class c  (cost=0.00..20.15 rows=108 width=72)
+	                                Filter: (relkind = ANY ('{r,t,m,p}'::"char"[]))
+	                          ->  Hash  (cost=1.06..1.06 rows=2 width=68)
+	                                ->  Seq Scan on pg_namespace n  (cost=0.00..1.06 rows=2 width=68)
+	                                      Filter: ((nspname <> ALL ('{pg_catalog,information_schema}'::name[])) AND (nspname !~ '^pg_toast'::text))
+2025-12-19 07:45:28 GMT [9604]: [5-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  duration: 814.110 ms  statement: SELECT
+			current_database() datname,
+			schemaname,
+			relname,
+			seq_scan,
+			seq_tup_read,
+			idx_scan,
+			idx_tup_fetch,
+			n_tup_ins,
+			n_tup_upd,
+			n_tup_del,
+			n_tup_hot_upd,
+			n_live_tup,
+			n_dead_tup,
+			n_mod_since_analyze,
+			COALESCE(last_vacuum, '1970-01-01Z') as last_vacuum,
+			COALESCE(last_autovacuum, '1970-01-01Z') as last_autovacuum,
+			COALESCE(last_analyze, '1970-01-01Z') as last_analyze,
+			COALESCE(last_autoanalyze, '1970-01-01Z') as last_autoanalyze,
+			vacuum_count,
+			autovacuum_count,
+			analyze_count,
+			autoanalyze_count,
+			pg_indexes_size(relid) as indexes_size,
+			pg_table_size(relid) as table_size
+		FROM
+			pg_stat_user_tables
+2025-12-19 07:45:29 GMT [9604]: [6-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:01.126 user=Secret database=databasesecret host=172.18.0.4 port=33642
+2025-12-19 07:45:31 GMT [9613]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:45:31 GMT [9613]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:45:31 GMT [9613]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.023 user=Secret database=databasesecret host=[local]
+2025-12-19 07:45:32 GMT [9614]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=33656
+2025-12-19 07:45:32 GMT [9614]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:32 GMT [9614]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:32 GMT [9614]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.065 user=Secret database=databasesecret host=172.18.0.4 port=33656
+2025-12-19 07:45:38 GMT [9615]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=49064
+2025-12-19 07:45:38 GMT [9615]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:38 GMT [9615]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:38 GMT [9615]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.322 user=Secret database=databasesecret host=172.18.0.4 port=49064
+2025-12-19 07:45:41 GMT [9623]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:45:42 GMT [9623]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:45:42 GMT [9623]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.019 user=Secret database=databasesecret host=[local]
+2025-12-19 07:45:42 GMT [9624]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=49068
+2025-12-19 07:45:42 GMT [9624]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:42 GMT [9624]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:42 GMT [9624]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.066 user=Secret database=databasesecret host=172.18.0.4 port=49068
+2025-12-19 07:45:47 GMT [9625]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=41938
+2025-12-19 07:45:47 GMT [9625]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:47 GMT [9625]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:47 GMT [9625]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.047 user=Secret database=databasesecret host=172.18.0.4 port=41938
+2025-12-19 07:45:52 GMT [9633]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:45:52 GMT [9633]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:45:52 GMT [9633]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:45:52 GMT [9634]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=41948
+2025-12-19 07:45:52 GMT [9634]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:52 GMT [9634]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:53 GMT [9634]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.062 user=Secret database=databasesecret host=172.18.0.4 port=41948
+2025-12-19 07:45:57 GMT [9635]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=53696
+2025-12-19 07:45:57 GMT [9635]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:45:57 GMT [9635]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:45:58 GMT [9635]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.086 user=Secret database=databasesecret host=172.18.0.4 port=53696
+2025-12-19 07:46:02 GMT [9643]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:46:02 GMT [9643]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:46:02 GMT [9643]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:46:02 GMT [9644]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=53708
+2025-12-19 07:46:02 GMT [9644]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:02 GMT [9644]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:03 GMT [9644]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.054 user=Secret database=databasesecret host=172.18.0.4 port=53708
+2025-12-19 07:46:07 GMT [9645]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47532
+2025-12-19 07:46:07 GMT [9645]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:07 GMT [9645]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:08 GMT [9645]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.062 user=Secret database=databasesecret host=172.18.0.4 port=47532
+2025-12-19 07:46:12 GMT [9655]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47542
+2025-12-19 07:46:12 GMT [9655]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:12 GMT [9655]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:12 GMT [9655]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.037 user=Secret database=databasesecret host=172.18.0.4 port=47542
+2025-12-19 07:46:13 GMT [9656]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:46:13 GMT [9656]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:46:13 GMT [9656]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.009 user=Secret database=databasesecret host=[local]
+2025-12-19 07:46:17 GMT [9657]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43600
+2025-12-19 07:46:18 GMT [9657]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:18 GMT [9657]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:18 GMT [9657]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.057 user=Secret database=databasesecret host=172.18.0.4 port=43600
+2025-12-19 07:46:22 GMT [9658]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43616
+2025-12-19 07:46:22 GMT [9658]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:22 GMT [9658]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:23 GMT [9658]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.055 user=Secret database=databasesecret host=172.18.0.4 port=43616
+2025-12-19 07:46:23 GMT [9666]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:46:23 GMT [9666]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:46:23 GMT [9666]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:46:27 GMT [9667]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37266
+2025-12-19 07:46:27 GMT [9667]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:27 GMT [9667]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:28 GMT [9667]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.053 user=Secret database=databasesecret host=172.18.0.4 port=37266
+2025-12-19 07:46:32 GMT [9669]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37268
+2025-12-19 07:46:32 GMT [9669]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:32 GMT [9669]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:33 GMT [9669]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.054 user=Secret database=databasesecret host=172.18.0.4 port=37268
+2025-12-19 07:46:33 GMT [9677]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:46:33 GMT [9677]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:46:33 GMT [9677]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.006 user=Secret database=databasesecret host=[local]
+2025-12-19 07:46:37 GMT [9678]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43242
+2025-12-19 07:46:37 GMT [9678]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:37 GMT [9678]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:38 GMT [9678]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.061 user=Secret database=databasesecret host=172.18.0.4 port=43242
+2025-12-19 07:46:43 GMT [9679]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43248
+2025-12-19 07:46:43 GMT [9679]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:43 GMT [9679]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:43 GMT [9679]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.096 user=Secret database=databasesecret host=172.18.0.4 port=43248
+2025-12-19 07:46:44 GMT [9687]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:46:44 GMT [9687]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:46:44 GMT [9687]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:46:47 GMT [9688]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=60446
+2025-12-19 07:46:47 GMT [9688]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:47 GMT [9688]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:48 GMT [9688]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.186 user=Secret database=databasesecret host=172.18.0.4 port=60446
+2025-12-19 07:46:53 GMT [9690]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=60448
+2025-12-19 07:46:53 GMT [9690]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:53 GMT [9690]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:53 GMT [9690]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.122 user=Secret database=databasesecret host=172.18.0.4 port=60448
+2025-12-19 07:46:54 GMT [9698]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:46:54 GMT [9698]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:46:54 GMT [9698]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.006 user=Secret database=databasesecret host=[local]
+2025-12-19 07:46:57 GMT [9699]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47094
+2025-12-19 07:46:57 GMT [9699]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:46:57 GMT [9699]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:46:58 GMT [9699]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.054 user=Secret database=databasesecret host=172.18.0.4 port=47094
+2025-12-19 07:47:02 GMT [9700]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47102
+2025-12-19 07:47:02 GMT [9700]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:02 GMT [9700]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:03 GMT [9700]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.112 user=Secret database=databasesecret host=172.18.0.4 port=47102
+2025-12-19 07:47:05 GMT [9708]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:47:05 GMT [9708]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:47:05 GMT [9708]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.005 user=Secret database=databasesecret host=[local]
+2025-12-19 07:47:07 GMT [9709]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=59166
+2025-12-19 07:47:07 GMT [9709]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:07 GMT [9709]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:07 GMT [9709]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.031 user=Secret database=databasesecret host=172.18.0.4 port=59166
+2025-12-19 07:47:12 GMT [9711]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=59182
+2025-12-19 07:47:13 GMT [9711]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:13 GMT [9711]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:13 GMT [9711]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.121 user=Secret database=databasesecret host=172.18.0.4 port=59182
+2025-12-19 07:47:15 GMT [9719]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:47:15 GMT [9719]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:47:15 GMT [9719]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.010 user=Secret database=databasesecret host=[local]
+2025-12-19 07:47:17 GMT [9720]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=40010
+2025-12-19 07:47:17 GMT [9720]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:17 GMT [9720]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:18 GMT [9720]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.089 user=Secret database=databasesecret host=172.18.0.4 port=40010
+2025-12-19 07:47:22 GMT [9721]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=40022
+2025-12-19 07:47:22 GMT [9721]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:22 GMT [9721]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:22 GMT [9721]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.027 user=Secret database=databasesecret host=172.18.0.4 port=40022
+2025-12-19 07:47:25 GMT [9730]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:47:25 GMT [9730]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:47:25 GMT [9730]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:47:27 GMT [9731]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42186
+2025-12-19 07:47:27 GMT [9731]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:27 GMT [9731]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:27 GMT [9731]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.040 user=Secret database=databasesecret host=172.18.0.4 port=42186
+2025-12-19 07:47:32 GMT [9733]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42200
+2025-12-19 07:47:32 GMT [9733]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:32 GMT [9733]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:32 GMT [9733]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.072 user=Secret database=databasesecret host=172.18.0.4 port=42200
+2025-12-19 07:47:35 GMT [9741]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:47:35 GMT [9741]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:47:35 GMT [9741]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:47:37 GMT [9742]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=34092
+2025-12-19 07:47:37 GMT [9742]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:37 GMT [9742]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:37 GMT [9742]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.049 user=Secret database=databasesecret host=172.18.0.4 port=34092
+2025-12-19 07:47:42 GMT [9743]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=34104
+2025-12-19 07:47:42 GMT [9743]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:42 GMT [9743]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:42 GMT [9743]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.038 user=Secret database=databasesecret host=172.18.0.4 port=34104
+2025-12-19 07:47:46 GMT [9751]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:47:46 GMT [9751]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:47:46 GMT [9751]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:47:47 GMT [9752]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44480
+2025-12-19 07:47:47 GMT [9752]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:47 GMT [9752]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:47 GMT [9752]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.043 user=Secret database=databasesecret host=172.18.0.4 port=44480
+2025-12-19 07:47:52 GMT [9754]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44494
+2025-12-19 07:47:52 GMT [9754]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:52 GMT [9754]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:52 GMT [9754]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.049 user=Secret database=databasesecret host=172.18.0.4 port=44494
+2025-12-19 07:47:56 GMT [9762]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:47:56 GMT [9762]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:47:56 GMT [9762]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:47:57 GMT [9763]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44110
+2025-12-19 07:47:57 GMT [9763]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:47:57 GMT [9763]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:47:57 GMT [9763]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.042 user=Secret database=databasesecret host=172.18.0.4 port=44110
+2025-12-19 07:48:02 GMT [9764]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44116
+2025-12-19 07:48:02 GMT [9764]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:02 GMT [9764]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:02 GMT [9764]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.054 user=Secret database=databasesecret host=172.18.0.4 port=44116
+2025-12-19 07:48:06 GMT [9772]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:48:06 GMT [9772]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:48:06 GMT [9772]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:48:07 GMT [9773]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37406
+2025-12-19 07:48:07 GMT [9773]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:07 GMT [9773]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:07 GMT [9773]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.039 user=Secret database=databasesecret host=172.18.0.4 port=37406
+2025-12-19 07:48:12 GMT [9775]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37410
+2025-12-19 07:48:12 GMT [9775]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:12 GMT [9775]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:12 GMT [9775]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.032 user=Secret database=databasesecret host=172.18.0.4 port=37410
+2025-12-19 07:48:16 GMT [9783]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:48:16 GMT [9783]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:48:16 GMT [9783]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.019 user=Secret database=databasesecret host=[local]
+2025-12-19 07:48:17 GMT [9784]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=35202
+2025-12-19 07:48:17 GMT [9784]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:17 GMT [9784]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:17 GMT [9784]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.038 user=Secret database=databasesecret host=172.18.0.4 port=35202
+2025-12-19 07:48:22 GMT [9785]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=35214
+2025-12-19 07:48:22 GMT [9785]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:22 GMT [9785]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:22 GMT [9785]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.042 user=Secret database=databasesecret host=172.18.0.4 port=35214
+2025-12-19 07:48:26 GMT [9793]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:48:26 GMT [9793]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:48:26 GMT [9793]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:48:27 GMT [9794]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=51044
+2025-12-19 07:48:27 GMT [9794]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:27 GMT [9794]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:27 GMT [9794]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.053 user=Secret database=databasesecret host=172.18.0.4 port=51044
+2025-12-19 07:48:32 GMT [9796]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=51054
+2025-12-19 07:48:32 GMT [9796]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:32 GMT [9796]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:32 GMT [9796]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.058 user=Secret database=databasesecret host=172.18.0.4 port=51054
+2025-12-19 07:48:37 GMT [9804]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:48:37 GMT [9804]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:48:37 GMT [9804]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.006 user=Secret database=databasesecret host=[local]
+2025-12-19 07:48:37 GMT [9805]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=49514
+2025-12-19 07:48:37 GMT [9805]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:37 GMT [9805]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:37 GMT [9805]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.044 user=Secret database=databasesecret host=172.18.0.4 port=49514
+2025-12-19 07:48:42 GMT [9806]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=49516
+2025-12-19 07:48:42 GMT [9806]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:42 GMT [9806]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:42 GMT [9806]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.053 user=Secret database=databasesecret host=172.18.0.4 port=49516
+2025-12-19 07:48:47 GMT [9814]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:48:47 GMT [9814]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:48:47 GMT [9814]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:48:47 GMT [9815]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42320
+2025-12-19 07:48:47 GMT [9815]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:47 GMT [9815]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:47 GMT [9815]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.036 user=Secret database=databasesecret host=172.18.0.4 port=42320
+2025-12-19 07:48:52 GMT [9817]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42324
+2025-12-19 07:48:52 GMT [9817]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:52 GMT [9817]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:52 GMT [9817]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.056 user=Secret database=databasesecret host=172.18.0.4 port=42324
+2025-12-19 07:48:57 GMT [9826]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:48:57 GMT [9826]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:48:57 GMT [9826]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:48:57 GMT [9827]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=38082
+2025-12-19 07:48:57 GMT [9827]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:48:57 GMT [9827]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:48:57 GMT [9827]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.038 user=Secret database=databasesecret host=172.18.0.4 port=38082
+2025-12-19 07:49:02 GMT [9828]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=38086
+2025-12-19 07:49:02 GMT [9828]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:02 GMT [9828]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:02 GMT [9828]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.065 user=Secret database=databasesecret host=172.18.0.4 port=38086
+2025-12-19 07:49:07 GMT [9836]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:49:07 GMT [9836]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:49:07 GMT [9836]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.005 user=Secret database=databasesecret host=[local]
+2025-12-19 07:49:07 GMT [9837]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55016
+2025-12-19 07:49:07 GMT [9837]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:07 GMT [9837]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:07 GMT [9837]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.069 user=Secret database=databasesecret host=172.18.0.4 port=55016
+2025-12-19 07:49:12 GMT [9839]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55032
+2025-12-19 07:49:12 GMT [9839]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:12 GMT [9839]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:12 GMT [9839]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.058 user=Secret database=databasesecret host=172.18.0.4 port=55032
+2025-12-19 07:49:17 GMT [9847]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:49:17 GMT [9847]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:49:17 GMT [9847]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:49:17 GMT [9848]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42472
+2025-12-19 07:49:17 GMT [9848]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:17 GMT [9848]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:17 GMT [9848]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.074 user=Secret database=databasesecret host=172.18.0.4 port=42472
+2025-12-19 07:49:22 GMT [9849]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42478
+2025-12-19 07:49:22 GMT [9849]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:22 GMT [9849]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:22 GMT [9849]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.060 user=Secret database=databasesecret host=172.18.0.4 port=42478
+2025-12-19 07:49:27 GMT [9857]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=51548
+2025-12-19 07:49:27 GMT [9857]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:27 GMT [9857]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:27 GMT [9858]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:49:27 GMT [9858]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:49:27 GMT [9858]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:49:27 GMT [9857]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.030 user=Secret database=databasesecret host=172.18.0.4 port=51548
+2025-12-19 07:49:32 GMT [9860]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=51552
+2025-12-19 07:49:32 GMT [9860]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:32 GMT [9860]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:32 GMT [9860]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.039 user=Secret database=databasesecret host=172.18.0.4 port=51552
+2025-12-19 07:49:37 GMT [9861]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=51660
+2025-12-19 07:49:37 GMT [9861]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:37 GMT [9861]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:37 GMT [9861]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.055 user=Secret database=databasesecret host=172.18.0.4 port=51660
+2025-12-19 07:49:38 GMT [9869]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:49:38 GMT [9869]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:49:38 GMT [9869]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:49:42 GMT [9870]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=51662
+2025-12-19 07:49:42 GMT [9870]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:42 GMT [9870]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:42 GMT [9870]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.051 user=Secret database=databasesecret host=172.18.0.4 port=51662
+2025-12-19 07:49:47 GMT [9871]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42868
+2025-12-19 07:49:47 GMT [9871]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:47 GMT [9871]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:47 GMT [9871]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.032 user=Secret database=databasesecret host=172.18.0.4 port=42868
+2025-12-19 07:49:48 GMT [9880]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:49:48 GMT [9880]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:49:48 GMT [9880]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:49:52 GMT [9882]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42876
+2025-12-19 07:49:52 GMT [9882]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:52 GMT [9882]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:52 GMT [9882]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.066 user=Secret database=databasesecret host=172.18.0.4 port=42876
+2025-12-19 07:49:57 GMT [9883]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47910
+2025-12-19 07:49:57 GMT [9883]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:49:57 GMT [9883]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:49:57 GMT [9883]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.043 user=Secret database=databasesecret host=172.18.0.4 port=47910
+2025-12-19 07:49:58 GMT [9891]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:49:58 GMT [9891]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:49:58 GMT [9891]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.005 user=Secret database=databasesecret host=[local]
+2025-12-19 07:50:02 GMT [9892]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=47918
+2025-12-19 07:50:02 GMT [9892]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:02 GMT [9892]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:02 GMT [9892]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.062 user=Secret database=databasesecret host=172.18.0.4 port=47918
+2025-12-19 07:50:07 GMT [9893]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43852
+2025-12-19 07:50:07 GMT [9893]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:07 GMT [9893]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:07 GMT [9893]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.033 user=Secret database=databasesecret host=172.18.0.4 port=43852
+2025-12-19 07:50:08 GMT [9901]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:50:08 GMT [9901]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:50:08 GMT [9901]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:50:12 GMT [9903]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43868
+2025-12-19 07:50:12 GMT [9903]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:12 GMT [9903]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:12 GMT [9903]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.050 user=Secret database=databasesecret host=172.18.0.4 port=43868
+2025-12-19 07:50:17 GMT [9904]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50176
+2025-12-19 07:50:17 GMT [9904]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:17 GMT [9904]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:17 GMT [9904]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.050 user=Secret database=databasesecret host=172.18.0.4 port=50176
+2025-12-19 07:50:18 GMT [9912]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:50:18 GMT [9912]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:50:18 GMT [9912]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:50:22 GMT [9913]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50184
+2025-12-19 07:50:22 GMT [9913]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:22 GMT [9913]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:22 GMT [9913]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.056 user=Secret database=databasesecret host=172.18.0.4 port=50184
+2025-12-19 07:50:27 GMT [9914]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=56084
+2025-12-19 07:50:27 GMT [9914]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:27 GMT [9914]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:27 GMT [9914]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.029 user=Secret database=databasesecret host=172.18.0.4 port=56084
+2025-12-19 07:50:29 GMT [9922]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:50:29 GMT [9922]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:50:29 GMT [9922]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:50:32 GMT [9924]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=56090
+2025-12-19 07:50:32 GMT [9924]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:32 GMT [9924]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:32 GMT [9924]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.070 user=Secret database=databasesecret host=172.18.0.4 port=56090
+2025-12-19 07:50:37 GMT [9925]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50396
+2025-12-19 07:50:37 GMT [9925]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:37 GMT [9925]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:37 GMT [9925]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.042 user=Secret database=databasesecret host=172.18.0.4 port=50396
+2025-12-19 07:50:39 GMT [9933]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:50:39 GMT [9933]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:50:39 GMT [9933]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:50:42 GMT [9934]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50410
+2025-12-19 07:50:42 GMT [9934]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:42 GMT [9934]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:42 GMT [9934]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.046 user=Secret database=databasesecret host=172.18.0.4 port=50410
+2025-12-19 07:50:47 GMT [9935]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37970
+2025-12-19 07:50:47 GMT [9935]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:47 GMT [9935]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:47 GMT [9935]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.028 user=Secret database=databasesecret host=172.18.0.4 port=37970
+2025-12-19 07:50:49 GMT [9943]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:50:49 GMT [9943]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:50:49 GMT [9943]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:50:52 GMT [9945]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37978
+2025-12-19 07:50:52 GMT [9945]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:52 GMT [9945]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:52 GMT [9945]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.035 user=Secret database=databasesecret host=172.18.0.4 port=37978
+2025-12-19 07:50:57 GMT [9946]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=36340
+2025-12-19 07:50:57 GMT [9946]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:50:57 GMT [9946]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:50:57 GMT [9946]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.035 user=Secret database=databasesecret host=172.18.0.4 port=36340
+2025-12-19 07:50:59 GMT [9955]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:50:59 GMT [9955]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:50:59 GMT [9955]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:51:02 GMT [9956]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=36350
+2025-12-19 07:51:02 GMT [9956]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:02 GMT [9956]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:02 GMT [9956]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.045 user=Secret database=databasesecret host=172.18.0.4 port=36350
+2025-12-19 07:51:07 GMT [9957]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=54246
+2025-12-19 07:51:07 GMT [9957]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:07 GMT [9957]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:07 GMT [9957]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.056 user=Secret database=databasesecret host=172.18.0.4 port=54246
+2025-12-19 07:51:09 GMT [9965]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:51:09 GMT [9965]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:51:09 GMT [9965]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:51:12 GMT [9967]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=54252
+2025-12-19 07:51:12 GMT [9967]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:12 GMT [9967]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:12 GMT [9967]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.060 user=Secret database=databasesecret host=172.18.0.4 port=54252
+2025-12-19 07:51:17 GMT [9968]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=52884
+2025-12-19 07:51:17 GMT [9968]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:17 GMT [9968]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:17 GMT [9968]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.041 user=Secret database=databasesecret host=172.18.0.4 port=52884
+2025-12-19 07:51:20 GMT [9976]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:51:20 GMT [9976]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:51:20 GMT [9976]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:51:22 GMT [9977]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=52894
+2025-12-19 07:51:22 GMT [9977]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:22 GMT [9977]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:22 GMT [9977]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.036 user=Secret database=databasesecret host=172.18.0.4 port=52894
+2025-12-19 07:51:27 GMT [9978]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50050
+2025-12-19 07:51:27 GMT [9978]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:27 GMT [9978]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:27 GMT [9978]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.055 user=Secret database=databasesecret host=172.18.0.4 port=50050
+2025-12-19 07:51:30 GMT [9986]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:51:30 GMT [9986]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:51:30 GMT [9986]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:51:32 GMT [9988]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=50064
+2025-12-19 07:51:32 GMT [9988]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:32 GMT [9988]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:32 GMT [9988]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.037 user=Secret database=databasesecret host=172.18.0.4 port=50064
+2025-12-19 07:51:37 GMT [9989]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=59642
+2025-12-19 07:51:37 GMT [9989]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:37 GMT [9989]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:37 GMT [9989]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.044 user=Secret database=databasesecret host=172.18.0.4 port=59642
+2025-12-19 07:51:40 GMT [9998]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:51:40 GMT [9998]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:51:40 GMT [9998]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.006 user=Secret database=databasesecret host=[local]
+2025-12-19 07:51:42 GMT [9999]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=59648
+2025-12-19 07:51:42 GMT [9999]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:42 GMT [9999]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:42 GMT [9999]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.031 user=Secret database=databasesecret host=172.18.0.4 port=59648
+2025-12-19 07:51:47 GMT [10000]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37650
+2025-12-19 07:51:47 GMT [10000]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:47 GMT [10000]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:47 GMT [10000]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.050 user=Secret database=databasesecret host=172.18.0.4 port=37650
+2025-12-19 07:51:50 GMT [10008]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:51:50 GMT [10008]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:51:50 GMT [10008]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:51:52 GMT [10010]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37664
+2025-12-19 07:51:52 GMT [10010]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:52 GMT [10010]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:52 GMT [10010]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.059 user=Secret database=databasesecret host=172.18.0.4 port=37664
+2025-12-19 07:51:57 GMT [10011]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=53308
+2025-12-19 07:51:57 GMT [10011]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:51:57 GMT [10011]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:51:57 GMT [10011]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.023 user=Secret database=databasesecret host=172.18.0.4 port=53308
+2025-12-19 07:52:00 GMT [10019]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:52:00 GMT [10019]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:52:00 GMT [10019]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:52:02 GMT [10020]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=53318
+2025-12-19 07:52:02 GMT [10020]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:02 GMT [10020]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:02 GMT [10020]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.026 user=Secret database=databasesecret host=172.18.0.4 port=53318
+2025-12-19 07:52:07 GMT [10021]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37070
+2025-12-19 07:52:07 GMT [10021]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:07 GMT [10021]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:07 GMT [10021]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.059 user=Secret database=databasesecret host=172.18.0.4 port=37070
+2025-12-19 07:52:11 GMT [10029]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:52:11 GMT [10029]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:52:11 GMT [10029]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:52:12 GMT [10031]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37074
+2025-12-19 07:52:12 GMT [10031]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:12 GMT [10031]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:12 GMT [10031]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.042 user=Secret database=databasesecret host=172.18.0.4 port=37074
+2025-12-19 07:52:17 GMT [10032]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=40148
+2025-12-19 07:52:17 GMT [10032]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:17 GMT [10032]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:17 GMT [10032]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.031 user=Secret database=databasesecret host=172.18.0.4 port=40148
+2025-12-19 07:52:21 GMT [10040]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:52:21 GMT [10040]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:52:21 GMT [10040]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:52:23 GMT [10041]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=40156
+2025-12-19 07:52:23 GMT [10041]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:23 GMT [10041]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:23 GMT [10041]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.027 user=Secret database=databasesecret host=172.18.0.4 port=40156
+2025-12-19 07:52:28 GMT [10042]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44194
+2025-12-19 07:52:28 GMT [10042]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:28 GMT [10042]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:28 GMT [10042]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.043 user=Secret database=databasesecret host=172.18.0.4 port=44194
+2025-12-19 07:52:31 GMT [10051]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:52:32 GMT [10051]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:52:32 GMT [10051]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:52:33 GMT [10052]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44200
+2025-12-19 07:52:33 GMT [10052]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:33 GMT [10052]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:33 GMT [10052]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.044 user=Secret database=databasesecret host=172.18.0.4 port=44200
+2025-12-19 07:52:38 GMT [10053]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55764
+2025-12-19 07:52:38 GMT [10053]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:38 GMT [10053]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:38 GMT [10053]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.050 user=Secret database=databasesecret host=172.18.0.4 port=55764
+2025-12-19 07:52:42 GMT [10061]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:52:42 GMT [10061]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:52:42 GMT [10061]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:52:43 GMT [10062]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55770
+2025-12-19 07:52:43 GMT [10062]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:43 GMT [10062]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:43 GMT [10062]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.036 user=Secret database=databasesecret host=172.18.0.4 port=55770
+2025-12-19 07:52:48 GMT [10063]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43674
+2025-12-19 07:52:48 GMT [10063]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:48 GMT [10063]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:48 GMT [10063]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.034 user=Secret database=databasesecret host=172.18.0.4 port=43674
+2025-12-19 07:52:53 GMT [10073]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:52:53 GMT [10073]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:52:53 GMT [10073]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:52:54 GMT [10074]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=43676
+2025-12-19 07:52:54 GMT [10074]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:54 GMT [10074]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:54 GMT [10074]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.061 user=Secret database=databasesecret host=172.18.0.4 port=43676
+2025-12-19 07:52:59 GMT [10075]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55326
+2025-12-19 07:52:59 GMT [10075]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:52:59 GMT [10075]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:52:59 GMT [10075]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.067 user=Secret database=databasesecret host=172.18.0.4 port=55326
+2025-12-19 07:53:03 GMT [10083]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:53:03 GMT [10083]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:53:03 GMT [10083]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:53:04 GMT [10084]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55330
+2025-12-19 07:53:04 GMT [10084]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:04 GMT [10084]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:04 GMT [10084]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.047 user=Secret database=databasesecret host=172.18.0.4 port=55330
+2025-12-19 07:53:09 GMT [10085]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=56404
+2025-12-19 07:53:09 GMT [10085]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:09 GMT [10085]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:09 GMT [10085]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.051 user=Secret database=databasesecret host=172.18.0.4 port=56404
+2025-12-19 07:53:13 GMT [10094]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:53:13 GMT [10094]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:53:13 GMT [10094]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:53:14 GMT [10095]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=56414
+2025-12-19 07:53:14 GMT [10095]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:14 GMT [10095]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:14 GMT [10095]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.022 user=Secret database=databasesecret host=172.18.0.4 port=56414
+2025-12-19 07:53:19 GMT [10096]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=54268
+2025-12-19 07:53:19 GMT [10096]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:19 GMT [10096]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:19 GMT [10096]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.038 user=Secret database=databasesecret host=172.18.0.4 port=54268
+2025-12-19 07:53:23 GMT [10104]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:53:23 GMT [10104]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:53:23 GMT [10104]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:53:24 GMT [10105]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=54278
+2025-12-19 07:53:24 GMT [10105]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:24 GMT [10105]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:24 GMT [10105]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.056 user=Secret database=databasesecret host=172.18.0.4 port=54278
+2025-12-19 07:53:29 GMT [10106]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=35360
+2025-12-19 07:53:29 GMT [10106]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:29 GMT [10106]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:29 GMT [10106]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.055 user=Secret database=databasesecret host=172.18.0.4 port=35360
+2025-12-19 07:53:34 GMT [10115]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:53:34 GMT [10115]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:53:34 GMT [10115]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:53:34 GMT [10116]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=35370
+2025-12-19 07:53:34 GMT [10116]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:34 GMT [10116]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:34 GMT [10116]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.047 user=Secret database=databasesecret host=172.18.0.4 port=35370
+2025-12-19 07:53:39 GMT [10117]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=48536
+2025-12-19 07:53:39 GMT [10117]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:39 GMT [10117]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:39 GMT [10117]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.048 user=Secret database=databasesecret host=172.18.0.4 port=48536
+2025-12-19 07:53:44 GMT [10124]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=48548
+2025-12-19 07:53:44 GMT [10124]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:44 GMT [10124]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:44 GMT [10124]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.046 user=Secret database=databasesecret host=172.18.0.4 port=48548
+2025-12-19 07:53:44 GMT [10126]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:53:44 GMT [10126]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:53:44 GMT [10126]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:53:49 GMT [10127]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=41990
+2025-12-19 07:53:49 GMT [10127]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:49 GMT [10127]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:49 GMT [10127]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.050 user=Secret database=databasesecret host=172.18.0.4 port=41990
+2025-12-19 07:53:54 GMT [10129]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42004
+2025-12-19 07:53:54 GMT [10129]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:54 GMT [10129]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:54 GMT [10129]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.049 user=Secret database=databasesecret host=172.18.0.4 port=42004
+2025-12-19 07:53:55 GMT [10137]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:53:55 GMT [10137]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:53:55 GMT [10137]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:53:59 GMT [10138]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39044
+2025-12-19 07:53:59 GMT [10138]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:53:59 GMT [10138]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:53:59 GMT [10138]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.042 user=Secret database=databasesecret host=172.18.0.4 port=39044
+2025-12-19 07:54:04 GMT [10139]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39052
+2025-12-19 07:54:04 GMT [10139]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:04 GMT [10139]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:04 GMT [10139]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.032 user=Secret database=databasesecret host=172.18.0.4 port=39052
+2025-12-19 07:54:05 GMT [10147]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:54:05 GMT [10147]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:54:05 GMT [10147]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.005 user=Secret database=databasesecret host=[local]
+2025-12-19 07:54:09 GMT [10148]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37752
+2025-12-19 07:54:09 GMT [10148]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:09 GMT [10148]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:09 GMT [10148]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.045 user=Secret database=databasesecret host=172.18.0.4 port=37752
+2025-12-19 07:54:14 GMT [10150]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=37756
+2025-12-19 07:54:14 GMT [10150]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:14 GMT [10150]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:14 GMT [10150]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.062 user=Secret database=databasesecret host=172.18.0.4 port=37756
+2025-12-19 07:54:15 GMT [10157]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:54:15 GMT [10157]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:54:15 GMT [10157]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:54:19 GMT [10158]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44098
+2025-12-19 07:54:19 GMT [10158]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:19 GMT [10158]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:19 GMT [10158]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.042 user=Secret database=databasesecret host=172.18.0.4 port=44098
+2025-12-19 07:54:25 GMT [10159]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44110
+2025-12-19 07:54:25 GMT [10159]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:25 GMT [10159]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:25 GMT [10159]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.055 user=Secret database=databasesecret host=172.18.0.4 port=44110
+2025-12-19 07:54:26 GMT [10167]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:54:26 GMT [10167]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:54:26 GMT [10167]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:54:30 GMT [10168]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=52844
+2025-12-19 07:54:30 GMT [10168]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:30 GMT [10168]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:30 GMT [10168]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.044 user=Secret database=databasesecret host=172.18.0.4 port=52844
+2025-12-19 07:54:35 GMT [10170]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=52848
+2025-12-19 07:54:35 GMT [10170]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:35 GMT [10170]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:35 GMT [10170]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.068 user=Secret database=databasesecret host=172.18.0.4 port=52848
+2025-12-19 07:54:36 GMT [10179]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:54:36 GMT [10179]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:54:36 GMT [10179]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:54:40 GMT [10180]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=57346
+2025-12-19 07:54:40 GMT [10180]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:40 GMT [10180]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:40 GMT [10180]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.045 user=Secret database=databasesecret host=172.18.0.4 port=57346
+2025-12-19 07:54:45 GMT [10181]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=57350
+2025-12-19 07:54:45 GMT [10181]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:45 GMT [10181]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:45 GMT [10181]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.051 user=Secret database=databasesecret host=172.18.0.4 port=57350
+2025-12-19 07:54:46 GMT [10189]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:54:46 GMT [10189]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:54:46 GMT [10189]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:54:50 GMT [10190]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55320
+2025-12-19 07:54:50 GMT [10190]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:50 GMT [10190]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:50 GMT [10190]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.048 user=Secret database=databasesecret host=172.18.0.4 port=55320
+2025-12-19 07:54:56 GMT [10192]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55328
+2025-12-19 07:54:56 GMT [10192]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:54:56 GMT [10192]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:54:56 GMT [10192]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.051 user=Secret database=databasesecret host=172.18.0.4 port=55328
+2025-12-19 07:54:57 GMT [10200]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:54:57 GMT [10200]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:54:57 GMT [10200]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:55:01 GMT [10201]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55720
+2025-12-19 07:55:01 GMT [10201]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:01 GMT [10201]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:01 GMT [10201]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.029 user=Secret database=databasesecret host=172.18.0.4 port=55720
+2025-12-19 07:55:06 GMT [10202]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=55726
+2025-12-19 07:55:06 GMT [10202]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:06 GMT [10202]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:06 GMT [10202]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.040 user=Secret database=databasesecret host=172.18.0.4 port=55726
+2025-12-19 07:55:07 GMT [10210]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:55:07 GMT [10210]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:55:07 GMT [10210]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:55:11 GMT [10211]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39992
+2025-12-19 07:55:11 GMT [10211]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:11 GMT [10211]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:11 GMT [10211]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.039 user=Secret database=databasesecret host=172.18.0.4 port=39992
+2025-12-19 07:55:16 GMT [10213]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=39996
+2025-12-19 07:55:16 GMT [10213]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:16 GMT [10213]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:16 GMT [10213]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.030 user=Secret database=databasesecret host=172.18.0.4 port=39996
+2025-12-19 07:55:17 GMT [10221]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:55:17 GMT [10221]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:55:17 GMT [10221]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.005 user=Secret database=databasesecret host=[local]
+2025-12-19 07:55:21 GMT [10222]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=33564
+2025-12-19 07:55:21 GMT [10222]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:21 GMT [10222]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:21 GMT [10222]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.041 user=Secret database=databasesecret host=172.18.0.4 port=33564
+2025-12-19 07:55:27 GMT [10223]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=33570
+2025-12-19 07:55:27 GMT [10223]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:27 GMT [10223]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:27 GMT [10223]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.030 user=Secret database=databasesecret host=172.18.0.4 port=33570
+2025-12-19 07:55:28 GMT [10231]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:55:28 GMT [10231]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:55:28 GMT [10231]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:55:32 GMT [10232]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=48020
+2025-12-19 07:55:32 GMT [10232]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:32 GMT [10232]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:32 GMT [10232]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.041 user=Secret database=databasesecret host=172.18.0.4 port=48020
+2025-12-19 07:55:37 GMT [10234]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=48024
+2025-12-19 07:55:37 GMT [10234]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:37 GMT [10234]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:37 GMT [10234]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.028 user=Secret database=databasesecret host=172.18.0.4 port=48024
+2025-12-19 07:55:39 GMT [10243]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:55:39 GMT [10243]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:55:39 GMT [10243]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:55:42 GMT [10244]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42242
+2025-12-19 07:55:42 GMT [10244]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:42 GMT [10244]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:42 GMT [10244]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.031 user=Secret database=databasesecret host=172.18.0.4 port=42242
+2025-12-19 07:55:47 GMT [10245]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=42246
+2025-12-19 07:55:47 GMT [10245]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:47 GMT [10245]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:47 GMT [10245]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.060 user=Secret database=databasesecret host=172.18.0.4 port=42246
+2025-12-19 07:55:49 GMT [10254]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:55:49 GMT [10254]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:55:49 GMT [10254]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:55:52 GMT [10255]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=59922
+2025-12-19 07:55:52 GMT [10255]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:52 GMT [10255]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:52 GMT [10255]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.024 user=Secret database=databasesecret host=172.18.0.4 port=59922
+2025-12-19 07:55:57 GMT [10257]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=59936
+2025-12-19 07:55:57 GMT [10257]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:55:57 GMT [10257]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:55:57 GMT [10257]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.040 user=Secret database=databasesecret host=172.18.0.4 port=59936
+2025-12-19 07:55:59 GMT [10265]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:55:59 GMT [10265]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:55:59 GMT [10265]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 07:56:02 GMT [10266]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=36658
+2025-12-19 07:56:02 GMT [10266]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:56:02 GMT [10266]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:56:02 GMT [10266]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.045 user=Secret database=databasesecret host=172.18.0.4 port=36658
+2025-12-19 07:56:07 GMT [10267]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=36662
+2025-12-19 07:56:07 GMT [10267]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:56:07 GMT [10267]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:56:07 GMT [10267]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.027 user=Secret database=databasesecret host=172.18.0.4 port=36662
+2025-12-19 07:56:09 GMT [10275]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:56:09 GMT [10275]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:56:09 GMT [10275]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]
+2025-12-19 07:56:13 GMT [10277]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=57684
+2025-12-19 07:56:13 GMT [10277]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:56:13 GMT [10277]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:56:13 GMT [10277]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.035 user=Secret database=databasesecret host=172.18.0.4 port=57684
+2025-12-19 07:56:18 GMT [10278]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=57700
+2025-12-19 07:56:18 GMT [10278]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:56:18 GMT [10278]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:56:18 GMT [10278]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.035 user=Secret database=databasesecret host=172.18.0.4 port=57700
+2025-12-19 07:56:20 GMT [10286]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 07:56:20 GMT [10286]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 07:56:20 GMT [10286]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.004 user=Secret database=databasesecret host=[local]
+2025-12-19 07:56:23 GMT [10287]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=44988
+2025-12-19 07:56:23 GMT [10287]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="Secret" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 07:56:23 GMT [10287]: [3-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=Secret database=databasesecret
+2025-12-19 07:56:23 GMT [10287]: [4-1] user=Secret,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  disconnection: session time: 0:00:00.026 user=Secret database=databasesecret host=172.18.0.4 port=44988

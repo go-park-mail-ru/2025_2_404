@@ -1,0 +1,46 @@
+2025-12-19 08:01:04 GMT [1]: [3-1] user=,db=,app=,client= LOG:  starting PostgreSQL 15.15 (Debian 15.15-1.pgdg13+1) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit
+2025-12-19 08:01:04 GMT [1]: [4-1] user=,db=,app=,client= LOG:  listening on IPv4 address "0.0.0.0", port 5432
+2025-12-19 08:01:04 GMT [1]: [5-1] user=,db=,app=,client= LOG:  listening on IPv6 address "::", port 5432
+2025-12-19 08:01:04 GMT [1]: [6-1] user=,db=,app=,client= LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+2025-12-19 08:01:04 GMT [29]: [1-1] user=,db=,app=,client= LOG:  database system was interrupted; last known up at 2025-12-19 08:00:27 GMT
+2025-12-19 08:01:04 GMT [30]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.2 LOG:  connection received: host=172.18.0.2 port=42426
+2025-12-19 08:01:04 GMT [30]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.2 FATAL:  the database system is starting up
+2025-12-19 08:01:04 GMT [31]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=54192
+2025-12-19 08:01:04 GMT [31]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.4 FATAL:  the database system is starting up
+2025-12-19 08:01:04 GMT [32]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.5 LOG:  connection received: host=172.18.0.5 port=45222
+2025-12-19 08:01:04 GMT [32]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.5 FATAL:  the database system is starting up
+2025-12-19 08:01:04 GMT [33]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.6 LOG:  connection received: host=172.18.0.6 port=35106
+2025-12-19 08:01:04 GMT [33]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.6 FATAL:  the database system is starting up
+2025-12-19 08:01:05 GMT [34]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.2 LOG:  connection received: host=172.18.0.2 port=42434
+2025-12-19 08:01:05 GMT [34]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.2 FATAL:  the database system is starting up
+2025-12-19 08:01:05 GMT [35]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=54200
+2025-12-19 08:01:05 GMT [35]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.4 FATAL:  the database system is starting up
+2025-12-19 08:01:05 GMT [36]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.5 LOG:  connection received: host=172.18.0.5 port=45234
+2025-12-19 08:01:05 GMT [36]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.5 FATAL:  the database system is starting up
+2025-12-19 08:01:05 GMT [37]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.6 LOG:  connection received: host=172.18.0.6 port=35114
+2025-12-19 08:01:05 GMT [37]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.6 FATAL:  the database system is starting up
+2025-12-19 08:01:06 GMT [29]: [2-1] user=,db=,app=,client= LOG:  database system was not properly shut down; automatic recovery in progress
+2025-12-19 08:01:06 GMT [29]: [3-1] user=,db=,app=,client= LOG:  redo starts at 0/19F4400
+2025-12-19 08:01:06 GMT [29]: [4-1] user=,db=,app=,client= LOG:  invalid record length at 0/19F4438: wanted 24, got 0
+2025-12-19 08:01:06 GMT [29]: [5-1] user=,db=,app=,client= LOG:  redo done at 0/19F4400 system usage: CPU: user: 0.00 s, system: 0.00 s, elapsed: 0.00 s
+2025-12-19 08:01:06 GMT [27]: [1-1] user=,db=,app=,client= LOG:  checkpoint starting: end-of-recovery immediate wait
+2025-12-19 08:01:06 GMT [27]: [2-1] user=,db=,app=,client= LOG:  checkpoint complete: wrote 3 buffers (0.0%); 0 WAL file(s) added, 0 removed, 0 recycled; write=0.011 s, sync=0.002 s, total=0.024 s; sync files=2, longest=0.001 s, average=0.001 s; distance=0 kB, estimate=0 kB
+2025-12-19 08:01:06 GMT [1]: [7-1] user=,db=,app=,client= LOG:  database system is ready to accept connections
+2025-12-19 08:01:06 GMT [41]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.2 LOG:  connection received: host=172.18.0.2 port=42450
+2025-12-19 08:01:06 GMT [41]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.2 LOG:  connection authenticated: identity="app_user" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 08:01:06 GMT [41]: [3-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.2 LOG:  connection authorized: user=app_user database=databasesecret
+2025-12-19 08:01:06 GMT [42]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.4 LOG:  connection received: host=172.18.0.4 port=54214
+2025-12-19 08:01:06 GMT [42]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authenticated: identity="app_user" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 08:01:06 GMT [42]: [3-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.4 LOG:  connection authorized: user=app_user database=databasesecret
+2025-12-19 08:01:06 GMT [43]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.5 LOG:  connection received: host=172.18.0.5 port=45238
+2025-12-19 08:01:06 GMT [43]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.5 LOG:  connection authenticated: identity="app_user" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 08:01:06 GMT [43]: [3-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.5 LOG:  connection authorized: user=app_user database=databasesecret
+2025-12-19 08:01:06 GMT [44]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=172.18.0.6 LOG:  connection received: host=172.18.0.6 port=35118
+2025-12-19 08:01:06 GMT [44]: [2-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.6 LOG:  connection authenticated: identity="app_user" method=scram-sha-256 (/var/lib/postgresql/data/pg_hba.conf:100)
+2025-12-19 08:01:06 GMT [44]: [3-1] user=app_user,db=databasesecret,app=[unknown],client=172.18.0.6 LOG:  connection authorized: user=app_user database=databasesecret
+2025-12-19 08:01:08 GMT [52]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 08:01:08 GMT [52]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 08:01:08 GMT [52]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.002 user=Secret database=databasesecret host=[local]
+2025-12-19 08:01:19 GMT [61]: [1-1] user=[unknown],db=[unknown],app=[unknown],client=[local] LOG:  connection received: host=[local]
+2025-12-19 08:01:19 GMT [61]: [2-1] user=Secret,db=databasesecret,app=[unknown],client=[local] LOG:  connection authorized: user=Secret database=databasesecret application_name=pg_isready
+2025-12-19 08:01:19 GMT [61]: [3-1] user=Secret,db=databasesecret,app=pg_isready,client=[local] LOG:  disconnection: session time: 0:00:00.003 user=Secret database=databasesecret host=[local]

@@ -171,7 +171,7 @@ services:
       context: .
       dockerfile: cmd/gateway/Dockerfile
     ports:
-      - "${APP_PORT}:${APP_PORT}" 
+      - "8888:${APP_PORT}" 
     environment:
       AUTH_ADDR: auth_service:${GRPC_PORT_AUTH}
       PROFILE_ADDR: profile_service:${GRPC_PORT_PROFILE}
