@@ -70,6 +70,18 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 		TargetURL: protoAd.Targeturl,
 	}
 
+	// Парсим даты, если они переданы
+	if protoAd.StartAt != "" {
+		if startAt, err := time.Parse(time.RFC3339, protoAd.StartAt); err == nil {
+			ad.StartAt = startAt
+		}
+	}
+	if protoAd.EndAt != "" {
+		if endAt, err := time.Parse(time.RFC3339, protoAd.EndAt); err == nil {
+			ad.EndAt = endAt
+		}
+	}
+
 	if err := s.adUsecase.Create(ctx, ad); err != nil {
 		s.logger.Error("CreateAd usecase failed", zap.Error(err))
 		return nil, utils.ToGRPCError(err)
@@ -150,6 +162,18 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 		ImagePath: protoAd.ImgPath,
 		TargetURL: protoAd.Targeturl,
 		Status:    protoAd.Status,
+	}
+
+	// Парсим даты, если они переданы
+	if protoAd.StartAt != "" {
+		if startAt, err := time.Parse(time.RFC3339, protoAd.StartAt); err == nil {
+			ad.StartAt = startAt
+		}
+	}
+	if protoAd.EndAt != "" {
+		if endAt, err := time.Parse(time.RFC3339, protoAd.EndAt); err == nil {
+			ad.EndAt = endAt
+		}
 	}
 
 	s.logger.Debug("received UpdateAd request",
