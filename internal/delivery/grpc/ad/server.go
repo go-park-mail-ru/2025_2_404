@@ -142,6 +142,9 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
 	}
 
+	starTime, _ := time.Parse(time.RFC3339, protoAd.StartAt)
+	endTome, _ := time.Parse(time.RFC3339, protoAd.EndAt)
+
 	ad := modelad.Ads{
 		ID:        modelad.ID(id),
 		ClientID:  clientID,
@@ -150,6 +153,8 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 		ImagePath: protoAd.ImgPath,
 		TargetURL: protoAd.Targeturl,
 		Status:    protoAd.Status,
+		StartAt: starTime,
+		EndAt: endTome,
 	}
 
 	s.logger.Debug("received UpdateAd request",

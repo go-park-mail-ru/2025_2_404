@@ -207,6 +207,8 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 	content := r.FormValue("content")
 	targetURL := r.FormValue("target_url")
 	statusAd := r.FormValue("status")
+	startAt := r.FormValue("start_at")
+	endAt := r.FormValue("end_at")
 
 	if title == "" || content == "" || targetURL == "" || statusAd == "" {
 		http.Error(w, `{"error":"title, content, target_url and budget are required"}`, http.StatusBadRequest)
@@ -250,6 +252,8 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 			Targeturl: targetURL,
 			ImgPath:   newImageFilename,
 			Status:    statusAd,
+			StartAt: startAt,
+			EndAt: endAt,
 		},
 	}
 
