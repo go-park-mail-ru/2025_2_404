@@ -86,18 +86,17 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 	if resp.AdSlot.ImageSrc != "" {
 		log.Printf("Слот найден. Запрос изображения по пути: %s", resp.AdSlot.ImageSrc)
 		imgData, err := h.storageClient.Get(ctx, &storagepb.GetRequest{ImagePath: resp.AdSlot.ImageSrc})
-		
+
 		if err != nil {
 			log.Printf("WARN: Ошибка при получении изображения (путь=%s): %v. Будет использована заглушка.", resp.AdSlot.ImageSrc, err)
 		} else if imgData == nil || len(imgData.ImageData) == 0 {
 			log.Printf("WARN: Получены пустые данные изображения для пути %s", resp.AdSlot.ImageSrc)
 		} else {
 			convertedInfo := convertimage.ConvertImageToBase64(imgData.ImageData, imgData.ContentType)
-			
 			if convertedInfo == "" {
 				log.Printf("WARN: ConvertImageToBase64 вернула пустую строку, хотя данные были")
 			} else {
-                imageSrc = convertedInfo
+				imageSrc = convertedInfo
 			}
 		}
 	} else {

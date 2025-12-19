@@ -93,7 +93,6 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		req.Ad.ImgPath = "ad/usualads.jpg"
 	}
 
-
 	resp, err := h.client.Create(ctx, req)
 	if err != nil {
 		st, _ := status.FromError(err)
