@@ -68,28 +68,44 @@ func (h *SlotHandler) ServeSlot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Слот найден. Запрос изображения по пути: %s", resp.AdSlot.ImageSrc)
-	imgData, err := h.storageClient.Get(ctx, &storagepb.GetRequest{ImagePath: resp.AdSlot.ImageSrc})
-	if err != nil {
-		log.Printf("Ошибка при получении изображения (путь=%s): %v", resp.AdSlot.ImageSrc, err)
-		http.Error(w, "Problem with load image", http.StatusNotFound)
-		return
-	}
+	// log.Printf("Слот найден. Запрос изображения по пути: %s", resp.AdSlot.ImageSrc)
+	// imgData, err := h.storageClient.Get(ctx, &storagepb.GetRequest{ImagePath: resp.AdSlot.ImageSrc})
+	// if err != nil {
+	// 	log.Printf("Ошибка при получении изображения (путь=%s): %v", resp.AdSlot.ImageSrc, err)
+	// 	http.Error(w, "Problem with load image", http.StatusNotFound)
+	// 	return
+	// }
 
-	if len(imgData.ImageData) == 0 {
-		log.Printf("Предупреждение: получены пустые данные изображения для пути %s", resp.AdSlot.ImageSrc)
-	}
+	// if len(imgData.ImageData) == 0 {
+	// 	log.Printf("Предупреждение: получены пустые данные изображения для пути %s", resp.AdSlot.ImageSrc)
+	// }
 
 	var imageSrc string
-	if len(imgData.ImageData) != 0 {
+	const placeHolderImg = "storage/ad63dc7e-a347-48f9-9839-da25a6a8d70b.png"
 
-		imageSrc = convertimage.ConvertImageToBase64(imgData.ImageData, imgData.ContentType)
-		log.Printf("Изображение успешно конвертировано в Base64: %s", imageSrc[:30]+"...")
-		if imageSrc == "" {
-			log.Printf("Ошибка: ConvertImageToBase64 вернула пустую строку")
-			http.Error(w, "Problem with convert image", http.StatusBadRequest)
-			return
+	if resp.AdSlot.ImageSrc != "" {
+		log.Printf("Слот найден. Запрос изображения по пути: %s", resp.AdSlot.ImageSrc)
+		imgData, err := h.storageClient.Get(ctx, &storagepb.GetRequest{ImagePath: resp.AdSlot.ImageSrc})
+		
+		if err != nil {
+			log.Printf("WARN: Ошибка при получении изображения (путь=%s): %v. Будет использована заглушка.", resp.AdSlot.ImageSrc, err)
+		} else if imgData == nil || len(imgData.ImageData) == 0 {
+			log.Printf("WARN: Получены пустые данные изображения для пути %s", resp.AdSlot.ImageSrc)
+		} else {
+			convertedInfo := convertimage.ConvertImageToBase64(imgData.ImageData, imgData.ContentType)
+			
+			if convertedInfo == "" {
+				log.Printf("WARN: ConvertImageToBase64 вернула пустую строку, хотя данные были")
+			} else {
+                imageSrc = convertedInfo
+			}
 		}
+	} else {
+		log.Printf("INFO: У рекламы нет изображения (ImageSrc пустой).")
+	}
+
+	if imageSrc == "" {
+		imageSrc = placeHolderImg
 	}
 
 	data := slot.SlotRenderData{
