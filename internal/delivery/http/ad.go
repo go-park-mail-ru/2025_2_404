@@ -55,6 +55,10 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Читаем даты из формы
+	startAt := r.FormValue("start_at")
+	endAt := r.FormValue("end_at")
+
 	fileBytes, imageFilename, err := pkgfile.ExtractImage(r, "ad/", "image")
 	if err != nil {
 		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
@@ -75,6 +79,8 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 			Targeturl: targetURL,
 			ImgPath:   imageFilename,
 			Budget:    uint32(budget),
+			StartAt:   startAt,
+			EndAt:     endAt,
 		},
 	}
 
@@ -213,16 +219,15 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var fileBytes []byte
-	var newImageFilename string
-	var err error
+	// Читаем даты из формы
+	startAt := r.FormValue("start_at")
+	endAt := r.FormValue("end_at")
 
-	if r.FormValue("image") != "" {
-		fileBytes, newImageFilename, err = pkgfile.ExtractImage(r, "ad/", "image")
-		if err != nil {
-			http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
-			return
-		}
+	// Извлекаем изображение (если есть)
+	fileBytes, newImageFilename, err := pkgfile.ExtractImage(r, "ad/", "image")
+	if err != nil {
+		http.Error(w, `{"error":"`+err.Error()+`"}`, http.StatusBadRequest)
+		return
 	}
 
 	// ———— ШАГ 2: Загружаем изображение (если есть) ————
@@ -250,6 +255,8 @@ func (h *AdHandler) Update(w http.ResponseWriter, r *http.Request) {
 			Targeturl: targetURL,
 			ImgPath:   newImageFilename,
 			Status:    statusAd,
+			StartAt:   startAt,
+			EndAt:     endAt,
 		},
 	}
 
