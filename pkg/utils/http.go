@@ -37,12 +37,12 @@ func HTTPStatusFromCode(code codes.Code) int {
 	case codes.Unimplemented:
 		return http.StatusBadRequest
 	case codes.Internal:
-		return http.StatusTeapot
+		return http.StatusBadGateway
 	case codes.Unavailable:
 		return http.StatusBadRequest
 	case codes.DataLoss:
 		return http.StatusNotFound
 	default:
-		return http.StatusTeapot
+		return http.StatusBadGateway
 	}
 }

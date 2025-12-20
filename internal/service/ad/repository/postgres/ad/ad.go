@@ -228,8 +228,6 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 		zap.String("client_id", ad.ClientID.String()),
 	)
 
-
-
 	return nil
 }
 
