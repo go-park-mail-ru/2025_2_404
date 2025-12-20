@@ -183,6 +183,9 @@ func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID)
 
 func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 	var newAdID modelad.ID
+	if ad.ImagePath == "" {
+		ad.ImagePath = "ad/default.jpg"
+	}
 	err := r.sql.QueryRowContext(ctx, sqlTextForInsertAds, ad.ClientID, ad.Title, ad.Content, ad.ImagePath, ad.TargetURL).Scan(&newAdID)
 	if err != nil {
 		r.logger.Error("failed to insert ad", zap.Error(err))

@@ -94,24 +94,19 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o storage_app ./cmd/storage
 
 # 2. RUNNER STAGE
 # Тут тоже форсируем платформу, чтобы Alpine понимал наш бинарник
-FROM  alpine:latest
+FROM alpine:latest
 
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /root/
 
 COPY .env /root/.env
-# Копируем бинарник
 COPY --from=builder /build/storage_app .
 
+RUN mkdir -p /storage/ad
+COPY storage/ad/default.jpg /storage/ad/default.jpg
+
 ENV ENV_FILE=/root/.env
-
-# Создаем папку
-RUN mkdir -p /root/storage
-
-# Даем права (хотя для linux/amd64 это часто происходит само, но не повредит)
-RUN chmod +x ./storage_app
-
 EXPOSE 8078
 
 CMD ["./storage_app"]

@@ -18,7 +18,7 @@ func New(cfg *config.Config) *UseCase {
 	uc := &UseCase{
 		baseDir: cfg.AppConfig.ImgPath,
 	}
-	slog.Debug(" FileStorage UseCase created", "base_dir", uc.baseDir)
+	slog.Debug("FileStorage UseCase created", "base_dir", uc.baseDir)
 	return uc
 }
 
@@ -77,7 +77,7 @@ func (u *UseCase) Get(ctx context.Context, imagePath string) ([]byte, string, er
 	}
 
 	fullPath := filepath.Join(u.baseDir, imagePath)
-	slog.Debug("🔍 Reading file", "full_path", fullPath)
+	slog.Debug("Reading file", "full_path", fullPath)
 
 	data, err := os.ReadFile(fullPath)
 	if err != nil {
@@ -112,7 +112,7 @@ func (u *UseCase) Delete(ctx context.Context, imagePath string) error {
 	}
 
 	fullPath := filepath.Join(u.baseDir, imagePath)
-	slog.Debug("🗑️ Deleting file", "full_path", fullPath)
+	slog.Debug("Deleting file", "full_path", fullPath)
 
 	if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 		slog.Warn(" File does not exist, skip delete", "path", fullPath)
