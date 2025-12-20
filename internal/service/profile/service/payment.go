@@ -20,7 +20,7 @@ func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Paymen
 		"yoo_payment_id", yooKassaID,
 	)
 
-	if payment.PaymentMethod != "YooKassa"{
+	if payment.PaymentMethod != "yooKassa"{
 		payment.Status = modelpayment.PaymentSucceeded
 		if err := u.repo.CreatePayment(ctx, payment); err != nil {
 			slog.Error("Ошибка при сохранении платежа в БД",

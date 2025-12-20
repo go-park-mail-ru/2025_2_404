@@ -316,16 +316,6 @@ func (h *AdHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
 		ctx = metadata.AppendToOutgoingContext(ctx, "authorization", auth)
 	}
 
-	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
-		SubAmount: uint32(budget),
-		Type: "ad_subtract",
-	})
-	if err != nil {
-		st, _ := status.FromError(err)
-		http.Error(w, `{"error":"`+st.Message()+`"}`, utils.HTTPStatusFromCode(st.Code()))
-		return
-	}
-
 	req := &pbAd.UpdateBudgetRequest{
 		Id:     id,
 		Budget: uint32(budget),
