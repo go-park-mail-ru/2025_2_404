@@ -318,6 +318,7 @@ func (h *AdHandler) UpdateBudget(w http.ResponseWriter, r *http.Request) {
 
 	_, err = h.profileClient.SubtractBalance(ctx, &pbProfile.SubtractBalanceRequest{
 		SubAmount: uint32(budget),
+		Type: "ad_subtract",
 	})
 	if err != nil {
 		st, _ := status.FromError(err)
