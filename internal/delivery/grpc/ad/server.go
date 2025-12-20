@@ -8,12 +8,14 @@ import (
 	modeluser "2025_2_404/internal/service/ad/domain/user"
 	"2025_2_404/pkg/utils"
 	adv1 "2025_2_404/protos/gen/go/ad"
+	profile "2025_2_404/protos/gen/go/profile"
 	"context"
 	"time"
 
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -36,14 +38,16 @@ type adService struct {
 	adUsecase     adUsecaseI
 	budgetUsecase budgetI
 	adv1.UnimplementedAdServServer
+	clientProfile profile.ProfileClient
 	logger *zap.Logger
 }
 
-func New(adUsecase adUsecaseI, budgetUsecase budgetI, logger *zap.Logger) *adService {
+func New(adUsecase adUsecaseI, budgetUsecase budgetI, logger *zap.Logger, clientProfile profile.ProfileClient) *adService {
 	return &adService{
 		adUsecase:     adUsecase,
 		budgetUsecase: budgetUsecase,
 		logger:        logger,
+		clientProfile: clientProfile,
 	}
 }
 
@@ -70,7 +74,6 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 		TargetURL: protoAd.Targeturl,
 	}
 
-	// Парсим даты, если они переданы
 	if protoAd.StartAt != "" {
 		if startAt, err := time.Parse(time.RFC3339, protoAd.StartAt); err == nil {
 			ad.StartAt = startAt
@@ -85,6 +88,28 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 	if err := s.adUsecase.Create(ctx, ad); err != nil {
 		s.logger.Error("CreateAd usecase failed", zap.Error(err))
 		return nil, utils.ToGRPCError(err)
+	}
+	if ad.Budget != 0{
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, status.Error(codes.Internal, "missing metadata")
+		}
+
+		authHeaders := md.Get("authorization")
+		if len(authHeaders) == 0 {
+			return nil, status.Error(codes.Unauthenticated, "missing authorization header")
+		}
+
+		// Добавляем токен в исходящий контекст
+		outCtx := metadata.AppendToOutgoingContext(ctx, "authorization", authHeaders[0])
+		_, err = s.clientProfile.SubtractBalance(outCtx, &profile.SubtractBalanceRequest{
+			SubAmount: ad.Budget,
+			Type: "ad_subtract",
+		})
+		if err != nil{
+			s.logger.Error("Substrate not complited", zap.Error(err))
+			return nil, utils.ToGRPCError(err)
+		}
 	}
 
 	s.logger.Info("ad created successfully",
@@ -393,6 +418,28 @@ func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRe
 			zap.Error(err),
 		)
 		return nil, utils.ToGRPCError(err)
+	}
+	if newBudget != 0{
+		md, ok := metadata.FromIncomingContext(ctx)
+		if !ok {
+			return nil, status.Error(codes.Internal, "missing metadata")
+		}
+
+		authHeaders := md.Get("authorization")
+		if len(authHeaders) == 0 {
+			return nil, status.Error(codes.Unauthenticated, "missing authorization header")
+		}
+
+		// Добавляем токен в исходящий контекст
+		outCtx := metadata.AppendToOutgoingContext(ctx, "authorization", authHeaders[0])
+		_, err = s.clientProfile.SubtractBalance(outCtx, &profile.SubtractBalanceRequest{
+			SubAmount: newBudget,
+			Type: "ad_subtract",
+		})
+		if err != nil{
+			s.logger.Error("Substrate not complited", zap.Error(err))
+			return nil, utils.ToGRPCError(err)
+		}
 	}
 
 	s.logger.Info("ad budget updated successfully",

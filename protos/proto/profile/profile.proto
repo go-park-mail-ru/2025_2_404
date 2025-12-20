@@ -91,6 +91,7 @@ message AddBalanceResponse {
 
 message SubtractBalanceRequest {
     uint32 sub_amount = 1;
+    string type = 2;
 }
 
 message SubtractBalanceResponse {

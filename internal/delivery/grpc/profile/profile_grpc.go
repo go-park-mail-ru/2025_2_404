@@ -150,6 +150,16 @@ func (h *ProfileServer) SubtractBalance(ctx context.Context, req *profile.Subtra
 		return nil, status.Errorf(codes.Internal, "failed to subtract balance: %v", err)
 	}
 
+	_, err = h.profileUsecase.CreatePayment(ctx, modeluser.Payment{
+		ClientID: clientID,
+		PaymentMethod: req.GetType(),
+		AmountRub: req.GetSubAmount(),
+		Status: modeluser.PaymentSucceeded,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Canceled, "failed to create payment history")
+	}
+
 	return &profile.SubtractBalanceResponse{}, nil
 }
 
@@ -205,7 +215,7 @@ func (h *ProfileServer) CreatePayment(ctx context.Context, req *profile.PaymentC
 }
 
 func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.PaymentStatusRequest) (*profile.PaymentStatusResponse, error) {
-	slog.Info("🔄 UpdatePaymentStatus called",
+	slog.Info("UpdatePaymentStatus called",
 		"yookassa_id", req.GetYookassaId(),
 		"status", req.GetStatus(),
 		"amount", req.GetAmount(),
@@ -246,7 +256,7 @@ func (h *ProfileServer) UpdatePaymentStatus(ctx context.Context, req *profile.Pa
 			AddAmount: uint32(amount),
 		})
 		if err != nil {
-			slog.Error("💸 Failed to add balance",
+			slog.Error("Failed to add balance",
 				"client_id", clientID.String(),
 				"amount", amount,
 				"error", err,

@@ -11,6 +11,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgconn"
 	"go.uber.org/zap"
 )
@@ -31,6 +32,8 @@ const (
 	sqlTextForDeleteAds     = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
 	sqlTextForFullAdInfo    = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
 	sqlTextForGetAdDetailID = "UPDATE ad_detail SET budget = ad_detail.budget - 3 WHERE ad_id = $1 RETURNING id "
+	sqlTextForAddBalance = "UPDATE client_wallet SET balance = client_wallet.balance + $1 WHERE client_id = $2 RETURNING id"
+	sqlTextForCreatePayment = "INSERT INTO wallet_top_up (client_wallet_id, amount, status, yoo_payment_id, payment_method) VALUES ($1, $2, $3, $4, $5)"
 	sqlTextForGetAdSlot     = `
 	SELECT id, title, content, img_path, target_url 
 	FROM ad 
@@ -46,6 +49,7 @@ const (
 	sqlTextForCountAds        = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 	sqlTextForUpdateStatistic = "UPDATE statistic SET clicks = statistic.clicks + $1, impressions = statistic.impressions + $2 WHERE ad_detail_id = $3"
 	sqlTextForGetPathImage    = "SELECT img_path FROM ad WHERE id = $1"
+	sqlTextForBudget = "SELECT budget FROM ad_detail WHERE ad_id = $1"
 )
 
 type DB struct {
@@ -129,7 +133,22 @@ func (r *DB) GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.I
 }
 
 func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error {
-	result, err := r.sql.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)
+	randomUUID := uuid.New()
+	var walletUUID uuid.UUID
+	tx, err := r.sql.BeginTx(ctx, nil)
+	if err != nil {
+		r.logger.Error("failed to begin transaction for update", zap.Error(err))
+		return globalerrors.ErrInternal
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+
+	var budget int
+
+	err = tx.QueryRowContext(ctx, sqlTextForBudget, adID).Scan(&budget)
+
+	result, err := tx.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)
 	if err != nil {
 		r.logger.Error("ad not delete", zap.Error(err))
 		var pgErr *pgconn.PgError
@@ -149,6 +168,15 @@ func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID)
 	}
 	if rowsAffected == 0 {
 		return globalerrors.ErrAdNotFound
+	}
+
+	if budget > 0 {
+		_ = tx.QueryRowContext(ctx, sqlTextForAddBalance, budget, clientID).Scan(&walletUUID)
+		_, _ = tx.ExecContext(ctx, sqlTextForCreatePayment, walletUUID, budget, "succeeded", randomUUID, "ad_plus")
+	}
+	if err := tx.Commit(); err != nil {
+		r.logger.Error("failed to commit update transaction", zap.Error(err))
+		return globalerrors.ErrInternal
 	}
 	return nil
 }
@@ -199,6 +227,8 @@ func (r *DB) Create(ctx context.Context, ad modelad.Ads) error {
 		zap.String("ad_id", newAdID.String()),
 		zap.String("client_id", ad.ClientID.String()),
 	)
+
+
 
 	return nil
 }

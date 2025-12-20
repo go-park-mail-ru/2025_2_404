@@ -55,7 +55,6 @@ func (h *AdHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Читаем даты из формы
 	startAt := r.FormValue("start_at")
 	endAt := r.FormValue("end_at")
 

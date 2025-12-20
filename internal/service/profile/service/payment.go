@@ -20,6 +20,18 @@ func (u *UseCase) CreatePayment(ctx context.Context, payment modelpayment.Paymen
 		"yoo_payment_id", yooKassaID,
 	)
 
+	if payment.PaymentMethod != "YooKassa"{
+		payment.Status = modelpayment.PaymentSucceeded
+		if err := u.repo.CreatePayment(ctx, payment); err != nil {
+			slog.Error("Ошибка при сохранении платежа в БД",
+				"yoo_payment_id", yooKassaID,
+				"user_id", payment.ClientID,
+				"error", err,
+			)
+			return "", fmt.Errorf("failed to store payment in repository: %w", err)
+		}
+		return "", nil
+	}
 	// Вызов внешнего платежного сервиса (YooKassa)
 	yooKassaResp, err := u.ext.CreatePayment(ctx, payment)
 	if err != nil {

@@ -12,6 +12,8 @@ import (
 	budget "2025_2_404/internal/service/ad/usecase/budget"
 	"2025_2_404/pkg/logger"
 	adpb "2025_2_404/protos/gen/go/ad"
+	profilepb "2025_2_404/protos/gen/go/profile"
+	"fmt"
 	"net"
 	"net/http"
 
@@ -62,6 +64,18 @@ func main() {
 		_ = authConn.Close()
 	}()
 
+	// --- Profile connection
+	profileServiceAddr := fmt.Sprintf("profile_service:%s", config.AppConfig.PortProfile)
+	profileConn, err := grpc.NewClient(profileServiceAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatal("failed to connect to Ad Service", zap.Error(err))
+	}
+	defer func() {
+		_ = profileConn.Close()
+	}()
+
+	profileClient := profilepb.NewProfileClient(profileConn)
+
 	// --- Инициализация слоёв с логгером
 	repoAd := repoAd.New(connCfg.PostgresSQL, log.Named("repo.ad"))
 	repoBudget := repoBudget.New(connCfg.PostgresSQL, log.Named("repo.budget"))
@@ -70,7 +84,7 @@ func main() {
 	budgetUC := budget.New(repoBudget, log.Named("usecase.budget"))
 
 	authInterceptor, _ := interceptor.InitAuthInterceptor()
-	adHandler := adhandler.New(adUC, budgetUC, log.Named("handler.ad"))
+	adHandler := adhandler.New(adUC, budgetUC, log.Named("handler.ad"), profileClient)
 
 	// --- Запуск gRPC сервера
 	lis, err := net.Listen("tcp", ":"+config.AppConfig.PortAD)
