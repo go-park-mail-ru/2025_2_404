@@ -39,7 +39,7 @@ type adService struct {
 	budgetUsecase budgetI
 	adv1.UnimplementedAdServServer
 	clientProfile profile.ProfileClient
-	logger *zap.Logger
+	logger        *zap.Logger
 }
 
 func New(adUsecase adUsecaseI, budgetUsecase budgetI, logger *zap.Logger, clientProfile profile.ProfileClient) *adService {
@@ -89,7 +89,7 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 		s.logger.Error("CreateAd usecase failed", zap.Error(err))
 		return nil, utils.ToGRPCError(err)
 	}
-	if ad.Budget != 0{
+	if ad.Budget != 0 {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, status.Error(codes.Internal, "missing metadata")
@@ -104,9 +104,9 @@ func (s *adService) Create(ctx context.Context, req *adv1.CreateRequest) (*adv1.
 		outCtx := metadata.AppendToOutgoingContext(ctx, "authorization", authHeaders[0])
 		_, err = s.clientProfile.SubtractBalance(outCtx, &profile.SubtractBalanceRequest{
 			SubAmount: ad.Budget,
-			Type: "ad_subtract",
+			Type:      "ad_subtract",
 		})
-		if err != nil{
+		if err != nil {
 			s.logger.Error("Substrate not complited", zap.Error(err))
 			return nil, utils.ToGRPCError(err)
 		}
@@ -419,7 +419,7 @@ func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRe
 		)
 		return nil, utils.ToGRPCError(err)
 	}
-	if newBudget != 0{
+	if newBudget != 0 {
 		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
 			return nil, status.Error(codes.Internal, "missing metadata")
@@ -434,9 +434,9 @@ func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRe
 		outCtx := metadata.AppendToOutgoingContext(ctx, "authorization", authHeaders[0])
 		_, err = s.clientProfile.SubtractBalance(outCtx, &profile.SubtractBalanceRequest{
 			SubAmount: newBudget,
-			Type: "ad_subtract",
+			Type:      "ad_subtract",
 		})
-		if err != nil{
+		if err != nil {
 			s.logger.Error("Substrate not complited", zap.Error(err))
 			return nil, utils.ToGRPCError(err)
 		}

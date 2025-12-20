@@ -24,7 +24,7 @@ type AppConfig struct {
 	Host        string
 	Port        string
 	PortAD      string
-	PortProfile	string
+	PortProfile string
 	PortStorage string
 	ImgPath     string
 }

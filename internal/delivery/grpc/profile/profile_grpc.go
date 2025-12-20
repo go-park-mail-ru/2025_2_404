@@ -151,10 +151,10 @@ func (h *ProfileServer) SubtractBalance(ctx context.Context, req *profile.Subtra
 	}
 
 	_, err = h.profileUsecase.CreatePayment(ctx, modeluser.Payment{
-		ClientID: clientID,
+		ClientID:      clientID,
 		PaymentMethod: req.GetType(),
-		AmountRub: req.GetSubAmount(),
-		Status: modeluser.PaymentSucceeded,
+		AmountRub:     req.GetSubAmount(),
+		Status:        modeluser.PaymentSucceeded,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Canceled, "failed to create payment history")

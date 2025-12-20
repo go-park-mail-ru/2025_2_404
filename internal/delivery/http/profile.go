@@ -296,7 +296,7 @@ func (h *ProfileHandler) SubtractBalance(w http.ResponseWriter, r *http.Request)
 
 	req := &pbProfile.SubtractBalanceRequest{
 		SubAmount: jsonReq.SubtractAmount,
-		Type: "subtract_balance",
+		Type:      "subtract_balance",
 	}
 
 	resp, err := h.client.SubtractBalance(ctx, req)

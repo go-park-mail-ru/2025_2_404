@@ -32,7 +32,7 @@ const (
 	sqlTextForDeleteAds     = "DELETE FROM ad WHERE id = $1 AND client_id = $2"
 	sqlTextForFullAdInfo    = "SELECT ad.id, ad.title, ad.content, ad.img_path, ad.target_url, COALESCE(ad_detail.budget, 0), COALESCE(ad_detail.status, 'non-active'), ad_detail.start_at, ad_detail.end_at, COALESCE(statistic.clicks, 0), COALESCE(statistic.impressions, 0) FROM ad LEFT JOIN ad_detail ON ad_detail.ad_id = ad.id LEFT JOIN statistic ON statistic.ad_detail_id = ad_detail.id WHERE ad.id = $1 AND client_id = $2"
 	sqlTextForGetAdDetailID = "UPDATE ad_detail SET budget = ad_detail.budget - 3 WHERE ad_id = $1 RETURNING id "
-	sqlTextForAddBalance = "UPDATE client_wallet SET balance = client_wallet.balance + $1 WHERE client_id = $2 RETURNING id"
+	sqlTextForAddBalance    = "UPDATE client_wallet SET balance = client_wallet.balance + $1 WHERE client_id = $2 RETURNING id"
 	sqlTextForCreatePayment = "INSERT INTO wallet_top_up (client_wallet_id, amount, status, yoo_payment_id, payment_method) VALUES ($1, $2, $3, $4, $5)"
 	sqlTextForGetAdSlot     = `
 	SELECT id, title, content, img_path, target_url 
@@ -49,7 +49,7 @@ const (
 	sqlTextForCountAds        = "SELECT COUNT(*) FROM ad WHERE client_id = $1"
 	sqlTextForUpdateStatistic = "UPDATE statistic SET clicks = statistic.clicks + $1, impressions = statistic.impressions + $2 WHERE ad_detail_id = $3"
 	sqlTextForGetPathImage    = "SELECT img_path FROM ad WHERE id = $1"
-	sqlTextForBudget = "SELECT budget FROM ad_detail WHERE ad_id = $1"
+	sqlTextForBudget          = "SELECT budget FROM ad_detail WHERE ad_id = $1"
 )
 
 type DB struct {
@@ -146,7 +146,7 @@ func (r *DB) Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID)
 
 	var budget int
 
-	err = tx.QueryRowContext(ctx, sqlTextForBudget, adID).Scan(&budget)
+	_ = tx.QueryRowContext(ctx, sqlTextForBudget, adID).Scan(&budget)
 
 	result, err := tx.ExecContext(ctx, sqlTextForDeleteAds, adID, clientID)
 	if err != nil {
