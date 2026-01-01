@@ -19,9 +19,7 @@ WORKDIR /root/
 
 # Копируем .env (если используется) — но лучше через environment
 # COPY .env /root/.env  # ← НЕ рекомендуется в продакшене
-COPY .env /root/.env
 COPY --from=builder /slot .
-ENV ENV_FILE=/root/.env
 
 # EXPOSE порт (для документации)
 EXPOSE 8081

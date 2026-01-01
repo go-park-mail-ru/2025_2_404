@@ -9,7 +9,7 @@ import (
 
 func ConvertImageToBase64(imageData []byte, imageType string) string {
 	base64Encoding := base64.StdEncoding.EncodeToString(imageData)
-	log.Printf("Converted image to base64: %s", base64Encoding)
+	log.Printf("Converted image to base64: %s", base64Encoding[:20])
 	if imageType == "jpg" {
 		return fmt.Sprintf("data:image/jpeg;base64,%s", base64Encoding)
 	}

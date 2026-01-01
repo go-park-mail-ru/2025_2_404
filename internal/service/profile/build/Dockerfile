@@ -19,9 +19,7 @@ RUN apk add --no-cache bash
 RUN apk add --no-cache curl
 WORKDIR /root/
 
-COPY .env /root/.env
 COPY --from=builder /profile .
-ENV ENV_FILE=/root/.env
 
 EXPOSE 8076
 CMD ["./profile"]

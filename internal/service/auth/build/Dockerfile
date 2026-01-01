@@ -15,10 +15,8 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
-COPY .env /root/.env
 COPY --from=builder /auth .
 COPY internal/service/auth/keys ./internal/service/auth/keys
-ENV ENV_FILE=/root/.env
 
 EXPOSE 8077
 CMD ["./auth"]

@@ -108,7 +108,7 @@ type UnsafeStorageServer interface {
 }
 
 func RegisterStorageServer(s grpc.ServiceRegistrar, srv StorageServer) {
-	// If the following call pancis, it indicates UnimplementedStorageServer was
+	// If the following call panics, it indicates UnimplementedStorageServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.

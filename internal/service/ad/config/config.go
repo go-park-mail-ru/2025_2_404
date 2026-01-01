@@ -32,7 +32,6 @@ type AppConfig struct {
 func GetConfig() *Config {
 	err := godotenv.Load()
 	if err != nil {
-		panic("Error loading .env file")
 	}
 
 	appCfg := GetAppConfig()

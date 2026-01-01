@@ -14,7 +14,6 @@
     
 
     COPY template ./template
-    COPY .env ./.env
     COPY --from=builder /app/gateway-app .
     
     EXPOSE 8080

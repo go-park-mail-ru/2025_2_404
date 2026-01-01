@@ -15,9 +15,7 @@ FROM alpine:latest
 RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
-COPY .env /root/.env
 COPY --from=builder /ad .
-ENV ENV_FILE=/root/.env
 
 EXPOSE 8079
 CMD ["./ad"]

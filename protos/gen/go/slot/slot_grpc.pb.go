@@ -172,7 +172,7 @@ type UnsafeSlotServServer interface {
 }
 
 func RegisterSlotServServer(s grpc.ServiceRegistrar, srv SlotServServer) {
-	// If the following call pancis, it indicates UnimplementedSlotServServer was
+	// If the following call panics, it indicates UnimplementedSlotServServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.

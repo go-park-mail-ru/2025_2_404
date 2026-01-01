@@ -71,7 +71,7 @@ func GetPostgresConfig() *PostgresConfig {
 func GetAppConfig() *AppConfig {
 	return &AppConfig{
 		Host:        os.Getenv("APP_HOST"),
-		Port:        os.Getenv("APP_PORT"),
+		Port:        os.Getenv("GRPC_PORT_AUTH"),
 		PortAD:      os.Getenv("GRPC_AD_PORT"),
 		PortStorage: os.Getenv("GRPC_STORAGE_PORT"),
 		// Port: os.Getenv("GRPC_PORT_AUTH"),
