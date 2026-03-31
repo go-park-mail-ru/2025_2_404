@@ -1,0 +1,115 @@
+syntax="proto3";
+
+package ad;
+
+option go_package = "ad.v1;adv1";
+
+service AdServ{
+    rpc Create(CreateRequest) returns (CreateResponse);
+    rpc GetAllAds(GetAllAdsRequest) returns (GetAllAdsResponse);
+    rpc GetAd(GetAdRequest) returns (GetAdResponse);
+    rpc Update(UpdateRequest) returns (UpdateResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
+    rpc GetAdDetailForSlot(GetAdDetailIDRequest) returns (GetAdDetailIDResponse);
+    rpc GetAdSlot(GetAdSlotRequest) returns (GetAdSlotResponse);
+    rpc UpdateAdBudget(UpdateBudgetRequest) returns (UpdateBudgetResponse);
+    rpc GetAdCount(GetAdCountRequest) returns (GetAdCountResponse);
+}
+
+message Ad {
+    string id = 1;
+    string clientID = 2;
+    string title = 3;
+    string content = 4;
+    string imgPath = 5;
+    string targeturl = 6;
+    uint32 budget = 7;
+    string created_at = 8;
+    string updatedAt = 9;
+    string status = 10;
+    string start_at = 11;
+    string end_at = 12;
+    int64 clicks = 13;
+    int64 impressions = 14;
+}
+
+message AdSlot  {
+    string title = 1;
+    string description = 2;
+    string image_src = 3;
+    string link = 4;
+    string id = 5;
+}
+
+message CreateRequest{
+    Ad ad = 1;
+}
+
+message CreateResponse{
+
+}
+
+message GetAllAdsRequest{
+}
+
+message GetAllAdsResponse{
+    repeated Ad ads = 1;
+}
+
+message GetAdRequest{
+    string id = 1;
+    string clientID = 2;
+}
+
+message GetAdResponse{
+    Ad ad = 1;
+}
+
+message UpdateRequest{
+    Ad ad = 1;
+}
+
+message UpdateResponse{
+    
+}
+
+message DeleteRequest{
+    string id = 1; 
+}
+
+message DeleteResponse{
+
+}
+
+message GetAdDetailIDRequest{
+    string ad_id = 1;
+    string event_type = 2;
+}
+
+message GetAdDetailIDResponse{
+    string ad_detail_id = 1;
+}
+
+message GetAdSlotRequest{
+    string client_id = 1;
+    uint32 min_cost = 2;
+}
+
+message GetAdSlotResponse{
+    AdSlot ad = 1;
+}
+
+message UpdateBudgetRequest{
+    string id = 1;
+    uint32 budget = 2;
+}
+
+message UpdateBudgetResponse{
+    uint32 budget = 1;
+}
+
+message GetAdCountRequest{}
+
+message GetAdCountResponse{
+    int64 count = 1;
+}

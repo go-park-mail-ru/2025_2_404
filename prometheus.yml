@@ -1,0 +1,34 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "auth"
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["auth:9090"]
+
+  - job_name: "ad"
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["ad-service:9090"]
+
+  - job_name: "profile"
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["profile:9090"]
+
+  - job_name: "storage"
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["storage:9090"]
+
+  - job_name: "slot"
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["slot-service:9090"]
+
+  - job_name: "gateway"
+    metrics_path: /api/metrics
+    static_configs:
+      - targets: ["gateway:9090"]
