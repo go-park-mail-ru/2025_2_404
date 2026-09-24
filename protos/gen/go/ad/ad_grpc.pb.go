@@ -19,11 +19,15 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AdServ_Create_FullMethodName    = "/ad.AdServ/Create"
-	AdServ_GetAllAds_FullMethodName = "/ad.AdServ/GetAllAds"
-	AdServ_GetAd_FullMethodName     = "/ad.AdServ/GetAd"
-	AdServ_Update_FullMethodName    = "/ad.AdServ/Update"
-	AdServ_Delete_FullMethodName    = "/ad.AdServ/Delete"
+	AdServ_Create_FullMethodName             = "/ad.AdServ/Create"
+	AdServ_GetAllAds_FullMethodName          = "/ad.AdServ/GetAllAds"
+	AdServ_GetAd_FullMethodName              = "/ad.AdServ/GetAd"
+	AdServ_Update_FullMethodName             = "/ad.AdServ/Update"
+	AdServ_Delete_FullMethodName             = "/ad.AdServ/Delete"
+	AdServ_GetAdDetailForSlot_FullMethodName = "/ad.AdServ/GetAdDetailForSlot"
+	AdServ_GetAdSlot_FullMethodName          = "/ad.AdServ/GetAdSlot"
+	AdServ_UpdateAdBudget_FullMethodName     = "/ad.AdServ/UpdateAdBudget"
+	AdServ_GetAdCount_FullMethodName         = "/ad.AdServ/GetAdCount"
 )
 
 // AdServClient is the client API for AdServ service.
@@ -35,6 +39,10 @@ type AdServClient interface {
 	GetAd(ctx context.Context, in *GetAdRequest, opts ...grpc.CallOption) (*GetAdResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*UpdateResponse, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*DeleteResponse, error)
+	GetAdDetailForSlot(ctx context.Context, in *GetAdDetailIDRequest, opts ...grpc.CallOption) (*GetAdDetailIDResponse, error)
+	GetAdSlot(ctx context.Context, in *GetAdSlotRequest, opts ...grpc.CallOption) (*GetAdSlotResponse, error)
+	UpdateAdBudget(ctx context.Context, in *UpdateBudgetRequest, opts ...grpc.CallOption) (*UpdateBudgetResponse, error)
+	GetAdCount(ctx context.Context, in *GetAdCountRequest, opts ...grpc.CallOption) (*GetAdCountResponse, error)
 }
 
 type adServClient struct {
@@ -95,6 +103,46 @@ func (c *adServClient) Delete(ctx context.Context, in *DeleteRequest, opts ...gr
 	return out, nil
 }
 
+func (c *adServClient) GetAdDetailForSlot(ctx context.Context, in *GetAdDetailIDRequest, opts ...grpc.CallOption) (*GetAdDetailIDResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAdDetailIDResponse)
+	err := c.cc.Invoke(ctx, AdServ_GetAdDetailForSlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adServClient) GetAdSlot(ctx context.Context, in *GetAdSlotRequest, opts ...grpc.CallOption) (*GetAdSlotResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAdSlotResponse)
+	err := c.cc.Invoke(ctx, AdServ_GetAdSlot_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adServClient) UpdateAdBudget(ctx context.Context, in *UpdateBudgetRequest, opts ...grpc.CallOption) (*UpdateBudgetResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateBudgetResponse)
+	err := c.cc.Invoke(ctx, AdServ_UpdateAdBudget_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *adServClient) GetAdCount(ctx context.Context, in *GetAdCountRequest, opts ...grpc.CallOption) (*GetAdCountResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetAdCountResponse)
+	err := c.cc.Invoke(ctx, AdServ_GetAdCount_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AdServServer is the server API for AdServ service.
 // All implementations must embed UnimplementedAdServServer
 // for forward compatibility.
@@ -104,6 +152,10 @@ type AdServServer interface {
 	GetAd(context.Context, *GetAdRequest) (*GetAdResponse, error)
 	Update(context.Context, *UpdateRequest) (*UpdateResponse, error)
 	Delete(context.Context, *DeleteRequest) (*DeleteResponse, error)
+	GetAdDetailForSlot(context.Context, *GetAdDetailIDRequest) (*GetAdDetailIDResponse, error)
+	GetAdSlot(context.Context, *GetAdSlotRequest) (*GetAdSlotResponse, error)
+	UpdateAdBudget(context.Context, *UpdateBudgetRequest) (*UpdateBudgetResponse, error)
+	GetAdCount(context.Context, *GetAdCountRequest) (*GetAdCountResponse, error)
 	mustEmbedUnimplementedAdServServer()
 }
 
@@ -128,6 +180,18 @@ func (UnimplementedAdServServer) Update(context.Context, *UpdateRequest) (*Updat
 }
 func (UnimplementedAdServServer) Delete(context.Context, *DeleteRequest) (*DeleteResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedAdServServer) GetAdDetailForSlot(context.Context, *GetAdDetailIDRequest) (*GetAdDetailIDResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAdDetailForSlot not implemented")
+}
+func (UnimplementedAdServServer) GetAdSlot(context.Context, *GetAdSlotRequest) (*GetAdSlotResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAdSlot not implemented")
+}
+func (UnimplementedAdServServer) UpdateAdBudget(context.Context, *UpdateBudgetRequest) (*UpdateBudgetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAdBudget not implemented")
+}
+func (UnimplementedAdServServer) GetAdCount(context.Context, *GetAdCountRequest) (*GetAdCountResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAdCount not implemented")
 }
 func (UnimplementedAdServServer) mustEmbedUnimplementedAdServServer() {}
 func (UnimplementedAdServServer) testEmbeddedByValue()                {}
@@ -240,6 +304,78 @@ func _AdServ_Delete_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AdServ_GetAdDetailForSlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAdDetailIDRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdServServer).GetAdDetailForSlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdServ_GetAdDetailForSlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdServServer).GetAdDetailForSlot(ctx, req.(*GetAdDetailIDRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdServ_GetAdSlot_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAdSlotRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdServServer).GetAdSlot(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdServ_GetAdSlot_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdServServer).GetAdSlot(ctx, req.(*GetAdSlotRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdServ_UpdateAdBudget_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateBudgetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdServServer).UpdateAdBudget(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdServ_UpdateAdBudget_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdServServer).UpdateAdBudget(ctx, req.(*UpdateBudgetRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AdServ_GetAdCount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAdCountRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AdServServer).GetAdCount(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AdServ_GetAdCount_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AdServServer).GetAdCount(ctx, req.(*GetAdCountRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AdServ_ServiceDesc is the grpc.ServiceDesc for AdServ service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -266,6 +402,22 @@ var AdServ_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _AdServ_Delete_Handler,
+		},
+		{
+			MethodName: "GetAdDetailForSlot",
+			Handler:    _AdServ_GetAdDetailForSlot_Handler,
+		},
+		{
+			MethodName: "GetAdSlot",
+			Handler:    _AdServ_GetAdSlot_Handler,
+		},
+		{
+			MethodName: "UpdateAdBudget",
+			Handler:    _AdServ_UpdateAdBudget_Handler,
+		},
+		{
+			MethodName: "GetAdCount",
+			Handler:    _AdServ_GetAdCount_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

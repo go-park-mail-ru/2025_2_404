@@ -23,6 +23,11 @@ const UserIDKey ctxKey = "userID"
 
 var publicMethods = map[string]bool{
 	"/slot.SlotServ/GetSlot": true,
+	"/slot.SlotServ/CreateMetric": true,
+	"/ad.AdServ/GetAdDetailForSlot": true,
+	"/ad.AdServ/GetAdSlot": true,
+	"/profile.Profile/UpdatePaymentStatus": true,
+	"/profile.Profile/AddBalance": true,   
 }
 
 func AuthInterceptor(authClient authProto.AuthClient) grpc.UnaryServerInterceptor {

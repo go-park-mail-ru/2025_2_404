@@ -8,6 +8,7 @@ import (
 	adv1 "2025_2_404/protos/gen/go/ad"
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
@@ -15,21 +16,30 @@ import (
 )
 
 type adUsecaseI interface{
-	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelad.Ads, error)
+	FindByUserID(ctx context.Context, userID modeluser.ID) ([]modelfullad.AdFullInfo, error)
 	Create(ctx context.Context, ad modelad.Ads) (error)
 	Update(ctx context.Context, ad modelad.Ads) error
 	Delete(ctx context.Context, adID modelad.ID, clientID modeluser.ID) error
 	GetOneAd(ctx context.Context, adID modelad.ID, clientID modeluser.ID) (modelfullad.AdFullInfo, int, error)
+	GetAdDetailForSlot(ctx context.Context, id modelad.ID, event_type string) (modelfullad.DetailID, error)
+	GetAdSlot(ctx context.Context, min_cost uint32) (modelad.Ads, error)
+	GetAdCount(ctx context.Context, clientID modeluser.ID) (int64, error)
+}
+
+type budgetI interface{
+	UpdateBudget(ctx context.Context, adID modelad.ID, clientID modeluser.ID, budget uint32) error
 }
 
 type adService struct{
 	adUsecase	adUsecaseI
+	budgetUsecase budgetI
 	adv1.UnimplementedAdServServer
 }
 
-func New(adUsecase adUsecaseI) *adService{
+func New(adUsecase adUsecaseI, budgetUsecase budgetI) *adService{
 	return &adService{
 		adUsecase: adUsecase,
+		budgetUsecase: budgetUsecase,
 	}
 }
 
@@ -65,19 +75,24 @@ func (s *adService) GetAllAds(ctx context.Context, req *adv1.GetAllAdsRequest) (
 		return nil, status.Error(codes.Unauthenticated, "unauthorized")
 	}
 
-	ads, err := s.adUsecase.FindByUserID(ctx, clientID)
+	adsFull, err := s.adUsecase.FindByUserID(ctx, clientID)
 	if err != nil {
 		return nil, err
 	}
 
 	var grpcAds []*adv1.Ad
-	for _, a := range ads {
+	for _, a := range adsFull {
 		grpcAds = append(grpcAds, &adv1.Ad{
 			Id:        uuid.UUID(a.ID).String(),
 			ClientID:  clientID.String(),
 			Title:     a.Title,
 			Content:   a.Content,
 			Targeturl: a.TargetUrl,
+			ImgPath:   a.ImgPath,
+			Budget:    a.Budget,
+			Status:    a.Status,
+			StartAt:   a.StartAt.Format(time.RFC3339),
+			EndAt:     a.EndAt.Format(time.RFC3339),
 		})
 	}
 
@@ -105,6 +120,7 @@ func (s *adService) Update(ctx context.Context, req *adv1.UpdateRequest) (*adv1.
 		Content: protoAd.Content,
 		ImagePath: protoAd.ImgPath,
 		TargetUrl: protoAd.Targeturl,
+		Status: protoAd.Status,
 	}
 
 	if err := s.adUsecase.Update(ctx, ad); err != nil{
@@ -149,9 +165,93 @@ func (s *adService) GetAd(ctx context.Context, req *adv1.GetAdRequest) (*adv1.Ge
 		Targeturl: adFull.TargetUrl,
 		ImgPath: adFull.ImgPath,
 		Budget: adFull.Budget,
+		Status: adFull.Status,
+		StartAt: adFull.StartAt.Format(time.RFC3339),
+    	EndAt:   adFull.EndAt.Format(time.RFC3339),
 	}
 
 	return &adv1.GetAdResponse{Ad: ad}, nil
+}
+
+func (s *adService) GetAdDetailForSlot(ctx context.Context, req *adv1.GetAdDetailIDRequest) (* adv1.GetAdDetailIDResponse, error){
+	id, err := uuid.Parse(req.GetAdId())
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid ad ID")
+	}
+
+	
+
+	detailId, err := s.adUsecase.GetAdDetailForSlot(ctx, modelfullad.ID(id), req.GetEventType())
+	if err != nil{
+		return nil, err
+	}
+
+	return &adv1.GetAdDetailIDResponse{
+		AdDetailId: detailId.String(),
+	}, nil
+}
+
+func (s *adService) GetAdSlot(ctx context.Context, req *adv1.GetAdSlotRequest) (* adv1.GetAdSlotResponse, error){
+	adSlot, err := s.adUsecase.GetAdSlot(ctx, req.GetMinCost())
+	if err != nil{
+		fmt.Printf("WARNING : Problem in usecase GetAdSlot or empty slice")
+	}
+
+	adRes := &adv1.AdSlot{
+		Id: adSlot.ID.String(),
+		Title: adSlot.Title,
+		Description: adSlot.Content,
+		ImageSrc: adSlot.ImagePath,
+		Link: adSlot.TargetUrl,
+	}
+
+	return &adv1.GetAdSlotResponse{Ad: adRes}, nil
+}
+
+//TODO создать ручку пополнения бюджета в рекламе
+func (s *adService) UpdateAdBudget(ctx context.Context, req *adv1.UpdateBudgetRequest) (* adv1.UpdateBudgetResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
+	fmt.Printf("DEBUG INTERCEPTOR: Auth returned clientID string: '%s'\n", clientID)
+	
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+	adIDStr := req.GetId()
+	if adIDStr == "" {
+		return nil, status.Error(codes.InvalidArgument, "ad id is required")
+	}
+
+	id, err := uuid.Parse(adIDStr)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid ad ID format")
+	}
+
+	newBudget := req.GetBudget()
+
+	err = s.budgetUsecase.UpdateBudget(ctx, modelad.ID(id), clientID, newBudget)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &adv1.UpdateBudgetResponse{
+		Budget: newBudget,
+	}, nil
+}
+
+func (s *adService) GetAdCount(ctx context.Context, req *adv1.GetAdCountRequest) (*adv1.GetAdCountResponse, error) {
+	clientID, err := interceptor.GetUserID(ctx)
+	if err != nil {
+		return nil, status.Error(codes.Unauthenticated, "unauthorized")
+	}
+
+	count, err := s.adUsecase.GetAdCount(ctx, clientID)
+	if err != nil {
+		return nil, status.Error(codes.Internal, "failed to get ad count")
+	}
+
+	return &adv1.GetAdCountResponse{
+		Count: count,
+	}, nil
 }
 
 

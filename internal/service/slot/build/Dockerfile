@@ -6,11 +6,7 @@ WORKDIR /build
 COPY go.mod go.sum ./
 
 # Копируем только нужные пакеты (как в ad-service)
-COPY internal/service/slot ./internal/service/slot
-COPY internal/delivery/grpc/slot ./internal/delivery/grpc/slot
-COPY internal/delivery/grpc/interceptor ./internal/delivery/grpc/interceptor
-COPY protos ./protos
-COPY cmd/slot ./cmd/slot
+COPY . .
 
 # Собираем бинарник
 RUN go build -o /slot ./cmd/slot/main.go

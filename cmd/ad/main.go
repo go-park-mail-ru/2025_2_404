@@ -5,9 +5,10 @@ import (
 	"2025_2_404/internal/delivery/grpc/interceptor"
 	"2025_2_404/internal/service/ad/config"
 	db "2025_2_404/internal/service/ad/connections"
-	repo "2025_2_404/internal/service/ad/repository/postgres"
+	repoAd "2025_2_404/internal/service/ad/repository/postgres/ad"
+	repoBudget "2025_2_404/internal/service/ad/repository/postgres/budget"
 	usecase "2025_2_404/internal/service/ad/usecase/ad"
-	// authProto "2025_2_404/protos/auth"
+	budget "2025_2_404/internal/service/ad/usecase/budget"
 	adpb "2025_2_404/protos/gen/go/ad"
 	"fmt"
 	"log"
@@ -38,12 +39,13 @@ func main() {
 
 	// authClient := authProto.NewAuthClient(authConn)
 
-	repoCfg := repo.New(connCfg.PostgresSQL)
-	useCaseCfg := usecase.New(repoCfg)
-	// authInterceptor := interceptor.AuthInterceptor(authClient)
+	repoCfgAd := repoAd.New(connCfg.PostgresSQL)
+	repoCfgBudget := repoBudget.New(connCfg.PostgresSQL)
+	adUC := usecase.New(repoCfgAd)
+	budgetUC := budget.New(repoCfgBudget)
 	authInterceptor, authConn := interceptor.InitAuthInterceptor()
     defer authConn.Close()
-	adHandler := adhandler.New(useCaseCfg)
+	adHandler := adhandler.New(adUC, budgetUC)
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", config.AppConfig.PortAD))
 	if err != nil {
